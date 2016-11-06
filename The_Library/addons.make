@@ -1,0 +1,8 @@
+ofxAssimpModelLoader
+ofxAutoReloadedShader
+ofxCv
+ofxEasing
+ofxGui
+ofxLibwebsockets
+ofxOpenCv
+ofxOrbbecAstra

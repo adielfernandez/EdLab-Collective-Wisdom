@@ -26,55 +26,64 @@ public:
     
     void setup(vector<ofVec3f> verts, float _tileWidth);
     void update();
-    void setNewTexture(ofTexture *_tex);
+    void setTextures(vector<ofImage> *imgs);
+    void setActiveTexture(int num);
+    void setNextTexture(int num);
     
     void draw();
     
     ofMesh mesh;
-    ofTexture *tex;
+    
+    vector<ofImage> *images;
+    int activeTexNum;
+    int nextTexNum;
     
     ofVec3f positionOnWall, tileCenter;
     
-    float startTrans;
-    float currentTrans, endTrans;
     float tileWidth;
     
+    //key to allow sorting a vector of tiles
+    //by distance (for wave effects)
+    int distSqToEpicenter;
+    
+    //overload the < operator so we can sort
+    bool operator < (const Tile &t) const{
+        return (this -> distSqToEpicenter < t.distSqToEpicenter);
+    }
+    
+    bool debugCout;
     
     //controlling effects
     enum Effect{
         
-        //OUT effects are EVEN
-        //IN effects are ODD
+        //"Transition" effects are even
+        //others are odd.
+        FLIP_TRANSITION_HORIZ = 0,
+        FLIP_TRANSITION_VERT = 2,
+        FLIP_TRANSITION_AXIS = 4,
         
-        ROT_OUT_LEFT = 0,
-        ROT_OUT_RIGHT = 2,
-        ROT_OUT_TOP = 4,
-        ROT_OUT_BOTTOM = 6,
-        ROT_OUT_RANDOM = 8,
-        FLIP_OUT_HORIZ = 11,
-        FLIP_OUT_VERT = 13,
-        FLIP_OUT_RAND = 15,
-
-        ROT_IN_LEFT = 1,
-        ROT_IN_RIGHT = 3,
-        ROT_IN_TOP = 5,
-        ROT_IN_BOTTOM = 7,
-        ROT_IN_RANDOM = 9,
-        FLIP_IN_HORIZ = 10,
-        FLIP_IN_VERT = 12,
-        FLIP_IN_RAND = 14
+        FLIP_OUT = 1,
+        FLIP_IN = 3
+        
     };
     
-    bool bRotating, bFlipping;
+    bool bRotating;
+    bool bFlipTransition, bFlipInOut;
+    bool bIsBackward;
+    bool bDrawDarkBacking;
+    
     float flipSpeed;
-    ofVec3f rotateStart, rotateEnd;
-    ofVec3f currentRotation;
+
+    
+    float startAngle, endAngle, currentAngle;
+    ofVec3f rotAxis;
     
     
     double effectStartTime, effectStagger, effectEndTime;
     float effectDuration;
     
-    void triggerEffect( Tile::Effect e, float stagger = 0.0 );
+    void triggerEffect( Tile::Effect e, float stagger = 0.0, ofVec3f flipAxis = ofVec3f(0, 1, 0) );
     
+    void triggerWaveTransition(ofVec2f epicenter);
     
 };

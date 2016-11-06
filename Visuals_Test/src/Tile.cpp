@@ -40,58 +40,124 @@ void Tile::setup(vector<ofVec3f> verts, float _tileWidth){
         
     }
     
-    startTrans = 0.0;
-    endTrans = 0.0;
-    currentTrans = 0.0;
 
     bRotating = false;
     
-    bFlipping = false;
+    bFlipTransition = false;
+    bFlipInOut = false;
+    bDrawDarkBacking = true;
+    bIsBackward = true;
     flipSpeed = 0.02;
-    
-    rotateStart.set(0, 0, 0);
-    rotateEnd.set(0, 0, 0);
+
+    //angle = 0: tile facing forward
+    rotAxis.set(0, 1, 0);
+    startAngle = 0;
+    endAngle = 0;
+    currentAngle = 180;
     
     effectStartTime = 0.0;
     effectStagger = 0.0;
     effectEndTime = 0.0;
     effectDuration = 1.0;
     
+
+    distSqToEpicenter = 0;
+    
+    debugCout = false;
+    
 }
 
-void Tile::setNewTexture(ofTexture *_tex){
+void Tile::setTextures(vector<ofImage> *imgs){
     
-    tex = _tex;
+    images = imgs;
     
 }
 
-void Tile::triggerEffect(Tile::Effect e, float stagger ){
+void Tile::setActiveTexture(int num){
+    
+    activeTexNum = num;
+    
+}
+
+void Tile::setNextTexture(int num){
+    
+    nextTexNum = num;
+    
+}
+
+void Tile::triggerWaveTransition(ofVec2f epicenter){
+    
+    //calculate the angle for the flip by getting the angle to the epicenter
+    ofVec2f dirToEpicenter = epicenter - positionOnWall;
+    
+    //then rotate 90 degrees in Z to make it purpendicular to epicenter direction
+    dirToEpicenter.normalize();
+//    dirToEpicenter.rotate(90);
+    
+    triggerEffect(FLIP_TRANSITION_HORIZ, 0.0, dirToEpicenter);
+    
+    
+    
+}
+
+void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
     
     
     
     switch (e) {
-        case FLIP_IN_HORIZ:
+        case FLIP_TRANSITION_HORIZ:
             
-            rotateStart.set(0, 180, 0);
-            rotateEnd.set(0, 0, 0);
-            currentRotation = rotateStart;
+            startAngle = 0;
+            endAngle = 180;
             
-            bFlipping = true;
+            rotAxis.set(0, 1, 0);
             
-            startTrans = 0.0;
-            endTrans = 255.0;
+            bFlipTransition = true;
+            bDrawDarkBacking = false;
             
             break;
-        case FLIP_OUT_HORIZ:
-            
-            rotateStart.set(0, 0, 0);
-            rotateEnd.set(0, 180, 0);
-            currentRotation = rotateStart;
-            
-            bFlipping = true;
 
-            startTrans = 255.0;
-            endTrans = 0.0;
+        case FLIP_TRANSITION_VERT:
+            
+            
+            
+            break;
+            
+        case FLIP_TRANSITION_AXIS:
+            
+            startAngle = 0;
+            endAngle = 180;
+            
+            rotAxis = flipAxis;
+            
+            bFlipTransition = true;
+            bDrawDarkBacking = false;
+            
+            
+            break;
+
+        case FLIP_OUT:
+            
+            startAngle = 0;
+            endAngle = 180;
+            
+            rotAxis.set(0, 1, 0); // flip horizontally
+            
+            bFlipInOut = true;
+            bDrawDarkBacking = true;
+            
+            break;
+            
+        case FLIP_IN:
+            
+            startAngle = 180;
+            endAngle = 0;
+            
+            rotAxis.set(0, 1, 0); // flip horizontally
+            
+            bFlipInOut = true;
+            bDrawDarkBacking = true;
+
             
             break;
             
@@ -109,25 +175,39 @@ void Tile::triggerEffect(Tile::Effect e, float stagger ){
 
 void Tile::update(){
     
-    if(bFlipping){
+    if(bFlipInOut || bFlipTransition){
         
         float now = ofGetElapsedTimef();
         
-        //interpolate the transparency linearly
-        //but end it a little early by shaving a bit off the end time
-        float earlyFinish = 0.5 * effectDuration;
-        currentTrans = ofMap(now, effectStartTime, effectEndTime - earlyFinish, startTrans, endTrans, true);
-        
         //bounce ease the angle
-        //flipping only happens in X and Y
-        currentRotation.x = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, rotateStart.x, rotateEnd.x, &ofxeasing::back::easeOut_s, 1.0);
-        currentRotation.y = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, rotateStart.y, rotateEnd.y, &ofxeasing::back::easeOut_s, 2.0);
+        currentAngle = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, startAngle, endAngle, &ofxeasing::back::easeOut_s, 1.0);
         
-        if(now > effectStartTime + effectDuration) bFlipping = false;
+        
+        if(now > effectStartTime + effectDuration){
+        
+            if(bFlipTransition){
+                
+                //set the next texture to the active one
+                activeTexNum = nextTexNum;
+                
+                //and set the current angle to 0 to complete the flipping illusion
+                currentAngle = 0;
+                
+                bFlipTransition = false;
+            
+            } else {
+                
+                bFlipInOut = false;
+            
+            }
+            
+            
+        }
         
     }
     
-
+    
+    
     
     
 }
@@ -140,16 +220,48 @@ void Tile::draw(){
     //translate to the center of the tile position
     ofTranslate(positionOnWall);
     
-    ofRotateX(currentRotation.x);
-    ofRotateY(currentRotation.y);
-    ofRotateZ(currentRotation.z);
+    ofRotate(currentAngle, rotAxis.x, rotAxis.y, rotAxis.z);
     
-    tex -> bind();
+    images -> at(activeTexNum).bind();
     
-    ofSetColor(255, currentTrans);
+    ofSetColor(255);
     mesh.draw();
     
-    tex -> unbind();
+    images -> at(activeTexNum).unbind();
+    
+    
+    //draw an opaque black square on the flip side of it
+    if(bDrawDarkBacking){
+        
+        ofPushMatrix();
+        ofTranslate(0, 0, -0.1);
+        ofSetColor(0);
+        ofDrawRectangle(-tileWidth/2, -tileWidth/2, tileWidth, tileWidth);
+        ofPopMatrix();
+        
+    }
+    
+    //draw secondary texture on the flip side of it during transitions
+    //we need to rotate it into place so that it is properly oriented
+    //when it faces front
+    if(bFlipTransition){
+        
+        ofPushMatrix();
+        ofRotateY(180);
+        //push it forward (i.e. behind since it's been turned) a bit so
+        //it draws slightly off the front mesh
+        ofTranslate(0, 0, 0.1);
+        
+        images -> at(nextTexNum).bind();
+        
+        ofSetColor(255);
+        mesh.draw();
+        
+        images -> at(nextTexNum).unbind();
+        
+        ofPopMatrix();
+
+    }
     
     ofPopMatrix();
     

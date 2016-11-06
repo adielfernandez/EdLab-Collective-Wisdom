@@ -43,7 +43,7 @@ void Wallpaper::setup(){
     
     //Common factors of 1920x1200 for square grid sizing:
     //15, 16, 20, 24, 30, 40, 48, 60, 80
-    gridSpacing = 80;
+    gridSpacing = 40;
     
     for(int x = 0; x < sceneDim.x + 1 ; x += gridSpacing){
         for(int y = 0; y < sceneDim.y + 1; y += gridSpacing){
@@ -69,7 +69,10 @@ void Wallpaper::setup(){
             
             Tile t;
             t.setup(verts, gridSpacing);
-            t.setNewTexture( &images[currentImg].getTexture() );
+            t.setTextures( &images );
+            t.setActiveTexture( currentImg );
+            
+            if(tiles.size() == 0) t.debugCout = true;
             
             tiles.push_back(t);
         
@@ -77,7 +80,31 @@ void Wallpaper::setup(){
     }
     
 
+    bWave = false;
+    waveTileIndex = 0;
+    waitToNextWaveTile = 0;
+    lastWaveTileTime = 0;
     
+}
+
+void Wallpaper::triggerWave(ofVec2f epicenter){
+    
+    waveEpicenter = epicenter;
+    
+    //go through all the tiles and calculate their distance from the epicenter
+    for(int i = 0; i < tiles.size(); i++){
+        
+        tiles[i].distSqToEpicenter = ofDistSquared(waveEpicenter.x, waveEpicenter.y, tiles[i].positionOnWall.x, tiles[i].positionOnWall.y);
+        
+    }
+    
+    //now that we have their distances stored within them we can sort based on that distance
+    std::sort(tiles.begin(), tiles.end());
+    
+    bWave = true;
+    lastWaveTileTime = ofGetElapsedTimeMillis();
+    waitToNextWaveTile = 0;
+    waveTileIndex = 0;
     
 }
 
@@ -89,12 +116,18 @@ void Wallpaper::applyEffectToAll(Tile::Effect e){
     
     //FADE IN effects need new texture applied
     bool bNeedsNewTex = false;
-    int newTexNum = 0;
     
     if(e % 2 == 0){
     
         bNeedsNewTex = true;
-        newTexNum = round(ofRandom( images.size() - 1 ));
+        
+        //set the image we'll transition to
+        nextImg = (currentImg == 1 ? 0 : 1);
+//        newTexNum = round(ofRandom( images.size() - 1 ));
+        
+        //then store it for the next time
+        currentImg = nextImg;
+        
     
     }
     
@@ -106,10 +139,10 @@ void Wallpaper::applyEffectToAll(Tile::Effect e){
     for(int i = 0; i < tiles.size(); i++){
 
         if(bNeedsNewTex){
-            tiles[i].setNewTexture( &images[newTexNum].getTexture() );
+            tiles[i].setNextTexture( nextImg );
         }
         
-        float stagger = ofRandom(2.0);
+        float stagger = ofRandom(1.5);
         tiles[i].triggerEffect(e, stagger);
         
     }
@@ -117,6 +150,69 @@ void Wallpaper::applyEffectToAll(Tile::Effect e){
 }
 
 void Wallpaper::update(){
+    
+    
+    //Handle wave effect
+    if(bWave){
+        
+        //wave is based on actual speed: fps vs how far away from epicenter
+        float waveSpeed = 15.0;  //in frames
+        float timeBetweenFrames = 1000.0/ofGetFrameRate();
+        
+        //time until we trigger the next wave is calculated below using wave speed and tile distance
+        if(ofGetElapsedTimeMillis() - lastWaveTileTime > waitToNextWaveTile){
+            
+            //go through and trigger all the triangles that need it
+            //Use a do while loop to compensate from triangles that
+            //need to be triggered between frames
+            do {
+                
+                
+                //Trigger the tile transition and set the next texture
+//                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_AXIS, 0.0, waveEpicenter );
+                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_HORIZ, 0.0, waveEpicenter );
+                
+                //CHANGE THIS TO REFLECT RANDOM TEXTURE PICKING
+                nextImg = (currentImg == 1 ? 0 : 1);
+                
+                tiles[ waveTileIndex ].setNextTexture( nextImg );
+                
+
+                
+                //only calculate the time to next tri if we're not the last one
+                if(waveTileIndex < tiles.size() - 1){
+                    //time till next triggering the next triangle is
+                    //distance between tris divided by wave speed
+                    //Square root since the dist stored is distSq
+                    float dist = sqrt( tiles[waveTileIndex + 1].distSqToEpicenter - tiles[waveTileIndex].distSqToEpicenter );
+                    
+                    waitToNextWaveTile = dist/waveSpeed;
+                    lastWaveTileTime = ofGetElapsedTimeMillis();
+                    
+                    //get ready for the next one
+                    waveTileIndex++;
+                    
+                } else {
+                    
+                    //if we ARE the last one, turn off the wave
+                    bWave = false;
+                    
+                    //random non-zero value to exit while loop
+                    waitToNextWaveTile = -1;
+                    
+                    currentImg = nextImg;
+                }
+                
+            } while (waitToNextWaveTile == 0);
+            
+            
+            
+        }
+        
+        
+    }
+    
+    
     
     for(int i = 0; i < tiles.size(); i++){
         tiles[i].update();

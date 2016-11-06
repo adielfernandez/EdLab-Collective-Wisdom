@@ -24,6 +24,8 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
+    ofEnableDepthTest();
+    
     ofBackground(0);
     
     wallpaper.draw();
@@ -34,13 +36,13 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
 
     if(key == OF_KEY_LEFT){
-        wallpaper.applyEffectToAll(Tile::FLIP_OUT_HORIZ);
+        wallpaper.applyEffectToAll(Tile::FLIP_OUT);
     } else if(key == OF_KEY_RIGHT){
-        wallpaper.applyEffectToAll(Tile::FLIP_IN_HORIZ);
+        wallpaper.applyEffectToAll(Tile::FLIP_IN);
     } else if(key == OF_KEY_UP){
-        wallpaper.applyEffectToAll(Tile::FLIP_OUT_VERT);
+        wallpaper.applyEffectToAll(Tile::FLIP_TRANSITION_HORIZ);
     } else if(key == OF_KEY_DOWN){
-        wallpaper.applyEffectToAll(Tile::FLIP_IN_VERT);
+        wallpaper.applyEffectToAll(Tile::FLIP_TRANSITION_VERT);
     }
 }
 
@@ -62,6 +64,9 @@ void ofApp::mouseDragged(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
 
+    wallpaper.triggerWave(ofVec2f(x, y));
+    
+    
 }
 
 //--------------------------------------------------------------

@@ -31,11 +31,11 @@ public:
     
     vector<Tile> tiles;
     
-    
+
     
     vector<ofImage> images;
     
-    int currentImg;
+    int currentImg, nextImg;
     
     int gridSpacing;
     int numCols, numRows;
@@ -46,7 +46,11 @@ public:
     
     //-----EFFECTS-----
     void applyEffectToAll( Tile::Effect e );
-    
-    
+    void triggerWave(ofVec2f epicenter);
+    bool bWave;
+    ofVec2f waveEpicenter;
+    int waveTileIndex;
+    float waitToNextWaveTile;
+    unsigned long lastWaveTileTime;
     
 };

@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Wallpaper.hpp"
+#include "Frame.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -38,7 +39,7 @@ class ofApp : public ofBaseApp{
     
     Wallpaper wallpaper;
     
-    
+    Frame frame;
     
     
     

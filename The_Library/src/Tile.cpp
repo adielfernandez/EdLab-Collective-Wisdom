@@ -15,10 +15,11 @@ Tile::Tile(){
     
 }
 
-void Tile::setup(vector<ofVec3f> verts, float _tileWidth){
+void Tile::setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords){
     
-    tileWidth = _tileWidth;
-    tileCenter.set(tileWidth/2, tileWidth/2);
+    
+    //tile center = average of incoming verts
+    tileCenter = (verts[0] + verts[1] + verts[2] + verts[3])/4.0 - verts[0];
     
     mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
     
@@ -36,14 +37,22 @@ void Tile::setup(vector<ofVec3f> verts, float _tileWidth){
         
         //but maintain verts relative to 1920x1200 image
         //for texcoords
-        mesh.addTexCoord(verts[i]);
+        mesh.addTexCoord(texCoords[i]);
         
     }
     
+    darkBacking.moveTo(mesh.getVertex(0));
+    darkBacking.lineTo(mesh.getVertex(1));
+    darkBacking.lineTo(mesh.getVertex(2));
+    darkBacking.lineTo(mesh.getVertex(3));
+    darkBacking.close();
+    darkBacking.setColor(ofColor(0));
 
     bRotating = false;
     
-    bFlipTransition = false;
+    bFlipAxis = false;
+    bFlipHoriz = false;
+    bFlipVert = false;
     bFlipInOut = false;
     bDrawDarkBacking = true;
     bIsBackward = true;
@@ -53,18 +62,17 @@ void Tile::setup(vector<ofVec3f> verts, float _tileWidth){
     rotAxis.set(0, 1, 0);
     startAngle = 0;
     endAngle = 0;
-    currentAngle = 180;
+    currentAngle = 0;
     
     effectStartTime = 0.0;
     effectStagger = 0.0;
     effectEndTime = 0.0;
-    effectDuration = 1.0;
+    effectDuration = 1.8;
     
 
     distToEpicenter = 0;
     timeUntilWave = 0;
     
-    debugCout = false;
     
 }
 
@@ -103,7 +111,11 @@ void Tile::triggerWaveTransition(ofVec2f epicenter){
 
 void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
     
-    
+    if(e == FLIP_TRANSITION_RAND){
+        
+        e = (ofRandom(1) < 0.5) ? FLIP_TRANSITION_HORIZ : FLIP_TRANSITION_VERT;
+        
+    }
     
     switch (e) {
         case FLIP_TRANSITION_HORIZ:
@@ -113,14 +125,20 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
             
             rotAxis.set(0, 1, 0);
             
-            bFlipTransition = true;
+            bFlipHoriz = true;
             bDrawDarkBacking = false;
             
             break;
 
         case FLIP_TRANSITION_VERT:
             
+            startAngle = 0;
+            endAngle = 180;
             
+            rotAxis.set(1, 0, 0);
+            
+            bFlipVert = true;
+            bDrawDarkBacking = false;
             
             break;
             
@@ -131,7 +149,7 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
             
             rotAxis = flipAxis;
             
-            bFlipTransition = true;
+            bFlipAxis = true;
             bDrawDarkBacking = false;
             
             
@@ -176,7 +194,7 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
 
 void Tile::update(){
     
-    if(bFlipInOut || bFlipTransition){
+    if(bFlipInOut || bFlipAxis || bFlipHoriz || bFlipVert){
         
         float now = ofGetElapsedTimef();
         
@@ -186,7 +204,7 @@ void Tile::update(){
         
         if(now > effectStartTime + effectDuration){
         
-            if(bFlipTransition){
+            if(bFlipHoriz){
                 
                 //set the next texture to the active one
                 activeTexNum = nextTexNum;
@@ -194,9 +212,35 @@ void Tile::update(){
                 //and set the current angle to 0 to complete the flipping illusion
                 currentAngle = 0;
                 
-                bFlipTransition = false;
+                bFlipHoriz = false;
+                
+            }
             
-            } else {
+            if(bFlipVert){
+                
+                //set the next texture to the active one
+                activeTexNum = nextTexNum;
+                
+                //and set the current angle to 0 to complete the flipping illusion
+                currentAngle = 0;
+                
+                bFlipVert = false;
+                
+            }
+            
+            if(bFlipAxis){
+                
+                //set the next texture to the active one
+                activeTexNum = nextTexNum;
+                
+                //and set the current angle to 0 to complete the flipping illusion
+                currentAngle = 0;
+                
+                bFlipAxis = false;
+                
+            }
+            
+            if(bFlipInOut){
                 
                 bFlipInOut = false;
             
@@ -236,8 +280,9 @@ void Tile::draw(){
         
         ofPushMatrix();
         ofTranslate(0, 0, -0.1);
-        ofSetColor(0);
-        ofDrawRectangle(-tileWidth/2, -tileWidth/2, tileWidth, tileWidth);
+
+        darkBacking.draw();
+        
         ofPopMatrix();
         
     }
@@ -245,10 +290,18 @@ void Tile::draw(){
     //draw secondary texture on the flip side of it during transitions
     //we need to rotate it into place so that it is properly oriented
     //when it faces front
-    if(bFlipTransition){
+    if(bFlipHoriz || bFlipVert || bFlipAxis){
         
         ofPushMatrix();
-        ofRotateY(180);
+        
+        if(bFlipHoriz){
+            ofRotateY(180);
+        }
+        
+        if(bFlipVert){
+            ofRotateX(180);
+        }
+        
         //push it forward (i.e. behind since it's been turned) a bit so
         //it draws slightly off the front mesh
         ofTranslate(0, 0, 0.1);

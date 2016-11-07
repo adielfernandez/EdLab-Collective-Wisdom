@@ -1,0 +1,93 @@
+//
+//  Frame.hpp
+//  The_Library
+//
+//  Created by Adiel Fernandez on 11/6/16.
+//
+//
+
+#ifndef Frame_hpp
+#define Frame_hpp
+
+#include <stdio.h>
+
+#endif /* Frame_hpp */
+
+
+#include "ofMain.h"
+#include "ofxGui.h"
+#include "Tile.hpp"
+#include "TiledObject.hpp"
+
+#pragma once
+
+
+class Frame: public TiledObject{
+
+public:
+    
+    Frame();
+    
+    void setup(string name);
+    
+    void prepareMesh();
+    void mapMesh();
+    
+    void update();
+    void draw();
+    void drawDebug();
+    
+    void setupGui();
+    void drawGui(int x, int y);
+    void saveSettings();
+    void loadSettings();
+    
+    //Tile coordinates are based on
+    //the frame corners and the percentages
+    //of the control points
+    vector<float> controlPointPcts;
+    vector<ofVec2f> controlPoints;
+    vector<ofVec2f> frameCorners;
+    vector<ofVec2f> texCoordControlPts;
+    vector<ofVec2f> texCoordCorners;
+    
+    //also what percentage of the width/height
+    //each of the tiles are on the frame borders
+    float vertBorderTileHeightPct;
+    float horizBorderTileWidthPct;
+    
+    //mesh prepping variables
+    float frameWidth, frameHeight;
+    float borderWidthPct, borderHeightPct;
+    
+    ofxPanel gui;
+    string guiName;
+    string filePath;
+    
+    ofxLabel settingsLabel;
+    ofxFloatSlider waveSpeedSlider;
+    ofxFloatSlider effectDurationSlider;
+    
+    ofxLabel mappingLabel;
+    ofxButton reMapMeshButton;
+    ofxVec2Slider frameCorner0;
+    ofxVec2Slider frameCorner1;
+    ofxVec2Slider frameCorner2;
+    ofxVec2Slider frameCorner3;
+    ofxFloatSlider controlPtPct0;
+    ofxFloatSlider controlPtPct1;
+    ofxFloatSlider controlPtPct2;
+    ofxFloatSlider controlPtPct3;
+    ofxFloatSlider controlPtPct4;
+    ofxFloatSlider controlPtPct5;
+    ofxFloatSlider controlPtPct6;
+    ofxFloatSlider controlPtPct7;
+    
+    
+    
+    
+    
+};
+
+
+

@@ -24,7 +24,7 @@ public:
     
     Tile();
     
-    void setup(vector<ofVec3f> verts, float _tileWidth);
+    void setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords);
     void update();
     void setTextures(vector<ofImage> *imgs);
     void setActiveTexture(int num);
@@ -40,7 +40,7 @@ public:
     
     ofVec3f positionOnWall, tileCenter;
     
-    float tileWidth;
+    ofPath darkBacking;
     
     //key to allow sorting a vector of tiles
     //by distance (for wave effects)
@@ -52,7 +52,6 @@ public:
         return (this -> distToEpicenter < t.distToEpicenter);
     }
     
-    bool debugCout;
     
     //controlling effects
     enum Effect{
@@ -62,6 +61,7 @@ public:
         FLIP_TRANSITION_HORIZ = 0,
         FLIP_TRANSITION_VERT = 2,
         FLIP_TRANSITION_AXIS = 4,
+        FLIP_TRANSITION_RAND = 6,
         
         FLIP_OUT = 1,
         FLIP_IN = 3
@@ -69,7 +69,9 @@ public:
     };
     
     bool bRotating;
-    bool bFlipTransition, bFlipInOut;
+    bool bFlipAxis;
+    bool bFlipHoriz, bFlipVert;
+    bool bFlipInOut;
     bool bIsBackward;
     bool bDrawDarkBacking;
     

@@ -1,0 +1,20 @@
+<Frame>
+	<__GENERAL_SETTINGS/>
+	<Wave_Speed>1</Wave_Speed>
+	<Effect_Duration>1.8</Effect_Duration>
+	<__Control_Points/>
+	<Corner_0>776.5, 170</Corner_0>
+	<Corner_1>1143.5, 170</Corner_1>
+	<Corner_2>1143.5, 657</Corner_2>
+	<Corner_3>776.5, 657</Corner_3>
+	<Control_Pt_0>0.1296</Control_Pt_0>
+	<Control_Pt_1>0.8704</Control_Pt_1>
+	<Control_Pt_2>0.1017</Control_Pt_2>
+	<Control_Pt_3>0.8983</Control_Pt_3>
+	<Control_Pt_4>0.8704</Control_Pt_4>
+	<Control_Pt_5>0.1296</Control_Pt_5>
+	<Control_Pt_6>0.8983</Control_Pt_6>
+	<Control_Pt_7>0.1017</Control_Pt_7>
+<Frame/>
+	<__CONTROL_POINTS/>
+</Frame>

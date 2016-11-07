@@ -15,11 +15,12 @@
 
 #include "ofMain.h"
 #include "Tile.hpp"
+#include "TiledObject.hpp"
 
 #pragma once
 
 
-class Wallpaper{
+class Wallpaper: public TiledObject{
     
 public:
     
@@ -29,25 +30,9 @@ public:
     void update();
     void draw();
     
-    vector<Tile> tiles;
-    
-
-    
-    vector<ofImage> images;
-    
-    int currentImg, nextImg;
-    
     int gridSpacing;
     ofVec2f sceneDim;
     
     
-    //-----EFFECTS-----
-    void applyEffectToAll( Tile::Effect e );
-    void triggerWave(ofVec2f epicenter);
-    bool bWave;
-    float waveSpeed;
-    ofVec2f waveEpicenter;
-    int waveTileIndex;
-    unsigned long waveStartTime;
-    
+
 };

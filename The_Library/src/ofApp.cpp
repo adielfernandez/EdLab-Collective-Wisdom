@@ -5,7 +5,7 @@ void ofApp::setup(){
 
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
-    
+    ofSetLogLevel(OF_LOG_VERBOSE);
     
     
     //----------Scene Setup----------
@@ -14,7 +14,7 @@ void ofApp::setup(){
     
     wallpaper.setup();
     
-    
+    frame.setup("Frame");
     
     //----------Camera Setup----------
     
@@ -31,6 +31,7 @@ void ofApp::update(){
 
     
     wallpaper.update();
+    frame.update();
     
     
 }
@@ -44,10 +45,21 @@ void ofApp::draw(){
         
         ofBackground(0);
         
-        wallpaper.draw();
+        //push wallpaper back a tiny bit so it's always in the background
+        ofPushMatrix();
+        ofTranslate(0, 0, -1);
+
+//        wallpaper.draw();
+        ofPopMatrix();
         
+
         
+        ofDisableDepthTest();
+        frame.draw();
+        frame.drawDebug();
         
+        frame.drawGui(15, 15);
+        ofEnableDepthTest();
         
     } else if(currentView == 1){
         
@@ -103,6 +115,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 void ofApp::mousePressed(int x, int y, int button){
 
     wallpaper.triggerWave(ofVec2f(x, y));
+  frame.triggerWave(ofVec2f(x, y));
     
 }
 

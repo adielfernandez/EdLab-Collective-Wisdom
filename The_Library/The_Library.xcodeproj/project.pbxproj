@@ -45,6 +45,7 @@
 		D7C168551DCED11800BA1A42 /* Wallpaper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C168501DCED11800BA1A42 /* Wallpaper.cpp */; };
 		D7C168561DCED11800BA1A42 /* Wireframe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C168521DCED11800BA1A42 /* Wireframe.cpp */; };
 		D7C168591DCEEF8800BA1A42 /* TiledObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C168571DCEEF8800BA1A42 /* TiledObject.cpp */; };
+		D7C1685C1DCFD0D500BA1A42 /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C1685A1DCFD0D500BA1A42 /* Frame.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -396,6 +397,8 @@
 		D7C168531DCED11800BA1A42 /* Wireframe.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wireframe.hpp; sourceTree = "<group>"; };
 		D7C168571DCEEF8800BA1A42 /* TiledObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TiledObject.cpp; sourceTree = "<group>"; };
 		D7C168581DCEEF8800BA1A42 /* TiledObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TiledObject.hpp; sourceTree = "<group>"; };
+		D7C1685A1DCFD0D500BA1A42 /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frame.cpp; sourceTree = "<group>"; };
+		D7C1685B1DCFD0D500BA1A42 /* Frame.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Frame.hpp; sourceTree = "<group>"; };
 		D825FF1F1EA48B305BB428B7 /* scene.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = scene.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/scene.h; sourceTree = SOURCE_ROOT; };
 		D847EBE484F4F500F9CF2549 /* ofxCvImage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvImage.h; path = ../../../addons/ofxOpenCv/src/ofxCvImage.h; sourceTree = SOURCE_ROOT; };
 		D8DE36BE576A104A4CAAED41 /* Hand.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Hand.hpp; path = ../../../addons/ofxOrbbecAstra/libs/astra/include/astra/streams/Hand.hpp; sourceTree = SOURCE_ROOT; };
@@ -1446,6 +1449,8 @@
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				D7C168511DCED11800BA1A42 /* Wallpaper.hpp */,
 				D7C168501DCED11800BA1A42 /* Wallpaper.cpp */,
+				D7C1685B1DCFD0D500BA1A42 /* Frame.hpp */,
+				D7C1685A1DCFD0D500BA1A42 /* Frame.cpp */,
 				D7C168581DCEEF8800BA1A42 /* TiledObject.hpp */,
 				D7C168571DCEEF8800BA1A42 /* TiledObject.cpp */,
 				D7C1684F1DCED11800BA1A42 /* Tile.hpp */,
@@ -1637,6 +1642,7 @@
 				6AABAB39E82AF5CFEA23A205 /* ContourFinder.cpp in Sources */,
 				45CC483A999BF1065A6B926C /* Distance.cpp in Sources */,
 				5CC34D433F5806179935B89D /* Flow.cpp in Sources */,
+				D7C1685C1DCFD0D500BA1A42 /* Frame.cpp in Sources */,
 				2023EF517ED2D8B397511D4B /* Helpers.cpp in Sources */,
 				311DF864378748129984EA1D /* Kalman.cpp in Sources */,
 				C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */,

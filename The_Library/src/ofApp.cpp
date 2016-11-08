@@ -14,8 +14,10 @@ void ofApp::setup(){
     
     wallpaper.setup();
     
-    frame.setup("Frame");
-    
+    frame.setup("frame");
+
+    leftBookcase.setup("leftBookcase", true);
+//    rightBookcase.setup("rightBookcase", false);
     //----------Camera Setup----------
     
     
@@ -32,7 +34,8 @@ void ofApp::update(){
     
     wallpaper.update();
     frame.update();
-    
+    leftBookcase.update();
+//    rightBookcase.update();
     
 }
 
@@ -46,19 +49,38 @@ void ofApp::draw(){
         ofBackground(0);
         
         //push wallpaper back a tiny bit so it's always in the background
-        ofPushMatrix();
-        ofTranslate(0, 0, -1);
-
+//        ofPushMatrix();
+//        ofTranslate(0, 0, -1);
+//
 //        wallpaper.draw();
-        ofPopMatrix();
+//        ofPopMatrix();
         
-
+        
         
         ofDisableDepthTest();
         frame.draw();
-        frame.drawDebug();
         
-        frame.drawGui(15, 15);
+//        leftBookcase.draw();
+
+//        rightBookcase.draw();
+//        rightBookcase.drawDebug();
+        
+        if(bShowGUIs){
+            
+            frame.drawGui();
+            frame.drawDebug();
+            
+            wallpaper.drawGui();
+            
+            leftBookcase.drawGui();
+            leftBookcase.drawDebug();
+
+//            rightBookcase.drawGui();
+            
+            
+        }
+        
+        
         ofEnableDepthTest();
         
     } else if(currentView == 1){
@@ -78,8 +100,10 @@ void ofApp::draw(){
     
 
     
-    
 }
+
+
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
@@ -92,6 +116,11 @@ void ofApp::keyPressed(int key){
         wallpaper.applyEffectToAll(Tile::FLIP_TRANSITION_HORIZ);
     } else if(key == OF_KEY_DOWN){
         wallpaper.applyEffectToAll(Tile::FLIP_TRANSITION_VERT);
+    }
+    
+    
+    if(key == ' '){
+        bShowGUIs = !bShowGUIs;
     }
     
 }
@@ -114,9 +143,11 @@ void ofApp::mouseDragged(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
 
-    wallpaper.triggerWave(ofVec2f(x, y));
-  frame.triggerWave(ofVec2f(x, y));
-    
+    if(button == 2){
+        wallpaper.triggerWave(ofVec2f(x, y));
+        frame.triggerWave(ofVec2f(x, y));
+        leftBookcase.triggerWave(ofVec2f(x, y));
+    }
 }
 
 //--------------------------------------------------------------

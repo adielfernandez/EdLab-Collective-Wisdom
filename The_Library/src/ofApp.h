@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "Wallpaper.hpp"
 #include "Frame.hpp"
+#include "Bookcase.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -35,11 +36,16 @@ class ofApp : public ofBaseApp{
     int currentView;
     
     
-    
+    bool bShowGUIs;
     
     Wallpaper wallpaper;
     
     Frame frame;
+    
+    Bookcase leftBookcase;
+//    Bookcase rightBookcase;
+    
+
     
     
     

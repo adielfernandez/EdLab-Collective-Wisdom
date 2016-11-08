@@ -274,16 +274,37 @@ void Tile::draw(){
     
     images -> at(activeTexNum).unbind();
     
+    //debug draw points and lines
+    //draw corners
+//    for(int i = 0; i < 4; i++){
+//        
+//        ofSetColor(255, 200, 0);
+//        ofDrawCircle(mesh.getVertex(i), 10);
+//        ofDrawBitmapStringHighlight(ofToString(i), mesh.getVertex(i).x + 10, mesh.getVertex(i).y - 10);
+//        
+//    }
+//    
+//    ofPolyline corners;
+//    corners.addVertex(mesh.getVertex(0));
+//    corners.addVertex(mesh.getVertex(1));
+//    corners.addVertex(mesh.getVertex(2));
+//    corners.addVertex(mesh.getVertex(3));
+//    corners.close();
+//    corners.draw();
+    
+    
+    
+    
     
     //draw an opaque black square on the flip side of it
     if(bDrawDarkBacking){
         
-        ofPushMatrix();
-        ofTranslate(0, 0, -0.1);
-
-        darkBacking.draw();
-        
-        ofPopMatrix();
+//        ofPushMatrix();
+//        ofTranslate(0, 0, -0.1);
+//
+//        darkBacking.draw();
+//        
+//        ofPopMatrix();
         
     }
     

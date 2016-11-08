@@ -1,7 +1,7 @@
-<Frame>
+<frame>
 	<__GENERAL_SETTINGS/>
 	<Wave_Speed>1</Wave_Speed>
-	<Effect_Duration>1.8</Effect_Duration>
+	<Effect_Duration>1.3005</Effect_Duration>
 	<__Control_Points/>
 	<Corner_0>776.5, 170</Corner_0>
 	<Corner_1>1143.5, 170</Corner_1>
@@ -15,6 +15,7 @@
 	<Control_Pt_5>0.1296</Control_Pt_5>
 	<Control_Pt_6>0.8983</Control_Pt_6>
 	<Control_Pt_7>0.1017</Control_Pt_7>
-<Frame/>
+<frame/>
 	<__CONTROL_POINTS/>
-</Frame>
+<__Mapping_Points/>
+</frame>

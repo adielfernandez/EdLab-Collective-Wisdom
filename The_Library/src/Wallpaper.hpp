@@ -14,6 +14,7 @@
 #endif /* Wallpaper_hpp */
 
 #include "ofMain.h"
+#include "ofxGui.h"
 #include "Tile.hpp"
 #include "TiledObject.hpp"
 
@@ -30,9 +31,22 @@ public:
     void update();
     void draw();
     
+    void setupGui();
+    void drawGui();
+    void drawGui(int x, int y);
+    void saveSettings();
+    void loadSettings();
+    
     int gridSpacing;
     ofVec2f sceneDim;
     
+    ofxPanel gui;
+    string guiName;
+    string filePath;
     
+    ofxLabel settingsLabel;
+    ofxFloatSlider waveSpeedSlider;
+    ofxFloatSlider effectDurationSlider;
+    float lastEffectDuration;
 
 };

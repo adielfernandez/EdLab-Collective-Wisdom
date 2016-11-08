@@ -94,11 +94,36 @@ void Wallpaper::setup(){
     waveSpeed = 1.0;   //in pixels per ms
     waveTileIndex = 0;
 
+    guiName = "wallpaper";
+    setupGui();
     
+    waveSpeedSlider = 1.0;
+    effectDurationSlider = 1.8;
+    lastEffectDuration = 1.0;
+    
+    //not needed after first XML population
+//    saveSettings();
+    
+    loadSettings();
     
 }
 
 void Wallpaper::update(){
+    
+    
+    //update tiles and TiledObject with GUI settings
+    waveSpeed = waveSpeedSlider;
+    
+    //check if the gui value is different
+    if(effectDurationSlider != lastEffectDuration){
+        
+        //then change all the tiles
+        for(int i = 0; i < tiles.size(); i++){
+            tiles[i].effectDuration = effectDurationSlider;
+        }
+        //store the last value
+        lastEffectDuration = effectDurationSlider;
+    }
     
     
     TiledObject::update();
@@ -119,5 +144,48 @@ void Wallpaper::draw(){
 
 
 
+void Wallpaper::setupGui(){
+    
+    filePath = "settings/";
+    gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
+    
+    gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
+    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 10.0f));
+    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
+    
+    gui.setHeaderBackgroundColor(ofColor(255));
+    
+    //color applies to gui title only
+    gui.setTextColor(ofColor(0));
+    
+    settingsLabel.setBackgroundColor(ofColor(255));
+    
+    //this changes the color of all the labels
+    settingsLabel.setDefaultTextColor(ofColor(0));
+    
+    gui.setPosition(10, 10);
+    
+}
 
+void Wallpaper::loadSettings(){
+    
+    gui.loadFromFile( filePath + guiName + ".xml");
+    
+    
+}
+
+void Wallpaper::saveSettings(){
+    
+    gui.saveToFile(filePath + guiName + ".xml");
+    
+}
+
+void Wallpaper::drawGui(){
+    gui.draw();
+}
+
+void Wallpaper::drawGui(int x, int y){
+    gui.setPosition(x, y);
+    gui.draw();
+}
 

@@ -1,18 +1,17 @@
 //
-//  Frame.hpp
+//  Bookcase.hpp
 //  The_Library
 //
-//  Created by Adiel Fernandez on 11/6/16.
+//  Created by Adiel Fernandez on 11/7/16.
 //
 //
 
-#ifndef Frame_hpp
-#define Frame_hpp
+#ifndef Bookcase_hpp
+#define Bookcase_hpp
 
 #include <stdio.h>
 
-#endif /* Frame_hpp */
-
+#endif /* Bookcase_hpp */
 
 #include "ofMain.h"
 #include "ofxGui.h"
@@ -22,13 +21,13 @@
 #pragma once
 
 
-class Frame: public TiledObject{
-
+class Bookcase: public TiledObject{
+    
 public:
     
-    Frame();
+    Bookcase();
     
-    void setup(string name);
+    void setup(string name, bool _leftCase);
     
     void prepareMesh();
     void mapMesh();
@@ -38,28 +37,32 @@ public:
     void drawDebug();
     
     void setupGui();
-    void drawGui(int x, int y);
     void drawGui();
+    void drawGui(int x, int y);
     void saveSettings();
     void loadSettings();
+    
+    
+    //LEFT or RIGHT
+    bool bLeftCase;
+    
     
     //Tile coordinates are based on
     //the frame corners and the percentages
     //of the control points
     vector<float> controlPointPcts;
     vector<ofVec2f> controlPoints;
-    vector<ofVec2f> frameCorners;
+    vector<ofVec2f> bookcaseCorners;
     vector<ofVec2f> texCoordControlPts;
     vector<ofVec2f> texCoordCorners;
     
-    //also what percentage of the width/height
-    //each of the tiles are on the frame borders
-    float vertBorderTileHeightPct;
-    float horizBorderTileWidthPct;
     
     //mesh prepping variables
-    float frameWidth, frameHeight;
-    float borderWidthPct, borderHeightPct;
+    //see bookcase_mapping.png for details
+    float bookcaseWidth, bookcaseHeight;
+    float edgeTileWidth, midTileWidth;
+    float topTileHeight, bookTileHeight;
+    float shelfTileHeight, bottomTileHeight;
     
     ofxPanel gui;
     string guiName;
@@ -71,8 +74,6 @@ public:
     
     ofxLabel mappingLabel;
     ofxButton reMapMeshButton;
-    unsigned long long lastMapTime;
-    
     ofxVec2Slider frameCorner0;
     ofxVec2Slider frameCorner1;
     ofxVec2Slider frameCorner2;
@@ -85,15 +86,16 @@ public:
     ofxFloatSlider controlPtPct5;
     ofxFloatSlider controlPtPct6;
     ofxFloatSlider controlPtPct7;
+    ofxFloatSlider controlPtPct8;
+    ofxFloatSlider controlPtPct9;
+    ofxFloatSlider controlPtPct10;
+    ofxFloatSlider controlPtPct11;
+    ofxFloatSlider controlPtPct12;
+    ofxFloatSlider controlPtPct13;
+    ofxFloatSlider controlPtPct14;
+    ofxFloatSlider controlPtPct15;
     
     
-    //convenience algorithm for finding
-    //intersection of two line segments
-    //used for finding points BETWEEN control points
-    ofVec2f getIntersectionPoint(ofVec2f line1Start, ofVec2f line1End, ofVec2f line2Start, ofVec2f line2End);
     
     
 };
-
-
-

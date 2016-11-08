@@ -70,7 +70,7 @@ void Frame::setup(string name){
     //Setup the parent class TiledObject with all th info set above
     TiledObject::setupTiledObject();
 
-    
+    lastMapTime = 0;
 }
 
 
@@ -111,9 +111,12 @@ void Frame::update(){
     controlPoints[7] = frameCorners[0].getInterpolated(frameCorners[3], controlPointPcts[7]);
     
     
-    if(reMapMeshButton){
+    if(reMapMeshButton && ofGetElapsedTimeMillis() - lastMapTime > 1000){
         tiles.clear();
         mapMesh();
+        
+        cout << "button pressed..." << endl;
+        lastMapTime = ofGetElapsedTimeMillis();
     }
     
     
@@ -167,8 +170,12 @@ void Frame::drawDebug(){
     ofDrawLine(controlPoints[1], controlPoints[4]);
     ofDrawLine(controlPoints[7], controlPoints[2]);
     ofDrawLine(controlPoints[6], controlPoints[3]);
+
     
     ofPopStyle();
+    
+    
+    
 
 }
 
@@ -194,14 +201,23 @@ void Frame::setupGui(){
     gui.add(frameCorner2.setup("Corner 2", frameCorners[2], frameCorners[2] + minus, frameCorners[2] + plus));
     gui.add(frameCorner3.setup("Corner 3", frameCorners[3], frameCorners[3] + minus, frameCorners[3] + plus));
     
-    gui.add(controlPtPct0.setup("Control Pt 0", 0.1f, 0.0f, 0.2f));
-    gui.add(controlPtPct1.setup("Control Pt 1", 0.1f, 0.8f, 1.0f));
-    gui.add(controlPtPct2.setup("Control Pt 2", 0.1f, 0.0f, 0.2f));
-    gui.add(controlPtPct3.setup("Control Pt 3", 0.1f, 0.8f, 1.0f));
-    gui.add(controlPtPct4.setup("Control Pt 4", 0.1f, 0.8f, 1.0f));
-    gui.add(controlPtPct5.setup("Control Pt 5", 0.1f, 0.0f, 0.2f));
-    gui.add(controlPtPct6.setup("Control Pt 6", 0.1f, 0.8f, 1.0f));
-    gui.add(controlPtPct7.setup("Control Pt 7", 0.1f, 0.0f, 0.2f));
+    float start = 0.0f;
+    float firstStep = 0.25f;
+    float lastStep = 0.75f;
+    float end = 1.0f;
+    
+    //will be overwritten immediately by calculations in "prepareMesh()" or XML loading
+    float defaultVal = 0.1f;
+    
+    
+    gui.add(controlPtPct0.setup("Control Pt 0", defaultVal, start, firstStep));
+    gui.add(controlPtPct1.setup("Control Pt 1", defaultVal, lastStep, end));
+    gui.add(controlPtPct2.setup("Control Pt 2", defaultVal, start, firstStep));
+    gui.add(controlPtPct3.setup("Control Pt 3", defaultVal, lastStep, end));
+    gui.add(controlPtPct4.setup("Control Pt 4", defaultVal, lastStep, end));
+    gui.add(controlPtPct5.setup("Control Pt 5", defaultVal, start, firstStep));
+    gui.add(controlPtPct6.setup("Control Pt 6", defaultVal, lastStep, end));
+    gui.add(controlPtPct7.setup("Control Pt 7", defaultVal, start, firstStep));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     
@@ -213,6 +229,8 @@ void Frame::setupGui(){
     
     //this changes the color of all the labels
     settingsLabel.setDefaultTextColor(ofColor(0));
+    
+    gui.setPosition(10, 150);
     
 }
 
@@ -243,12 +261,15 @@ void Frame::saveSettings(){
     
 }
 
-void Frame::drawGui(int x, int y){
- 
-//    gui.setPosition(x, y);
+void Frame::drawGui(){
     gui.draw();
-    
 }
+
+void Frame::drawGui(int x, int y){
+    gui.setPosition(x, y);
+    gui.draw();
+}
+
 
 void Frame::prepareMesh(){
     
@@ -312,9 +333,6 @@ void Frame::prepareMesh(){
     frameCorners[1] = frameCorners[0] + ofVec2f( frameWidth, 0           );
     frameCorners[2] = frameCorners[0] + ofVec2f( frameWidth, frameHeight );
     frameCorners[3] = frameCorners[0] + ofVec2f( 0         , frameHeight );
-    
-    cout << "Frame width: " << frameWidth  << endl;
-    
     
     //these floats are how far along the edge of the portrait they are
     //(left to right or top to bottom) as a percentage of the distance from one corner to the next
@@ -402,179 +420,312 @@ void Frame::mapMesh(){
     vector<ofVec2f> texCoords;
     texCoords.resize(4);
     
-    //----------TOP ROW----------
-    //Interpolates vertices between
-    //frameCorners/controlPoints from left to right
+    //these are the vertices we'll be using to interpolate the tiles between
+    ofVec2f topLeft;
+    ofVec2f topRight;
+    ofVec2f bottomRight;
+    ofVec2f bottomLeft;
     
-    //Construct the first row (2 corners + 5 middle = 7 tiles)
-    //BOUNDED BY...
-    //top left:     frameCorners[0]
-    //bottom left:  controlPoint 7
-    //top Right:    frameCorners[1]
-    //bottom Right: controlPoint 2
-    for(int i = 0; i < 7; i++){
+    //these will hold the texture coordinates for the interpolated tiles
+    ofVec2f texTopLeft;
+    ofVec2f texTopRight;
+    ofVec2f texBottomRight;
+    ofVec2f texBottomLeft;
+    
+    //start/end points for the interpolations and how far to move tiles (width/height)
+    float startPct;
+    float endPct;
+    float tileHeight;
+    float tileWidth;
+    
+    //----------LEFT AND RIGHT COLUMNS----------
+    //Interpolates vertices betweem
+    //frameCorners/controlPoints from top to bottom
+
+    
+    //Do LEFT and RIGHT with nested loop
+    for(int j = 0; j < 2; j++){
         
-        float startPct, endPct;
-        
-        if(i == 0){
+        //do LEFT
+        if(j == 0){
             
-            //left Tile
+            topLeft = controlPoints[7];
+            topRight = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[7], controlPoints[2]);
+            bottomRight = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[6], controlPoints[3]);
+            bottomLeft = controlPoints[6];
+            
+            texTopLeft = texCoordControlPts[7];
+            texTopRight = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[5], texCoordControlPts[7], texCoordControlPts[2]);
+            texBottomRight = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[5], texCoordControlPts[6], texCoordControlPts[3]);
+            texBottomLeft = texCoordControlPts[6];
+            
+            
+            
             startPct = 0.0f;
-            endPct = controlPointPcts[0];
+            endPct = 0.0f;
+            tileHeight = 1.0f/8.0f;
             
-        } else if(i == 6){
-            
-            //right tile
-            startPct = controlPointPcts[1];
-            endPct = 1.0f;
             
         } else {
             
-            //middle tiles
-            startPct = controlPointPcts[0] + horizBorderTileWidthPct * (i - 1);
-            endPct = startPct + horizBorderTileWidthPct;
+            //do RIGHT column
+            
+            //vertices
+            topLeft = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[7], controlPoints[2]);
+            topRight = controlPoints[2];
+            bottomRight = controlPoints[3];
+            bottomLeft = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[6], controlPoints[3]);
+
+            //texCoords
+            texTopLeft = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[4], texCoordControlPts[7], texCoordControlPts[2]);
+            texTopRight = texCoordControlPts[2];
+            texBottomRight = texCoordControlPts[3];
+            texBottomLeft = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[4], texCoordControlPts[6], texCoordControlPts[3]);
+            
+            startPct = 0.0f;
+            endPct = 0.0f;
+            tileHeight = 1.0f/8.0f;
+
         }
         
-        verts[0] = frameCorners[0].getInterpolated(frameCorners[1], startPct);
-        verts[1] = frameCorners[0].getInterpolated(frameCorners[1], endPct);
-        verts[2] = controlPoints[7].getInterpolated(controlPoints[2], endPct);
-        verts[3] = controlPoints[7].getInterpolated(controlPoints[2], startPct);
         
-        //texCoords have similar construction but they use the default "borderWidthPct" and
-        //"borderHeightPct" values from the image template instead of the control
-        //points that will be moved with the GUI
-        texCoords[0] = texCoordCorners[0].getInterpolated(texCoordCorners[1], startPct);
-        texCoords[1] = texCoordCorners[0].getInterpolated(texCoordCorners[1], endPct);
-        texCoords[2] = texCoordControlPts[7].getInterpolated(texCoordControlPts[2], endPct);
-        texCoords[3] = texCoordControlPts[7].getInterpolated(texCoordControlPts[2], startPct);
-        
-        
-        
-        Tile t;
-        t.setup(verts, texCoords);
-        t.setTextures( &images );
-        t.setActiveTexture( currentImg );
-        
-        tiles.push_back(t);
-        
+        //Make the 8 tiles per column, interpolating between the vertices declared above
+        for(int i = 0; i < 8; i++){
+            
+            //startPct starts at zero and gets the new height (1/8 th the total) added every loop
+            endPct = startPct + tileHeight;
+            
+            verts[0] = topLeft.getInterpolated(bottomLeft, startPct);
+            verts[1] = topRight.getInterpolated(bottomRight, startPct);
+            verts[2] = topRight.getInterpolated(bottomRight, endPct);
+            verts[3] = topLeft.getInterpolated(bottomLeft, endPct);
+            
+            //texCoords have similar construction but they use the default "borderWidthPct" and
+            //"borderHeightPct" values instead of the control points that will be moved with the GUI
+            texCoords[0] = texTopLeft.getInterpolated(texBottomLeft, startPct);
+            texCoords[1] = texTopRight.getInterpolated(texBottomRight, startPct);
+            texCoords[2] = texTopRight.getInterpolated(texBottomRight, endPct);
+            texCoords[3] = texTopLeft.getInterpolated(texBottomLeft, endPct);
+            
+            Tile t;
+            t.setup(verts, texCoords);
+            t.setTextures( &images );
+            t.setActiveTexture( currentImg );
+            
+            tiles.push_back(t);
+            
+            //add endPct to startPct so the next tile knows where to start
+            startPct = endPct;
+        }
     }
     
-    //----------BOTTOM ROW----------
-    //Interpolates vertices between
+    
+    //----------TOP AND BOTTOM ROWS----------
+    //Interpolates vertices betweem
     //frameCorners/controlPoints from left to right
-    for(int i = 0; i < 7; i++){
+    
+    //Do TOP and BOTTOM with nested loop
+    for(int j = 0; j < 2; j++){
         
-        float startPct, endPct;
-        
-        if(i == 0){
+        //do TOP
+        if(j == 0){
             
-            //left Tile
+            topLeft = controlPoints[0];
+            topRight = controlPoints[1];
+            bottomRight = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[7], controlPoints[2]);
+            bottomLeft = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[7], controlPoints[2]);
+            
+            texTopLeft = texCoordControlPts[0];
+            texTopRight = texCoordControlPts[1];
+            texBottomRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[4], texCoordControlPts[7], texCoordControlPts[2]);
+            texBottomLeft = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[5], texCoordControlPts[7], texCoordControlPts[2]);
+            
+            
+            
             startPct = 0.0f;
-            endPct = controlPointPcts[5];
+            endPct = 0.0f;
+            tileWidth = 1.0f/5.0f;  //5 tiles in top row
             
-        } else if(i == 6){
-            
-            //right tile
-            startPct = controlPointPcts[4];
-            endPct = 1.0f;
             
         } else {
             
-            //middle tiles
-            startPct = controlPointPcts[5] + horizBorderTileWidthPct * (i - 1);
-            endPct = startPct + horizBorderTileWidthPct;
+            //do BOTTOM
+            
+            topLeft = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[6], controlPoints[3]);
+            topRight = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[6], controlPoints[3]);
+            bottomRight = controlPoints[4];
+            bottomLeft = controlPoints[5];
+
+            texTopLeft = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[5], texCoordControlPts[6], texCoordControlPts[3]);
+            texTopRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[4], texCoordControlPts[6], texCoordControlPts[3]);
+            texBottomRight = texCoordControlPts[4];
+            texBottomLeft = texCoordControlPts[5];
+            
+            startPct = 0.0f;
+            endPct = 0.0f;
+            tileWidth = 1.0f/5.0f;  //5 tiles in top row
+            
         }
         
-        verts[0] = controlPoints[6].getInterpolated(controlPoints[3], startPct);
-        verts[1] = controlPoints[6].getInterpolated(controlPoints[3], endPct);
-        verts[2] = frameCorners[3].getInterpolated(frameCorners[2], endPct);
-        verts[3] = frameCorners[3].getInterpolated(frameCorners[2], startPct);
         
-        //texCoords have similar construction but they use the default "borderWidthPct" and
-        //"borderHeightPct" values instead of the control points that will be moved with the GUI
-        texCoords[0] = texCoordControlPts[6].getInterpolated(texCoordControlPts[3], startPct);
-        texCoords[1] = texCoordControlPts[6].getInterpolated(texCoordControlPts[3], endPct);
-        texCoords[2] = texCoordCorners[3].getInterpolated(texCoordCorners[2], endPct);
-        texCoords[3] = texCoordCorners[3].getInterpolated(texCoordCorners[2], startPct);
-        
-        Tile t;
-        t.setup(verts, texCoords);
-        t.setTextures( &images );
-        t.setActiveTexture( currentImg );
-        
-        tiles.push_back(t);
-        
-    }
-    
-    //----------LEFT COLUMN----------
-    //Interpolates vertices betweem
-    //frameCorners/controlPoints from top to bottom
-    
-    //8 tiles between top row and bottom row
-    for(int i = 0; i < 8; i++){
-        
-        //middle tiles
-        float startPct = borderHeightPct + (vertBorderTileHeightPct * i);
-        float endPct = startPct + vertBorderTileHeightPct;
-        
-        verts[0] = frameCorners[0].getInterpolated(frameCorners[3], startPct);
-        verts[1] = controlPoints[0].getInterpolated(controlPoints[5], startPct);
-        verts[2] = controlPoints[0].getInterpolated(controlPoints[5], endPct);
-        verts[3] = frameCorners[0].getInterpolated(frameCorners[3], endPct);
-        
-        //texCoords have similar construction but they use the default "borderWidthPct" and
-        //"borderHeightPct" values instead of the control points that will be moved with the GUI
-        texCoords[0] = texCoordCorners[0].getInterpolated(texCoordCorners[3], startPct);
-        texCoords[1] = texCoordControlPts[0].getInterpolated(texCoordControlPts[5], startPct);
-        texCoords[2] = texCoordControlPts[0].getInterpolated(texCoordControlPts[5], endPct);
-        texCoords[3] = texCoordCorners[0].getInterpolated(texCoordCorners[3], endPct);
-        
-        Tile t;
-        t.setup(verts, texCoords);
-        t.setTextures( &images );
-        t.setActiveTexture( currentImg );
-        
-        tiles.push_back(t);
-        
-    }
-    
-    //----------RIGHT COLUMN----------
-    //Interpolates vertices betweem
-    //frameCorners/controlPoints from top to bottom
-    
-    //8 tiles between top row and bottom row
-    for(int i = 0; i < 8; i++){
-        
-        //middle tiles
-        float startPct = borderHeightPct + (vertBorderTileHeightPct * i);
-        float endPct = startPct + vertBorderTileHeightPct;
-        
-        verts[0] = controlPoints[1].getInterpolated(controlPoints[4], startPct);
-        verts[1] = frameCorners[1].getInterpolated(frameCorners[2], startPct);
-        verts[2] = frameCorners[1].getInterpolated(frameCorners[2], endPct);
-        verts[3] = controlPoints[1].getInterpolated(controlPoints[4], endPct);
-        
-        //texCoords have similar construction but they use the default "borderWidthPct" and
-        //"borderHeightPct" values instead of the control points that will be moved with the GUI
-        texCoords[0] = texCoordControlPts[1].getInterpolated(texCoordControlPts[4], startPct);
-        texCoords[1] = texCoordCorners[1].getInterpolated(texCoordCorners[2], startPct);
-        texCoords[2] = texCoordCorners[1].getInterpolated(texCoordCorners[2], endPct);
-        texCoords[3] = texCoordControlPts[1].getInterpolated(texCoordControlPts[4], endPct);
-        
-        Tile t;
-        t.setup(verts, texCoords);
-        t.setTextures( &images );
-        t.setActiveTexture( currentImg );
-        
-        tiles.push_back(t);
-        
+        //Make the 8 tiles per column, interpolating between the vertices declared above
+        for(int i = 0; i < 5; i++){
+            
+            //startPct starts at zero and gets the new height (1/8 th the total) added every loop
+            endPct = startPct + tileWidth;
+            
+            verts[0] = topLeft.getInterpolated(topRight, startPct);
+            verts[1] = topLeft.getInterpolated(topRight, endPct);
+            verts[2] = bottomLeft.getInterpolated(bottomRight, endPct);
+            verts[3] = bottomLeft.getInterpolated(bottomRight, startPct);
+            
+            //texCoords have similar construction but they use the default "borderWidthPct" and
+            //"borderHeightPct" values instead of the control points that will be moved with the GUI
+            texCoords[0] = texTopLeft.getInterpolated(texTopRight, startPct);
+            texCoords[1] = texTopLeft.getInterpolated(texTopRight, endPct);
+            texCoords[2] = texBottomLeft.getInterpolated(texBottomRight, endPct);
+            texCoords[3] = texBottomLeft.getInterpolated(texBottomRight, startPct);
+            
+            Tile t;
+            t.setup(verts, texCoords);
+            t.setTextures( &images );
+            t.setActiveTexture( currentImg );
+            
+            tiles.push_back(t);
+            
+            //add endPct to startPct so the next tile knows where to start
+            startPct = endPct;
+        }
     }
 
+    
+    //Make 4 corner tiles
+    for(int i = 0; i < 4; i++){
+        
+        if(i == 0){
+            //----------TOP LEFT CORNER----------
+            verts[0] = frameCorners[0];
+            verts[1] = controlPoints[0];
+            verts[2] = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[7], controlPoints[2]);
+            verts[3] = controlPoints[7];
+            
+            texCoords[0] = texCoordCorners[0];
+            texCoords[1] = texCoordControlPts[0];
+            texCoords[2] = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[5], texCoordControlPts[7], texCoordControlPts[2]);
+            texCoords[3] = texCoordControlPts[7];
+            
+        } else if(i == 1){
+            //----------TOP RIGHT CORNER----------
+            verts[0] = controlPoints[1];
+            verts[1] = frameCorners[1];
+            verts[2] = controlPoints[2];
+            verts[3] = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[7], controlPoints[2]);
+            
+            texCoords[0] = texCoordControlPts[1];
+            texCoords[1] = texCoordCorners[1];
+            texCoords[2] = texCoordControlPts[2];
+            texCoords[3] = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[4], texCoordControlPts[7], texCoordControlPts[2]);
+            
+        } else if(i == 2){
+            //----------BOTTOM RIGHT CORNER----------
+            verts[0] = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[6], controlPoints[3]);
+            verts[1] = controlPoints[3];
+            verts[2] = frameCorners[2];
+            verts[3] = controlPoints[4];
+
+            texCoords[0] = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[4], texCoordControlPts[6], texCoordControlPts[3]);
+            texCoords[1] = texCoordControlPts[3];
+            texCoords[2] = texCoordCorners[2];
+            texCoords[3] = texCoordControlPts[4];
+            
+        } else {
+            //----------BOTTOM LEFT CORNER----------
+            verts[0] = controlPoints[6];
+            verts[1] = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[6], controlPoints[3]);
+            verts[2] = controlPoints[5];
+            verts[3] = frameCorners[3];
+            
+            texCoords[0] = texCoordControlPts[6];
+            texCoords[1] = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[5], texCoordControlPts[6], texCoordControlPts[3]);
+            texCoords[2] = texCoordControlPts[5];
+            texCoords[3] = texCoordCorners[3];
+            
+        }
+        
+        Tile t;
+        t.setup(verts, texCoords);
+        t.setTextures( &images );
+        t.setActiveTexture( currentImg );
+        
+        tiles.push_back(t);
+        
+    }
+    
+
+
+    
+    
     
 }
 
 
+ofVec2f Frame::getIntersectionPoint(ofVec2f line1Start, ofVec2f line1End, ofVec2f line2Start, ofVec2f line2End){
+    
+    ofVec2f intersectionPt;
+    
+    //find equation of line 1
+    float m1, b1, m2, b2;
+    
+    //vertical lines break the straightforward approach so check for those
+    //NOTE: if both lines are vertical this function breaks
+    
+    //first line is vert
+    if(line1Start.x - line1End.x == 0.0){
+        
+        //we know the x right away since the line segment is vertical (all has the same x)
+        intersectionPt.x = line1Start.x;
+        
+        //find slope 2
+        m2 = (line2Start.y - line2End.y)/(line2Start.x - line2End.x);
+        //find yIntercept 2
+        b2 = line2Start.y - m2 * line2Start.x;
+        
+        intersectionPt.y = m2 * intersectionPt.x + b2;
+        
+    } else if(line2Start.x - line2End.x == 0.0){   //second line is vert
+        
+        //we know the x right away since the line segment is vertical (all has the same x)
+        intersectionPt.x = line2Start.x;
+        
+        //find slope 1
+        m1 = (line1Start.y - line1End.y)/(line1Start.x - line1End.x);
+        //find yIntercept 1
+        b2 = line2Start.y - m2 * line2Start.x;
+        
+        intersectionPt.y = m2 * intersectionPt.x + b2;
+        
+        
+    } else {        //normal scenario
+        
+        //slope (y diff)/(x diff)
+        m1 = (line1Start.y - line1End.y)/(line1Start.x - line1End.x);
+        m2 = (line2Start.y - line2End.y)/(line2Start.x - line2End.x);
+        
+        //Y = mX + b   ==> b = Y - mX
+        b1 = line1Start.y - m1 * line1Start.x;
+        b2 = line2Start.y - m2 * line2Start.x;
+        
+        //X intersection point
+        intersectionPt.x = (b2 - b1)/(m1 - m2);
+        
+        //sub X back into one of y = mx + b to get Y intersect
+        intersectionPt.y = m1 * intersectionPt.x + b1;
+        
+    }
+    
+    return intersectionPt;
 
+}
 
 
 

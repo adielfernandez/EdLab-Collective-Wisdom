@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxLibwebsockets.h"
 #include "Wallpaper.hpp"
 #include "Frame.hpp"
 #include "Bookcase.hpp"
@@ -27,13 +28,13 @@ class ofApp : public ofBaseApp{
     /*
      -----View Control-----
      0 = Main interaction view
-     1 = Mapping Mode
      2 = Camera 1 debug
      3 = Camera 2 debug
      4 = Camera 3 debug
      
     */
     int currentView;
+    int numViews;
     
     
     bool bShowGUIs;
@@ -43,10 +44,21 @@ class ofApp : public ofBaseApp{
     Frame frame;
     
     Bookcase leftBookcase;
-//    Bookcase rightBookcase;
+    Bookcase rightBookcase;
     
 
+
+    // WebSocket Connection
+    void onConnect( ofxLibwebsockets::Event& args );
+    void onOpen( ofxLibwebsockets::Event& args );
+    void onClose( ofxLibwebsockets::Event& args );
+    void onIdle( ofxLibwebsockets::Event& args );
+    void onMessage( ofxLibwebsockets::Event& args );
+    void onBroadcast( ofxLibwebsockets::Event& args );
     
-    
+    ofxLibwebsockets::Client client;
+
+    unsigned long long lastHeartbeatTime;
+    int heartbeatInterval;
     
 };

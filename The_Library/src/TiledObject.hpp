@@ -16,6 +16,7 @@
 
 #include "ofMain.h"
 #include "Tile.hpp"
+#include "ofxGui.h"
 
 #pragma once
 
@@ -26,17 +27,33 @@ public:
     
     TiledObject();
     
-    void setupTiledObject();
+    void setupTiledObject(bool isBookcase);
     void update();
     void draw();
     
+    void setupCommonGui();
+    void updateCommonGui();
+    
     vector<Tile> tiles;
     vector<ofImage> images;
-
     
+    bool bIsBookcase;
     int currentImg, nextImg;
     
     ofImage result;
+    
+    //Common Gui elements to
+    //all child classes
+    ofxPanel gui;
+    string guiName;
+    string filePath;
+    
+    ofxLabel settingsLabel;
+    ofxFloatSlider waveSpeedSlider;
+    ofxFloatSlider effectDurationSlider;
+    ofxFloatSlider easingBounceSlider;
+    
+    
     
     
     //-----EFFECTS-----
@@ -48,7 +65,10 @@ public:
     int waveTileIndex;
     unsigned long waveStartTime;
 
-    
+    //convenience algorithm for finding
+    //intersection of two line segments
+    //used for finding points BETWEEN control points
+    ofVec2f getIntersectionPoint(ofVec2f line1Start, ofVec2f line1End, ofVec2f line2Start, ofVec2f line2End);
     
 };
 

@@ -68,7 +68,7 @@ void Frame::setup(string name){
     
     
     //Setup the parent class TiledObject with all th info set above
-    TiledObject::setupTiledObject();
+    TiledObject::setupTiledObject(false);   //NOT a bookcase
 
     lastMapTime = 0;
 }
@@ -76,51 +76,53 @@ void Frame::setup(string name){
 
 void Frame::update(){
     
-    //Distribute GUI values to where they belong
-    waveSpeed = waveSpeedSlider;
+    TiledObject::updateCommonGui();
     
-    for(int i = 0; i < tiles.size(); i++){
-        tiles[i].effectDuration = effectDurationSlider;
-    }
+    //this only updates variables from the GUI values if the GUI is on screen
+    //Simple hack to avoid using listeners/callbacks for EACH of the GUI elements
+    if(bIsGuiActive){
     
-    //set variables from GUI settings
-    frameCorners[0] = frameCorner0;
-    frameCorners[1] = frameCorner1;
-    frameCorners[2] = frameCorner2;
-    frameCorners[3] = frameCorner3;
-    
-    controlPointPcts[0] = controlPtPct0;
-    controlPointPcts[1] = controlPtPct1;
-    controlPointPcts[2] = controlPtPct2;
-    controlPointPcts[3] = controlPtPct3;
-    controlPointPcts[4] = controlPtPct4;
-    controlPointPcts[5] = controlPtPct5;
-    controlPointPcts[6] = controlPtPct6;
-    controlPointPcts[7] = controlPtPct7;
-    
-    //ofVec2f controlPoints are for convenience and calculated
-    //based on controlPointsPcts vector. Recalculate them in case settings have changed
-    controlPoints.resize(8);
-    controlPoints[0] = frameCorners[0].getInterpolated(frameCorners[1], controlPointPcts[0]);
-    controlPoints[1] = frameCorners[0].getInterpolated(frameCorners[1], controlPointPcts[1]);
-    controlPoints[2] = frameCorners[1].getInterpolated(frameCorners[2], controlPointPcts[2]);
-    controlPoints[3] = frameCorners[1].getInterpolated(frameCorners[2], controlPointPcts[3]);
-    controlPoints[4] = frameCorners[3].getInterpolated(frameCorners[2], controlPointPcts[4]);
-    controlPoints[5] = frameCorners[3].getInterpolated(frameCorners[2], controlPointPcts[5]);
-    controlPoints[6] = frameCorners[0].getInterpolated(frameCorners[3], controlPointPcts[6]);
-    controlPoints[7] = frameCorners[0].getInterpolated(frameCorners[3], controlPointPcts[7]);
-    
-    
-    if(reMapMeshButton && ofGetElapsedTimeMillis() - lastMapTime > 1000){
-        tiles.clear();
-        mapMesh();
+        //set variables from GUI settings
+        frameCorners[0] = frameCorner0;
+        frameCorners[1] = frameCorner1;
+        frameCorners[2] = frameCorner2;
+        frameCorners[3] = frameCorner3;
         
-        cout << "button pressed..." << endl;
-        lastMapTime = ofGetElapsedTimeMillis();
-    }
+        controlPointPcts[0] = controlPtPct0;
+        controlPointPcts[1] = controlPtPct1;
+        controlPointPcts[2] = controlPtPct2;
+        controlPointPcts[3] = controlPtPct3;
+        controlPointPcts[4] = controlPtPct4;
+        controlPointPcts[5] = controlPtPct5;
+        controlPointPcts[6] = controlPtPct6;
+        controlPointPcts[7] = controlPtPct7;
+        
+        //ofVec2f controlPoints are for convenience and calculated
+        //based on controlPointsPcts vector. Recalculate them in case settings have changed
+        controlPoints.resize(8);
+        controlPoints[0] = frameCorners[0].getInterpolated(frameCorners[1], controlPointPcts[0]);
+        controlPoints[1] = frameCorners[0].getInterpolated(frameCorners[1], controlPointPcts[1]);
+        controlPoints[2] = frameCorners[1].getInterpolated(frameCorners[2], controlPointPcts[2]);
+        controlPoints[3] = frameCorners[1].getInterpolated(frameCorners[2], controlPointPcts[3]);
+        controlPoints[4] = frameCorners[3].getInterpolated(frameCorners[2], controlPointPcts[4]);
+        controlPoints[5] = frameCorners[3].getInterpolated(frameCorners[2], controlPointPcts[5]);
+        controlPoints[6] = frameCorners[0].getInterpolated(frameCorners[3], controlPointPcts[6]);
+        controlPoints[7] = frameCorners[0].getInterpolated(frameCorners[3], controlPointPcts[7]);
+        
+        
+        if(reMapMeshButton && ofGetElapsedTimeMillis() - lastMapTime > 1000){
+            tiles.clear();
+            mapMesh();
+            
+            lastMapTime = ofGetElapsedTimeMillis();
+        }
     
+    }
     
     TiledObject::update();
+    
+    //this will be set to true later if we're drawing the gui.
+    bIsGuiActive = false;
     
 }
 
@@ -181,12 +183,8 @@ void Frame::drawDebug(){
 
 void Frame::setupGui(){
     
-    filePath = "settings/";
-    gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
+    TiledObject::setupCommonGui();
     
-    gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
-    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 10.0f));
-    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
     
     gui.add(mappingLabel.setup("  Mapping Points", ""));
     gui.add(reMapMeshButton.setup("Re-Map Mesh"));
@@ -224,13 +222,14 @@ void Frame::setupGui(){
     //color applies to gui title only
     gui.setTextColor(ofColor(0));
     
-    settingsLabel.setBackgroundColor(ofColor(255));
     mappingLabel.setBackgroundColor(ofColor(255));
     
-    //this changes the color of all the labels
-    settingsLabel.setDefaultTextColor(ofColor(0));
     
-    gui.setPosition(10, 150);
+    gui.setPosition(ofGetWidth()/2 - 200 , 10);
+    
+    //if we're drawing the gui, then it's active so
+    //we'll update all the values in update()
+    bIsGuiActive = true;
     
 }
 
@@ -263,11 +262,15 @@ void Frame::saveSettings(){
 
 void Frame::drawGui(){
     gui.draw();
+    
+    bIsGuiActive = true;
 }
 
 void Frame::drawGui(int x, int y){
     gui.setPosition(x, y);
     gui.draw();
+    
+    bIsGuiActive = true;
 }
 
 
@@ -377,14 +380,6 @@ void Frame::prepareMesh(){
 
 void Frame::mapMesh(){
     
-
-    
-
-    
-    
-    
-    
-    
     //ofVec2f controlPoints are for convenience and calculated
     //based on controlPointsPcts vector. Recalculate them in case settings have changed
     controlPoints.resize(8);
@@ -396,8 +391,6 @@ void Frame::mapMesh(){
     controlPoints[5] = frameCorners[3].getInterpolated(frameCorners[2], controlPointPcts[5]);
     controlPoints[6] = frameCorners[0].getInterpolated(frameCorners[3], controlPointPcts[6]);
     controlPoints[7] = frameCorners[0].getInterpolated(frameCorners[3], controlPointPcts[7]);
-    
-    
     
     
     /*
@@ -435,8 +428,8 @@ void Frame::mapMesh(){
     //start/end points for the interpolations and how far to move tiles (width/height)
     float startPct;
     float endPct;
-    float tileHeight;
-    float tileWidth;
+    float tileHeightPct;
+    float tileWidthPct;
     
     //----------LEFT AND RIGHT COLUMNS----------
     //Interpolates vertices betweem
@@ -463,7 +456,7 @@ void Frame::mapMesh(){
             
             startPct = 0.0f;
             endPct = 0.0f;
-            tileHeight = 1.0f/8.0f;
+            tileHeightPct = 1.0f/8.0f;
             
             
         } else {
@@ -484,7 +477,7 @@ void Frame::mapMesh(){
             
             startPct = 0.0f;
             endPct = 0.0f;
-            tileHeight = 1.0f/8.0f;
+            tileHeightPct = 1.0f/8.0f;
 
         }
         
@@ -493,7 +486,7 @@ void Frame::mapMesh(){
         for(int i = 0; i < 8; i++){
             
             //startPct starts at zero and gets the new height (1/8 th the total) added every loop
-            endPct = startPct + tileHeight;
+            endPct = startPct + tileHeightPct;
             
             verts[0] = topLeft.getInterpolated(bottomLeft, startPct);
             verts[1] = topRight.getInterpolated(bottomRight, startPct);
@@ -544,7 +537,7 @@ void Frame::mapMesh(){
             
             startPct = 0.0f;
             endPct = 0.0f;
-            tileWidth = 1.0f/5.0f;  //5 tiles in top row
+            tileWidthPct = 1.0f/5.0f;  //5 tiles in top row
             
             
         } else {
@@ -563,7 +556,7 @@ void Frame::mapMesh(){
             
             startPct = 0.0f;
             endPct = 0.0f;
-            tileWidth = 1.0f/5.0f;  //5 tiles in top row
+            tileWidthPct = 1.0f/5.0f;  //5 tiles in top row
             
         }
         
@@ -572,7 +565,7 @@ void Frame::mapMesh(){
         for(int i = 0; i < 5; i++){
             
             //startPct starts at zero and gets the new height (1/8 th the total) added every loop
-            endPct = startPct + tileWidth;
+            endPct = startPct + tileWidthPct;
             
             verts[0] = topLeft.getInterpolated(topRight, startPct);
             verts[1] = topLeft.getInterpolated(topRight, endPct);
@@ -667,65 +660,4 @@ void Frame::mapMesh(){
     
     
 }
-
-
-ofVec2f Frame::getIntersectionPoint(ofVec2f line1Start, ofVec2f line1End, ofVec2f line2Start, ofVec2f line2End){
-    
-    ofVec2f intersectionPt;
-    
-    //find equation of line 1
-    float m1, b1, m2, b2;
-    
-    //vertical lines break the straightforward approach so check for those
-    //NOTE: if both lines are vertical this function breaks
-    
-    //first line is vert
-    if(line1Start.x - line1End.x == 0.0){
-        
-        //we know the x right away since the line segment is vertical (all has the same x)
-        intersectionPt.x = line1Start.x;
-        
-        //find slope 2
-        m2 = (line2Start.y - line2End.y)/(line2Start.x - line2End.x);
-        //find yIntercept 2
-        b2 = line2Start.y - m2 * line2Start.x;
-        
-        intersectionPt.y = m2 * intersectionPt.x + b2;
-        
-    } else if(line2Start.x - line2End.x == 0.0){   //second line is vert
-        
-        //we know the x right away since the line segment is vertical (all has the same x)
-        intersectionPt.x = line2Start.x;
-        
-        //find slope 1
-        m1 = (line1Start.y - line1End.y)/(line1Start.x - line1End.x);
-        //find yIntercept 1
-        b2 = line2Start.y - m2 * line2Start.x;
-        
-        intersectionPt.y = m2 * intersectionPt.x + b2;
-        
-        
-    } else {        //normal scenario
-        
-        //slope (y diff)/(x diff)
-        m1 = (line1Start.y - line1End.y)/(line1Start.x - line1End.x);
-        m2 = (line2Start.y - line2End.y)/(line2Start.x - line2End.x);
-        
-        //Y = mX + b   ==> b = Y - mX
-        b1 = line1Start.y - m1 * line1Start.x;
-        b2 = line2Start.y - m2 * line2Start.x;
-        
-        //X intersection point
-        intersectionPt.x = (b2 - b1)/(m1 - m2);
-        
-        //sub X back into one of y = mx + b to get Y intersect
-        intersectionPt.y = m1 * intersectionPt.x + b1;
-        
-    }
-    
-    return intersectionPt;
-
-}
-
-
 

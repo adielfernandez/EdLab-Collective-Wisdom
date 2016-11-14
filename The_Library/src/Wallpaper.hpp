@@ -40,13 +40,8 @@ public:
     int gridSpacing;
     ofVec2f sceneDim;
     
-    ofxPanel gui;
-    string guiName;
-    string filePath;
     
-    ofxLabel settingsLabel;
-    ofxFloatSlider waveSpeedSlider;
-    ofxFloatSlider effectDurationSlider;
-    float lastEffectDuration;
+
+    
 
 };

@@ -77,6 +77,7 @@ public:
     
     float flipSpeed;
 
+    float easingBounce;
     
     float startAngle, endAngle, currentAngle;
     ofVec3f rotAxis;

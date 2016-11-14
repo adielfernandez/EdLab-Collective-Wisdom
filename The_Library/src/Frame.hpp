@@ -61,13 +61,7 @@ public:
     float frameWidth, frameHeight;
     float borderWidthPct, borderHeightPct;
     
-    ofxPanel gui;
-    string guiName;
-    string filePath;
-    
-    ofxLabel settingsLabel;
-    ofxFloatSlider waveSpeedSlider;
-    ofxFloatSlider effectDurationSlider;
+    bool bIsGuiActive;
     
     ofxLabel mappingLabel;
     ofxButton reMapMeshButton;
@@ -86,11 +80,7 @@ public:
     ofxFloatSlider controlPtPct6;
     ofxFloatSlider controlPtPct7;
     
-    
-    //convenience algorithm for finding
-    //intersection of two line segments
-    //used for finding points BETWEEN control points
-    ofVec2f getIntersectionPoint(ofVec2f line1Start, ofVec2f line1End, ofVec2f line2Start, ofVec2f line2End);
+
     
     
 };

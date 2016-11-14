@@ -15,9 +15,20 @@ TiledObject::TiledObject(){
     
 }
 
-void TiledObject::setupTiledObject(){
+void TiledObject::setupTiledObject(bool isBookcase){
     
-    currentImg = round(ofRandom( images.size() - 1 ));
+    bIsBookcase = isBookcase;
+    
+    //if we're a book case, we'll go through the images one by one
+    //instead of at random to keep both bookcases linked
+    if(bIsBookcase){
+        
+        currentImg = 0;
+        
+    } else {
+        
+        currentImg = round(ofRandom( images.size() - 1 ));
+    }
     
 
     
@@ -29,9 +40,60 @@ void TiledObject::setupTiledObject(){
     
 }
 
+void TiledObject::setupCommonGui(){
+    
+    filePath = "settings/";
+    gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
+    
+    gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
+    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 10.0f));
+    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
+    gui.add(easingBounceSlider.setup("Easing Bounce Amt", 1.0, 0.0, 4.0));
+    
+    gui.setHeaderBackgroundColor(ofColor(255));
+    
+    //color applies to gui title only
+    gui.setTextColor(ofColor(0));
+    
+    settingsLabel.setBackgroundColor(ofColor(255));
+    
+    //this changes the color of all the labels
+    settingsLabel.setDefaultTextColor(ofColor(0));
+
+    
+}
+
+void TiledObject::updateCommonGui(){
+    
+    //Distribute GUI values to where they belong
+    waveSpeed = waveSpeedSlider;
+    
+    for(int i = 0; i < tiles.size(); i++){
+        tiles[i].effectDuration = effectDurationSlider;
+        tiles[i].easingBounce = easingBounceSlider;
+    }
+    
+    
+}
+
 void TiledObject::triggerWave(ofVec2f epicenter){
     
     waveEpicenter = epicenter;
+    
+    //pick next image depending on type
+    //bookcase increments by one, everything else picks a random number
+    if(bIsBookcase){
+        nextImg = currentImg + 1;
+        if(nextImg == images.size()) nextImg = 0;
+        
+    } else {
+        
+        nextImg = round(ofRandom( images.size() - 1 ));
+    }
+    
+    //then store it for the next time
+    currentImg = nextImg;
+    
     
     //go through all the tiles and calculate their distance from the epicenter
     for(int i = 0; i < tiles.size(); i++){
@@ -41,6 +103,9 @@ void TiledObject::triggerWave(ofVec2f epicenter){
         
         //calculate time from wave epicenter to triggering the specific tile
         tiles[i].timeUntilWave = tiles[i].distToEpicenter/waveSpeed;
+        
+        //set next texture
+        tiles[i].setNextTexture( nextImg );
         
     }
     
@@ -67,8 +132,11 @@ void TiledObject::applyEffectToAll(Tile::Effect e){
         bNeedsNewTex = true;
         
         //set the image we'll transition to
-        nextImg = (currentImg == 1 ? 0 : 1);
-        //        newTexNum = round(ofRandom( images.size() - 1 ));
+//        nextImg = (currentImg == 1 ? 0 : 1);   //alternated between 0 and 1
+        
+        //pick next image depending on type
+        //bookcase increments by one, everything else picks a random number
+        nextImg = bIsBookcase ? currentImg + 1 : round(ofRandom( images.size() - 1 ));
         
         //then store it for the next time
         currentImg = nextImg;
@@ -114,11 +182,6 @@ void TiledObject::update(){
                 
                 //                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_AXIS, 0.0, waveEpicenter );
                 tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_RAND, 0.0, waveEpicenter );
-                
-                //CHANGE THIS TO REFLECT RANDOM TEXTURE PICKING
-                nextImg = (currentImg == 1 ? 0 : 1);
-                
-                tiles[ waveTileIndex ].setNextTexture( nextImg );
                 
                 waveTileIndex++;
                 
@@ -170,6 +233,63 @@ void TiledObject::draw(){
 }
 
 
+ofVec2f TiledObject::getIntersectionPoint(ofVec2f line1Start, ofVec2f line1End, ofVec2f line2Start, ofVec2f line2End){
+    
+    ofVec2f intersectionPt;
+    
+    //find equation of line 1
+    float m1, b1, m2, b2;
+    
+    //vertical lines break the straightforward approach so check for those
+    //NOTE: if both lines are vertical this function breaks
+    
+    //first line is vert
+    if(line1Start.x - line1End.x == 0.0){
+        
+        //we know the x right away since the line segment is vertical (all has the same x)
+        intersectionPt.x = line1Start.x;
+        
+        //find slope 2
+        m2 = (line2Start.y - line2End.y)/(line2Start.x - line2End.x);
+        //find yIntercept 2
+        b2 = line2Start.y - m2 * line2Start.x;
+        
+        intersectionPt.y = m2 * intersectionPt.x + b2;
+        
+    } else if(line2Start.x - line2End.x == 0.0){   //second line is vert
+        
+        //we know the x right away since the line segment is vertical (all has the same x)
+        intersectionPt.x = line2Start.x;
+        
+        //find slope 1
+        m1 = (line1Start.y - line1End.y)/(line1Start.x - line1End.x);
+        //find yIntercept 1
+        b2 = line2Start.y - m2 * line2Start.x;
+        
+        intersectionPt.y = m2 * intersectionPt.x + b2;
+        
+        
+    } else {        //normal scenario
+        
+        //slope (y diff)/(x diff)
+        m1 = (line1Start.y - line1End.y)/(line1Start.x - line1End.x);
+        m2 = (line2Start.y - line2End.y)/(line2Start.x - line2End.x);
+        
+        //Y = mX + b   ==> b = Y - mX
+        b1 = line1Start.y - m1 * line1Start.x;
+        b2 = line2Start.y - m2 * line2Start.x;
+        
+        //X intersection point
+        intersectionPt.x = (b2 - b1)/(m1 - m2);
+        
+        //sub X back into one of y = mx + b to get Y intersect
+        intersectionPt.y = m1 * intersectionPt.x + b1;
+        
+    }
+    
+    return intersectionPt;
+    
+}
 
 
 

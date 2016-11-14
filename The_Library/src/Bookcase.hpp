@@ -42,6 +42,8 @@ public:
     void saveSettings();
     void loadSettings();
     
+    static int sharedCurrentImg, sharedNextImg;
+    
     
     //LEFT or RIGHT
     bool bLeftCase;
@@ -64,16 +66,12 @@ public:
     float topTileHeight, bookTileHeight;
     float shelfTileHeight, bottomTileHeight;
     
-    ofxPanel gui;
-    string guiName;
-    string filePath;
-    
-    ofxLabel settingsLabel;
-    ofxFloatSlider waveSpeedSlider;
-    ofxFloatSlider effectDurationSlider;
+    bool bIsGuiActive;
     
     ofxLabel mappingLabel;
     ofxButton reMapMeshButton;
+    unsigned long long lastMapTime;
+    
     ofxVec2Slider frameCorner0;
     ofxVec2Slider frameCorner1;
     ofxVec2Slider frameCorner2;
@@ -95,7 +93,7 @@ public:
     ofxFloatSlider controlPtPct14;
     ofxFloatSlider controlPtPct15;
     
-    
+
     
     
 };

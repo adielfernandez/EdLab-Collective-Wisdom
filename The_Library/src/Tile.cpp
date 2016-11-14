@@ -68,7 +68,7 @@ void Tile::setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords){
     effectStagger = 0.0;
     effectEndTime = 0.0;
     effectDuration = 1.8;
-    
+    easingBounce = 1.0;
 
     distToEpicenter = 0;
     timeUntilWave = 0;
@@ -199,7 +199,7 @@ void Tile::update(){
         float now = ofGetElapsedTimef();
         
         //bounce ease the angle
-        currentAngle = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, startAngle, endAngle, &ofxeasing::back::easeOut_s, 1.0);
+        currentAngle = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, startAngle, endAngle, &ofxeasing::back::easeOut_s, easingBounce);
         
         
         if(now > effectStartTime + effectDuration){

@@ -43,7 +43,7 @@ void Wallpaper::setup(){
     
     //Common factors of 1920x1200 for square grid sizing:
     //20, 24, 30, 40, 48, 60, 80, 120, 240
-    gridSpacing = 48;
+    gridSpacing = 120;
     
     for(int x = 0; x < sceneDim.x + 1 ; x += gridSpacing){
         for(int y = 0; y < sceneDim.y + 1; y += gridSpacing){
@@ -87,7 +87,7 @@ void Wallpaper::setup(){
     }
     
     //Setup the parent class TiledObject with all th info set above
-    TiledObject::setupTiledObject();
+    TiledObject::setupTiledObject(false);   //NOT a bookcase
     
 
     bWave = false;
@@ -99,7 +99,6 @@ void Wallpaper::setup(){
     
     waveSpeedSlider = 1.0;
     effectDurationSlider = 1.8;
-    lastEffectDuration = 1.0;
     
     //not needed after first XML population
 //    saveSettings();
@@ -111,19 +110,8 @@ void Wallpaper::setup(){
 void Wallpaper::update(){
     
     
-    //update tiles and TiledObject with GUI settings
-    waveSpeed = waveSpeedSlider;
-    
-    //check if the gui value is different
-    if(effectDurationSlider != lastEffectDuration){
-        
-        //then change all the tiles
-        for(int i = 0; i < tiles.size(); i++){
-            tiles[i].effectDuration = effectDurationSlider;
-        }
-        //store the last value
-        lastEffectDuration = effectDurationSlider;
-    }
+    TiledObject::updateCommonGui();
+
     
     
     TiledObject::update();
@@ -146,22 +134,7 @@ void Wallpaper::draw(){
 
 void Wallpaper::setupGui(){
     
-    filePath = "settings/";
-    gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
-    
-    gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
-    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 10.0f));
-    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
-    
-    gui.setHeaderBackgroundColor(ofColor(255));
-    
-    //color applies to gui title only
-    gui.setTextColor(ofColor(0));
-    
-    settingsLabel.setBackgroundColor(ofColor(255));
-    
-    //this changes the color of all the labels
-    settingsLabel.setDefaultTextColor(ofColor(0));
+    TiledObject::setupCommonGui();
     
     gui.setPosition(10, 10);
     

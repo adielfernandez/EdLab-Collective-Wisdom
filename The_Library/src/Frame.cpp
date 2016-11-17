@@ -37,27 +37,64 @@ void Frame::setup(string name){
     
     currentImg = round(ofRandom( images.size() - 1 ));
 
+    
+    //prepare the portrait
+    ofDirectory portraitDirectory;
+    
+    portraitDirectory.listDir("images/portraits/");
+    portraitDirectory.sort(); // in linux the file system doesn't return file lists ordered in alphabetical order
+    
+    //allocate the vector with correct # of images
+    if( portraitDirectory.size() ){
+        portraits.assign(portraitDirectory.size(), ofImage());
+    }
+    
+    for(int i = 0; i < (int)portraitDirectory.size(); i++){
+        portraits[i].load(portraitDirectory.getPath(i));
+    }
+    
+    currentPortrait = round(ofRandom( portraits.size() - 1 ));
+    
+    cout << "Num Portraits: " << portraits.size() << endl;
+    cout << "Current Portrait: " << currentPortrait << endl;
+    
+    //allocate FBO
+    //This will be mapped to a mesh to fit inside the portrait
+    //so size is less important than aspect ratio
+    float aspect = 1.43;
+    float w = 300;
+    float h = w * aspect;
+    portraitFbo.allocate(w, h, GL_RGBA);
+    
+    //clear buffer garbage
+    portraitFbo.begin();
+    ofClear(0, 0, 0, 255);
+    portraitFbo.end();
+
+    lastPortraitChange = 0;
+    
+    
     //ALL THE BUSINESS HAPPENS IN HERE
     //This will need to be called whenever the mesh is altered by GUI/mouse
     prepareMesh();
     
-    //Set GUI values to these (Only needed for first population of GUI XML)
-//        frameCorner0 = frameCorners[0];
-//        frameCorner1 = frameCorners[1];
-//        frameCorner2 = frameCorners[2];
-//        frameCorner3 = frameCorners[3];
-//        controlPtPct0 = controlPointPcts[0];
-//        controlPtPct1 = controlPointPcts[1];
-//        controlPtPct2 = controlPointPcts[2];
-//        controlPtPct3 = controlPointPcts[3];
-//        controlPtPct4 = controlPointPcts[4];
-//        controlPtPct5 = controlPointPcts[5];
-//        controlPtPct6 = controlPointPcts[6];
-//        controlPtPct7 = controlPointPcts[7];
-    
     guiName = name;
     
     setupGui();
+    
+    //Set GUI values to these (Only needed for first population of GUI XML)
+//    frameCorner0 = frameCorners[0];
+//    frameCorner1 = frameCorners[1];
+//    frameCorner2 = frameCorners[2];
+//    frameCorner3 = frameCorners[3];
+//    controlPtPct0 = controlPointPcts[0];
+//    controlPtPct1 = controlPointPcts[1];
+//    controlPtPct2 = controlPointPcts[2];
+//    controlPtPct3 = controlPointPcts[3];
+//    controlPtPct4 = controlPointPcts[4];
+//    controlPtPct5 = controlPointPcts[5];
+//    controlPtPct6 = controlPointPcts[6];
+//    controlPtPct7 = controlPointPcts[7];
     
     loadSettings();
     
@@ -71,6 +108,9 @@ void Frame::setup(string name){
     TiledObject::setupTiledObject(false);   //NOT a bookcase
 
     lastMapTime = 0;
+    
+    
+    
 }
 
 
@@ -81,7 +121,7 @@ void Frame::update(){
     //this only updates variables from the GUI values if the GUI is on screen
     //Simple hack to avoid using listeners/callbacks for EACH of the GUI elements
     if(bIsGuiActive){
-    
+        
         //set variables from GUI settings
         frameCorners[0] = frameCorner0;
         frameCorners[1] = frameCorner1;
@@ -119,14 +159,44 @@ void Frame::update(){
     
     }
     
-    TiledObject::update();
-    
     //this will be set to true later if we're drawing the gui.
     bIsGuiActive = false;
+
+    //update all the stuff from the parent object
+    //like tile manipulation, wave effects, etc.
+    TiledObject::update();
+    
+    
+    if(ofGetElapsedTimeMillis() - lastPortraitChange > 5000){
+        currentPortrait = round(ofRandom( portraits.size() - 1 ));
+        lastPortraitChange = ofGetElapsedTimeMillis();
+    }
+    
+    
     
 }
 
 void Frame::draw(){
+    
+    
+    portraitFbo.begin();
+    ofSetColor(255);
+    
+    currentPortrait = 0;
+    portraits[currentPortrait].draw(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
+    
+//    ofSetColor(0, 255, 0);
+//    ofDrawRectangle(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
+    portraitFbo.end();
+    
+    ofTexture tex;
+    tex = portraitFbo.getTexture();
+    
+    tex.bind();
+    ofSetColor(255);
+    portraitMesh.draw();
+    tex.unbind();
+    
     
     TiledObject::draw();
     
@@ -326,7 +396,7 @@ void Frame::prepareMesh(){
     vertBorderTileHeightPct = (1.0f - (borderHeightPct * 2.0f))/8.0f;
     horizBorderTileWidthPct = (1.0f - (borderWidthPct * 2.0f))/5.0f;
     
-    float heightFromTop = 170;
+    float heightFromTop = 130;
     
     //Frame corners hold the actual points that will be moved around
     //to map the mesh to the physical frame. Start them off as square
@@ -374,6 +444,8 @@ void Frame::prepareMesh(){
     for(int i = 0; i < texCoordControlPts.size(); i++){
         texCoordControlPts[i] -= frameCorners[0];
     }
+    
+
     
     
 }
@@ -655,9 +727,40 @@ void Frame::mapMesh(){
     }
     
 
-
     
+    //map Portrait mesh
+    portraitVerts.clear();
+    portraitVerts.resize(4);
+    
+    portraitVerts[0] = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[7], controlPoints[2]);
+    portraitVerts[1] = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[7], controlPoints[2]);
+    portraitVerts[2] = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[6], controlPoints[3]);
+    portraitVerts[3] = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[6], controlPoints[3]);
+    
+    
+    portraitMesh.clear();
+    portraitMesh.addVertices(portraitVerts);
+    
+    //set them according to the FBO
+    setPortraitTexCoords(portraitFbo.getWidth(), portraitFbo.getHeight());
+    
+    portraitMesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
     
     
 }
+
+
+void Frame::setPortraitTexCoords(int x, int y){
+    
+    portraitMesh.addTexCoord(ofVec2f(0, 0));
+    portraitMesh.addTexCoord(ofVec2f(x, 0));
+    portraitMesh.addTexCoord(ofVec2f(x, y));
+    portraitMesh.addTexCoord(ofVec2f(0, y));
+    
+    
+}
+
+
+
+
 

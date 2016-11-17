@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxLibwebsockets.h"
+#include "ofxAssimpModelLoader.h"
 #include "Wallpaper.hpp"
 #include "Frame.hpp"
 #include "Bookcase.hpp"
@@ -36,6 +37,9 @@ class ofApp : public ofBaseApp{
     int currentView;
     int numViews;
     
+    //Interface elements
+    ofImage bgEdgeMask;
+    
     
     bool bShowGUIs;
     
@@ -46,9 +50,14 @@ class ofApp : public ofBaseApp{
     Bookcase leftBookcase;
     Bookcase rightBookcase;
     
+    //show coordinates of mouse to
+    //help place things on screen
+    bool bShowMouseCoords;
 
 
     // WebSocket Connection
+    bool connectToServer;
+    
     void onConnect( ofxLibwebsockets::Event& args );
     void onOpen( ofxLibwebsockets::Event& args );
     void onClose( ofxLibwebsockets::Event& args );

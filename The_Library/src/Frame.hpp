@@ -43,6 +43,16 @@ public:
     void saveSettings();
     void loadSettings();
     
+    
+    vector<ofImage> portraits;
+    int currentPortrait;
+    ofMesh portraitMesh;
+    vector<ofVec3f> portraitVerts;
+    ofFbo portraitFbo;
+    void setPortraitTexCoords(int x, int y);
+    unsigned long long lastPortraitChange;
+    
+    
     //Tile coordinates are based on
     //the frame corners and the percentages
     //of the control points

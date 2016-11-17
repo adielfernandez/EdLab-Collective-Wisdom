@@ -43,7 +43,7 @@ void Wallpaper::setup(){
     
     //Common factors of 1920x1200 for square grid sizing:
     //20, 24, 30, 40, 48, 60, 80, 120, 240
-    gridSpacing = 120;
+    gridSpacing = 80;
     
     for(int x = 0; x < sceneDim.x + 1 ; x += gridSpacing){
         for(int y = 0; y < sceneDim.y + 1; y += gridSpacing){

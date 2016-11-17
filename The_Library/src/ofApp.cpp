@@ -9,9 +9,14 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-//    client.connect("localhost", 8081);
-    //    client.connect("54.68.243.245", 8081);
-    client.addListener(this);
+    connectToServer = false;
+    
+    if(connectToServer){
+//    client.connect("54.68.243.245", 8081);
+        client.connect("localhost", 8081);
+        client.addListener(this);
+        
+    }
 
     lastHeartbeatTime = 0;
     heartbeatInterval = 500;
@@ -28,11 +33,19 @@ void ofApp::setup(){
 
     leftBookcase.setup("leftBookcase", true);
     rightBookcase.setup("rightBookcase", false);
+    
+    bgEdgeMask.load("images/interface/bgMask.png");
+    
+    
     //----------Camera Setup----------
     
     
-    bShowGUIs = false;
     
+    
+    
+    //----------Debug Tools----------
+    bShowGUIs = false;
+    bShowMouseCoords = false;
     
 }
 
@@ -49,14 +62,12 @@ void ofApp::update(){
     
     
     //Heartbeat to Server
-    if(ofGetElapsedTimeMillis() - lastHeartbeatTime > heartbeatInterval){
-        
-//        cout << "Heartbeat sent" << endl;
-        client.send("HB");
-        
-        lastHeartbeatTime = ofGetElapsedTimeMillis();
+    if(connectToServer){
+        if(ofGetElapsedTimeMillis() - lastHeartbeatTime > heartbeatInterval){
+            client.send("HB");
+            lastHeartbeatTime = ofGetElapsedTimeMillis();
+        }
     }
-    
     
 }
 
@@ -85,19 +96,21 @@ void ofApp::draw(){
         leftBookcase.draw();
         rightBookcase.draw();
 
+        bgEdgeMask.draw(-1, -1, bgEdgeMask.getWidth(), bgEdgeMask.getHeight() + 2);
+        
         
         if(bShowGUIs){
             
-            frame.drawGui();
             frame.drawDebug();
+            frame.drawGui();
             
             wallpaper.drawGui();
             
-            leftBookcase.drawGui();
             leftBookcase.drawDebug();
+            leftBookcase.drawGui();
 
-            rightBookcase.drawGui();
             rightBookcase.drawDebug();
+            rightBookcase.drawGui();
             
             
         }
@@ -120,7 +133,11 @@ void ofApp::draw(){
     }
     
     
-
+    if(bShowMouseCoords){
+        ofSetColor(255);
+        string s = ofToString(mouseX) + ", " + ofToString(mouseY);
+        ofDrawBitmapStringHighlight(s, mouseX + 10, mouseY - 10);
+    }
     
 }
 
@@ -150,6 +167,9 @@ void ofApp::keyPressed(int key){
 
     }
     
+    if(key == OF_KEY_LEFT_SHIFT){
+        bShowMouseCoords = true;
+    }
     
     if(key == ' '){
         bShowGUIs = !bShowGUIs;
@@ -160,6 +180,11 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
 
+    if(key == OF_KEY_LEFT_SHIFT){
+        bShowMouseCoords = false;
+    }
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -177,28 +202,19 @@ void ofApp::mousePressed(int x, int y, int button){
 
     if(button == 2){
         
-        //trigger one of the objects to animate at random
-        float r = ofRandom(1.0);
-        
-        if(r < 0.35){
+        if(x < leftBookcase.bookcaseCorners[1].x || x > rightBookcase.bookcaseCorners[0].x){
             
-            wallpaper.triggerWave(ofVec2f(x, y));
+            //make bookcase wave start from center X of bookcase
+            leftBookcase.triggerWave(ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
+            rightBookcase.triggerWave(ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
             
-        } else if(r < 0.7){
-            
+        } else if(y < frame.frameCorners[3].y){
             frame.triggerWave(ofVec2f(x, y));
-            
         } else {
-            
-            leftBookcase.triggerWave(ofVec2f(ofGetWidth()/2, y));
-            rightBookcase.triggerWave(ofVec2f(ofGetWidth()/2, y));
-            
+            wallpaper.triggerWave(ofVec2f(x, y));
         }
-
-        
-        
-        
     }
+    
 }
 
 //--------------------------------------------------------------

@@ -229,27 +229,28 @@ void Bookcase::setupGui(){
     gui.add(frameCorner3.setup("Corner 3", bookcaseCorners[3], bookcaseCorners[3] + minus, bookcaseCorners[3] + plus));
     
     float start = 0.0f;
-    float firstStep = 0.25f;
-    float lastStep = 0.75f;
+    float firstStep = 0.15f;
+    float midStep = 0.6f;
+    float lastStep = 0.85f;
     float end = 1.0f;
     
     
-    gui.add(controlPtPct0.setup("Control Pt 0", controlPointPcts[0], start, end));
-    gui.add(controlPtPct1.setup("Control Pt 1", controlPointPcts[1], start, end));
-    gui.add(controlPtPct2.setup("Control Pt 2", controlPointPcts[2], start, end));
-    gui.add(controlPtPct3.setup("Control Pt 3", controlPointPcts[3], start, end));
-    gui.add(controlPtPct4.setup("Control Pt 4", controlPointPcts[4], start, end));
-    gui.add(controlPtPct5.setup("Control Pt 5", controlPointPcts[5], start, end));
-    gui.add(controlPtPct6.setup("Control Pt 6", controlPointPcts[6], start, end));
-    gui.add(controlPtPct7.setup("Control Pt 7", controlPointPcts[7], start, end));
-    gui.add(controlPtPct8.setup("Control Pt 8", controlPointPcts[8], start, end));
-    gui.add(controlPtPct9.setup("Control Pt 9", controlPointPcts[9], start, end));
-    gui.add(controlPtPct10.setup("Control Pt 10", controlPointPcts[10], start, end));
-    gui.add(controlPtPct11.setup("Control Pt 11", controlPointPcts[11], start, end));
-    gui.add(controlPtPct12.setup("Control Pt 12", controlPointPcts[12], start, end));
-    gui.add(controlPtPct13.setup("Control Pt 13", controlPointPcts[13], start, end));
-    gui.add(controlPtPct14.setup("Control Pt 14", controlPointPcts[14], start, end));
-    gui.add(controlPtPct15.setup("Control Pt 15", controlPointPcts[15], start, end));
+    gui.add(controlPtPct0.setup("Control Pt 0", controlPointPcts[0], start, firstStep));
+    gui.add(controlPtPct1.setup("Control Pt 1", controlPointPcts[1], lastStep, end));
+    gui.add(controlPtPct2.setup("Control Pt 2", controlPointPcts[2], start, midStep));
+    gui.add(controlPtPct3.setup("Control Pt 3", controlPointPcts[3], start, midStep));
+    gui.add(controlPtPct4.setup("Control Pt 4", controlPointPcts[4], start, midStep));
+    gui.add(controlPtPct5.setup("Control Pt 5", controlPointPcts[5], start, midStep));
+    gui.add(controlPtPct6.setup("Control Pt 6", controlPointPcts[6], start, midStep));
+    gui.add(controlPtPct7.setup("Control Pt 7", controlPointPcts[7], start, midStep));
+    gui.add(controlPtPct8.setup("Control Pt 8", controlPointPcts[8], lastStep, end));
+    gui.add(controlPtPct9.setup("Control Pt 9", controlPointPcts[9], start, firstStep));
+    gui.add(controlPtPct10.setup("Control Pt 10", controlPointPcts[10], start, midStep));
+    gui.add(controlPtPct11.setup("Control Pt 11", controlPointPcts[11], start, midStep));
+    gui.add(controlPtPct12.setup("Control Pt 12", controlPointPcts[12], start, midStep));
+    gui.add(controlPtPct13.setup("Control Pt 13", controlPointPcts[13], start, midStep));
+    gui.add(controlPtPct14.setup("Control Pt 14", controlPointPcts[14], start, midStep));
+    gui.add(controlPtPct15.setup("Control Pt 15", controlPointPcts[15], start, midStep));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     

@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Assimp</author>
+      <authoring_tool>Assimp Exporter</authoring_tool>
+    </contributor>
+    <created>2016-09-26T23:33:43</created>
+    <modified>2016-09-26T23:33:43</modified>
+    <unit name="meter" meter="1" />
+    <up_axis>Y_UP</up_axis>
+  </asset>
+  <library_geometries>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="RootNode" name="RootNode">
+      <node id="Hips" name="Hips">
+        <matrix>1 0 0 0 0 1 0 114.053 0 0 1 0 0 0 0 1</matrix>
+        <node id="Spine_$AssimpFbx$_Translation" name="Spine_$AssimpFbx$_Translation">
+          <matrix>1 0 0 -0.0057 0 1 0 10.8958 0 0 1 -1.2787 0 0 0 1</matrix>
+          <node id="Spine_$AssimpFbx$_PreRotation" name="Spine_$AssimpFbx$_PreRotation">
+            <matrix>1 -0.000516563 -6.06201e-05 0 0.000520108 0.993184 0.116553 0 0 -0.116553 0.993185 0 0 0 0 1</matrix>
+            <node id="Spine_$AssimpFbx$_Rotation" name="Spine_$AssimpFbx$_Rotation">
+              <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+              <node id="Spine" name="Spine">
+                <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                <node id="Spine1" name="Spine1">
+                  <matrix>1 0 0 0 0 1 0 12.7989 0 0 1 0 0 0 0 1</matrix>
+                  <node id="Spine2" name="Spine2">
+                    <matrix>1 0 0 0 0 1 0 14.6274 0 0 1 0 0 0 0 1</matrix>
+                    <node id="Neck_$AssimpFbx$_Translation" name="Neck_$AssimpFbx$_Translation">
+                      <matrix>1 0 0 -0 0 1 0 16.4558 0 0 1 0 0 0 0 1</matrix>
+                      <node id="Neck_$AssimpFbx$_PreRotation" name="Neck_$AssimpFbx$_PreRotation">
+                        <matrix>1 0.000520216 4.56945e-07 0 -0.000516617 0.993184 -0.116553 0 -6.10865e-05 0.116553 0.993185 0 0 0 0 1</matrix>
+                        <node id="Neck_$AssimpFbx$_Rotation" name="Neck_$AssimpFbx$_Rotation">
+                          <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                          <node id="Neck" name="Neck">
+                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                            <node id="Head" name="Head">
+                              <matrix>1 0 0 0 0 1 0 7.4726 0 0 1 1.8977 0 0 0 1</matrix>
+                              <node id="HeadTop_End" name="HeadTop_End">
+                                <matrix>1 0 0 0 0 1 0 25.4969 0 0 1 6.475 0 0 0 1</matrix>
+                              </node>
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                    <node id="LeftShoulder_$AssimpFbx$_Translation" name="LeftShoulder_$AssimpFbx$_Translation">
+                      <matrix>1 0 0 5.5578 0 1 0 13.9031 0 0 1 -0.3082 0 0 0 1</matrix>
+                      <node id="LeftShoulder_$AssimpFbx$_PreRotation" name="LeftShoulder_$AssimpFbx$_PreRotation">
+                        <matrix>-0.0553649 0.907584 -0.416205 0 1.0076e-07 -0.416844 -0.908978 0 -0.998466 -0.0503255 0.0230784 0 0 0 0 1</matrix>
+                        <node id="LeftShoulder_$AssimpFbx$_Rotation" name="LeftShoulder_$AssimpFbx$_Rotation">
+                          <matrix>0.999755 -0.0220194 -0.00212137 0 0.0220602 0.985267 0.169597 0 -0.00164432 -0.169602 0.985511 0 0 0 0 1</matrix>
+                          <node id="LeftShoulder" name="LeftShoulder">
+                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                            <node id="LeftArm_$AssimpFbx$_Translation" name="LeftArm_$AssimpFbx$_Translation">
+                              <matrix>1 0 0 0 0 1 0 12.2475 0 0 1 0 0 0 0 1</matrix>
+                              <node id="LeftArm_$AssimpFbx$_PreRotation" name="LeftArm_$AssimpFbx$_PreRotation">
+                                <matrix>0.958428 0.12535 0.256325 0 0 0.898335 -0.439311 0 -0.285334 0.421048 0.86099 0 0 0 0 1</matrix>
+                                <node id="LeftArm_$AssimpFbx$_Rotation" name="LeftArm_$AssimpFbx$_Rotation">
+                                  <matrix>0.999318 0.0352867 -0.0108951 0 -0.0205936 0.77734 0.628744 0 0.0306555 -0.628091 0.777536 0 0 0 0 1</matrix>
+                                  <node id="LeftArm" name="LeftArm">
+                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                    <node id="LeftForeArm_$AssimpFbx$_Translation" name="LeftForeArm_$AssimpFbx$_Translation">
+                                      <matrix>1 0 0 0.122 0 1 0 29.224 0 0 1 -0.97 0 0 0 1</matrix>
+                                      <node id="LeftForeArm_$AssimpFbx$_PreRotation" name="LeftForeArm_$AssimpFbx$_PreRotation">
+                                        <matrix>0.956567 -0.290079 -0.0288666 0 0.290946 0.956184 0.032582 0 0.0181504 -0.0395655 0.999052 0 0 0 0 1</matrix>
+                                        <node id="LeftForeArm_$AssimpFbx$_Rotation" name="LeftForeArm_$AssimpFbx$_Rotation">
+                                          <matrix>0.939512 0.342512 0.00167923 0 -0.342512 0.939513 -0.000773496 0 -0.00184259 0.000151552 0.999998 0 0 0 0 1</matrix>
+                                          <node id="LeftForeArm" name="LeftForeArm">
+                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                            <node id="LeftHand_$AssimpFbx$_Translation" name="LeftHand_$AssimpFbx$_Translation">
+                                              <matrix>1 0 0 -1.5122 0 1 0 29.6264 0 0 1 -0.028 0 0 0 1</matrix>
+                                              <node id="LeftHand_$AssimpFbx$_PreRotation" name="LeftHand_$AssimpFbx$_PreRotation">
+                                                <matrix>0.985097 0.0431313 -0.166502 0 -0.062324 0.991772 -0.111824 0 0.160308 0.120534 0.97968 0 0 0 0 1</matrix>
+                                                <node id="LeftHand_$AssimpFbx$_Rotation" name="LeftHand_$AssimpFbx$_Rotation">
+                                                  <matrix>0.935598 -0.105003 0.33709 0 0.0608126 0.988409 0.139102 0 -0.347789 -0.109644 0.93114 0 0 0 0 1</matrix>
+                                                  <node id="LeftHand" name="LeftHand">
+                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                    <node id="LeftHandThumb1_$AssimpFbx$_Translation" name="LeftHandThumb1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 -4.0544 0 1 0 6.088 0 0 1 2.9995 0 0 0 1</matrix>
+                                                      <node id="LeftHandThumb1_$AssimpFbx$_PreRotation" name="LeftHandThumb1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.703213 0.694045 -0.154247 0 0.631875 -0.510636 0.583082 0 0.325921 -0.507497 -0.797636 0 0 0 0 1</matrix>
+                                                        <node id="LeftHandThumb1_$AssimpFbx$_Rotation" name="LeftHandThumb1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.973225 -0.227086 -0.035574 0 0.225216 0.911149 0.345088 0 -0.0459514 -0.34386 0.937896 0 0 0 0 1</matrix>
+                                                          <node id="LeftHandThumb1" name="LeftHandThumb1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="LeftHandThumb2_$AssimpFbx$_Translation" name="LeftHandThumb2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 -0.1085 0 1 0 -2.3342 0 0 1 -0.1126 0 0 0 1</matrix>
+                                                              <node id="LeftHandThumb2_$AssimpFbx$_PreRotation" name="LeftHandThumb2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.98227 -0.186501 -0.0190296 0 0.185412 0.981469 -0.0483809 0 0.0277001 0.0439948 0.998648 0 0 0 0 1</matrix>
+                                                                <node id="LeftHandThumb2_$AssimpFbx$_Rotation" name="LeftHandThumb2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.961434 0.275013 0.00369653 0 -0.275036 0.961379 0.0102325 0 -0.000739718 -0.0108545 0.999941 0 0 0 0 1</matrix>
+                                                                  <node id="LeftHandThumb2" name="LeftHandThumb2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="LeftHandThumb3_$AssimpFbx$_Translation" name="LeftHandThumb3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 0.0711 0 1 0 -1.5927 0 0 1 -0.0155 0 0 0 1</matrix>
+                                                                      <node id="LeftHandThumb3_$AssimpFbx$_PreRotation" name="LeftHandThumb3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.93437 -0.356299 0.00200699 0 0.356304 0.934365 -0.002907 0 -0.000839503 0.00343131 0.999994 0 0 0 0 1</matrix>
+                                                                        <node id="LeftHandThumb3_$AssimpFbx$_Rotation" name="LeftHandThumb3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.95419 0.29897 -0.0117768 0 -0.299187 0.953796 -0.0275822 0 0.00298646 0.0298421 0.99955 0 0 0 0 1</matrix>
+                                                                          <node id="LeftHandThumb3" name="LeftHandThumb3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="LeftHandThumb4_$AssimpFbx$_Translation" name="LeftHandThumb4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 -0.0404 0 1 0 -2.5465 0 0 1 0.059 0 0 0 1</matrix>
+                                                                              <node id="LeftHandThumb4_$AssimpFbx$_PreRotation" name="LeftHandThumb4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>0.241416 -0.379052 -0.89333 0 0.150937 0.924022 -0.351286 0 0.958612 -0.0500306 0.280286 0 0 0 0 1</matrix>
+                                                                                <node id="LeftHandThumb4" name="LeftHandThumb4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="LeftHandIndex1_$AssimpFbx$_Translation" name="LeftHandIndex1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 -2.9383 0 1 0 13.2179 0 0 1 -0.5244 0 0 0 1</matrix>
+                                                      <node id="LeftHandIndex1_$AssimpFbx$_PreRotation" name="LeftHandIndex1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.920936 0.175917 -0.347749 0 0.209811 -0.975773 0.062021 0 -0.328413 -0.130079 -0.935534 0 0 0 0 1</matrix>
+                                                        <node id="LeftHandIndex1_$AssimpFbx$_Rotation" name="LeftHandIndex1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.974302 -0.225159 -0.00624356 0 0.225083 0.972173 0.0649395 0 -0.00855192 -0.064676 0.99787 0 0 0 0 1</matrix>
+                                                          <node id="LeftHandIndex1" name="LeftHandIndex1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="LeftHandIndex2_$AssimpFbx$_Translation" name="LeftHandIndex2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 -0.0552 0 1 0 -2.1967 0 0 1 -0.0046 0 0 0 1</matrix>
+                                                              <node id="LeftHandIndex2_$AssimpFbx$_PreRotation" name="LeftHandIndex2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.998426 0.0337717 0.0447661 0 -0.0260523 0.986281 -0.163004 0 -0.0496569 0.161582 0.985609 0 0 0 0 1</matrix>
+                                                                <node id="LeftHandIndex2_$AssimpFbx$_Rotation" name="LeftHandIndex2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.998572 -0.0533211 0.00330078 0 0.0517419 0.980677 0.188669 0 -0.013297 -0.188229 0.982035 0 0 0 0 1</matrix>
+                                                                  <node id="LeftHandIndex2" name="LeftHandIndex2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="LeftHandIndex3_$AssimpFbx$_Translation" name="LeftHandIndex3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 -0.0787 0 1 0 -1.5068 0 0 1 -0.0443 0 0 0 1</matrix>
+                                                                      <node id="LeftHandIndex3_$AssimpFbx$_PreRotation" name="LeftHandIndex3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.998688 0.0508279 -0.00625 0 -0.0507591 0.998654 0.0107069 0 0.00678579 -0.0103756 0.999923 0 0 0 0 1</matrix>
+                                                                        <node id="LeftHandIndex3_$AssimpFbx$_Rotation" name="LeftHandIndex3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.998299 0.0582876 0.00144952 0 -0.0582236 0.997905 -0.0282034 0 -0.00309039 0.028071 0.999601 0 0 0 0 1</matrix>
+                                                                          <node id="LeftHandIndex3" name="LeftHandIndex3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="LeftHandIndex4_$AssimpFbx$_Translation" name="LeftHandIndex4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 0.0926 0 1 0 -1.6303 0 0 1 -0.0188 0 0 0 1</matrix>
+                                                                              <node id="LeftHandIndex4_$AssimpFbx$_PreRotation" name="LeftHandIndex4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>0.938429 0.28421 -0.196407 0 0.298677 -0.953156 0.0478142 0 -0.173617 -0.103533 -0.979356 0 0 0 0 1</matrix>
+                                                                                <node id="LeftHandIndex4" name="LeftHandIndex4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="LeftHandMiddle1_$AssimpFbx$_Translation" name="LeftHandMiddle1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 -0.1186 0 1 0 13.0973 0 0 1 0.0334 0 0 0 1</matrix>
+                                                      <node id="LeftHandMiddle1_$AssimpFbx$_PreRotation" name="LeftHandMiddle1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.99794 -0.0373065 -0.0521897 0 -0.0186457 -0.947077 0.320463 0 -0.061383 -0.31883 -0.945822 0 0 0 0 1</matrix>
+                                                        <node id="LeftHandMiddle1_$AssimpFbx$_Rotation" name="LeftHandMiddle1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.999115 0.0420044 0.00240695 0 -0.0405421 0.945881 0.321971 0 0.0112475 -0.321783 0.946747 0 0 0 0 1</matrix>
+                                                          <node id="LeftHandMiddle1" name="LeftHandMiddle1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="LeftHandMiddle2_$AssimpFbx$_Translation" name="LeftHandMiddle2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 0.0324 0 1 0 -2.2841 0 0 1 -0.0082 0 0 0 1</matrix>
+                                                              <node id="LeftHandMiddle2_$AssimpFbx$_PreRotation" name="LeftHandMiddle2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.99755 -0.0213758 0.066617 0 0.0346208 0.978248 -0.204529 0 -0.0607959 0.206334 0.976591 0 0 0 0 1</matrix>
+                                                                <node id="LeftHandMiddle2_$AssimpFbx$_Rotation" name="LeftHandMiddle2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.999866 -0.0153183 0.00572607 0 0.0138262 0.978821 0.204249 0 -0.00873355 -0.204143 0.978902 0 0 0 0 1</matrix>
+                                                                  <node id="LeftHandMiddle2" name="LeftHandMiddle2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="LeftHandMiddle3_$AssimpFbx$_Translation" name="LeftHandMiddle3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 -0.0849 0 1 0 -2.3867 0 0 1 -0.0058 0 0 0 1</matrix>
+                                                                      <node id="LeftHandMiddle3_$AssimpFbx$_PreRotation" name="LeftHandMiddle3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.999998 0.00113956 -0.00184285 0 -0.00131423 0.995211 -0.0977438 0 0.00172264 0.097746 0.99521 0 0 0 0 1</matrix>
+                                                                        <node id="LeftHandMiddle3_$AssimpFbx$_Rotation" name="LeftHandMiddle3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.999978 0.00502638 0.00430133 0 -0.00554148 0.991551 0.129599 0 -0.00361358 -0.12962 0.991557 0 0 0 0 1</matrix>
+                                                                          <node id="LeftHandMiddle3" name="LeftHandMiddle3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="LeftHandMiddle4_$AssimpFbx$_Translation" name="LeftHandMiddle4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 -0.0509 0 1 0 -1.7491 0 0 1 -0.0605 0 0 0 1</matrix>
+                                                                              <node id="LeftHandMiddle4_$AssimpFbx$_PreRotation" name="LeftHandMiddle4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>0.0470622 -0.0861447 -0.99517 0 0.0626163 0.994569 -0.0831315 0 0.996927 -0.0584015 0.0522007 0 0 0 0 1</matrix>
+                                                                                <node id="LeftHandMiddle4" name="LeftHandMiddle4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="LeftHandRing1_$AssimpFbx$_Translation" name="LeftHandRing1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 2.4992 0 1 0 12.2372 0 0 1 0.9073 0 0 0 1</matrix>
+                                                      <node id="LeftHandRing1_$AssimpFbx$_PreRotation" name="LeftHandRing1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.935641 -0.235027 0.263323 0 -0.318642 -0.883333 0.343789 0 0.151803 -0.405569 -0.901371 0 0 0 0 1</matrix>
+                                                        <node id="LeftHandRing1_$AssimpFbx$_Rotation" name="LeftHandRing1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.946519 0.31576 0.0663174 0 -0.318526 0.881719 0.348013 0 0.0514155 -0.350525 0.935141 0 0 0 0 1</matrix>
+                                                          <node id="LeftHandRing1" name="LeftHandRing1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="LeftHandRing2_$AssimpFbx$_Translation" name="LeftHandRing2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 -0.0234 0 1 0 -2.1661 0 0 1 -0.0251 0 0 0 1</matrix>
+                                                              <node id="LeftHandRing2_$AssimpFbx$_PreRotation" name="LeftHandRing2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.996571 0.0793595 0.0234079 0 -0.0748206 0.985152 -0.154525 0 -0.0353234 0.152244 0.987711 0 0 0 0 1</matrix>
+                                                                <node id="LeftHandRing2_$AssimpFbx$_Rotation" name="LeftHandRing2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.99863 -0.0519773 -0.0059548 0 0.0522869 0.98769 0.147427 0 -0.00178135 -0.147536 0.989055 0 0 0 0 1</matrix>
+                                                                  <node id="LeftHandRing2" name="LeftHandRing2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="LeftHandRing3_$AssimpFbx$_Translation" name="LeftHandRing3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 0.0234 0 1 0 -1.876 0 0 1 -0.0089 0 0 0 1</matrix>
+                                                                      <node id="LeftHandRing3_$AssimpFbx$_PreRotation" name="LeftHandRing3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.999269 -0.0119351 -0.0363103 0 0.0116055 0.99989 -0.00927624 0 0.036417 0.00884807 0.999297 0 0 0 0 1</matrix>
+                                                                        <node id="LeftHandRing3_$AssimpFbx$_Rotation" name="LeftHandRing3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.999933 0.0115461 -0.000134262 0 -0.0115468 0.999787 -0.0171243 0 -6.34859e-05 0.0171247 0.999853 0 0 0 0 1</matrix>
+                                                                          <node id="LeftHandRing3" name="LeftHandRing3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="LeftHandRing4_$AssimpFbx$_Translation" name="LeftHandRing4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 0.0274 0 1 0 -2.2393 0 0 1 0.0475 0 0 0 1</matrix>
+                                                                              <node id="LeftHandRing4_$AssimpFbx$_PreRotation" name="LeftHandRing4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>-0.218559 -0.0267569 -0.975457 0 -0.00208397 0.999635 -0.0269531 0 0.975821 -0.00385804 -0.218535 0 0 0 0 1</matrix>
+                                                                                <node id="LeftHandRing4" name="LeftHandRing4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="LeftHandPinky1_$AssimpFbx$_Translation" name="LeftHandPinky1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 4.6268 0 1 0 10.95 0 0 1 1.7871 0 0 0 1</matrix>
+                                                      <node id="LeftHandPinky1_$AssimpFbx$_PreRotation" name="LeftHandPinky1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.800701 -0.30173 0.517529 0 -0.524036 -0.771389 0.361034 0 0.290281 -0.560285 -0.775769 0 0 0 0 1</matrix>
+                                                        <node id="LeftHandPinky1_$AssimpFbx$_Rotation" name="LeftHandPinky1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.842771 0.532285 0.0800603 0 -0.52589 0.782506 0.333353 0 0.114791 -0.323043 0.939397 0 0 0 0 1</matrix>
+                                                          <node id="LeftHandPinky1" name="LeftHandPinky1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="LeftHandPinky2_$AssimpFbx$_Translation" name="LeftHandPinky2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 -0.0023 0 1 0 -1.5626 0 0 1 0.0527 0 0 0 1</matrix>
+                                                              <node id="LeftHandPinky2_$AssimpFbx$_PreRotation" name="LeftHandPinky2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.985666 -0.0377842 -0.164421 0 0.0137462 0.989344 -0.144948 0 0.168145 0.14061 0.975682 0 0 0 0 1</matrix>
+                                                                <node id="LeftHandPinky2_$AssimpFbx$_Rotation" name="LeftHandPinky2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.999998 0.000677147 0.00167067 0 -0.000968098 0.983513 0.180834 0 -0.00152068 -0.180835 0.983512 0 0 0 0 1</matrix>
+                                                                  <node id="LeftHandPinky2" name="LeftHandPinky2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="LeftHandPinky3_$AssimpFbx$_Translation" name="LeftHandPinky3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 -0.0113 0 1 0 -1.2784 0 0 1 -0.0037 0 0 0 1</matrix>
+                                                                      <node id="LeftHandPinky3_$AssimpFbx$_PreRotation" name="LeftHandPinky3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.990616 0.00158881 0.136667 0 0.00201596 0.999654 -0.0262339 0 -0.136661 0.0262632 0.99027 0 0 0 0 1</matrix>
+                                                                        <node id="LeftHandPinky3_$AssimpFbx$_Rotation" name="LeftHandPinky3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.999655 -0.0262543 0.000560109 0 0.0262491 0.999624 0.00792853 0 -0.000768056 -0.00791109 0.999968 0 0 0 0 1</matrix>
+                                                                          <node id="LeftHandPinky3" name="LeftHandPinky3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="LeftHandPinky4_$AssimpFbx$_Translation" name="LeftHandPinky4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 -0.0636 0 1 0 -1.7349 0 0 1 0.0247 0 0 0 1</matrix>
+                                                                              <node id="LeftHandPinky4_$AssimpFbx$_PreRotation" name="LeftHandPinky4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>-0.435371 0.1939 -0.879121 0 0.206791 0.971957 0.111966 0 0.876179 -0.133047 -0.463259 0 0 0 0 1</matrix>
+                                                                                <node id="LeftHandPinky4" name="LeftHandPinky4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                  </node>
+                                                </node>
+                                              </node>
+                                            </node>
+                                          </node>
+                                        </node>
+                                      </node>
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                    <node id="RightShoulder_$AssimpFbx$_Translation" name="RightShoulder_$AssimpFbx$_Translation">
+                      <matrix>1 0 0 -5.6498 0 1 0 13.9089 0 0 1 -0.3075 0 0 0 1</matrix>
+                      <node id="RightShoulder_$AssimpFbx$_PreRotation" name="RightShoulder_$AssimpFbx$_PreRotation">
+                        <matrix>-0.0553649 -0.907584 0.416205 0 -1.0076e-07 -0.416844 -0.908978 0 0.998466 -0.0503255 0.0230784 0 0 0 0 1</matrix>
+                        <node id="RightShoulder_$AssimpFbx$_Rotation" name="RightShoulder_$AssimpFbx$_Rotation">
+                          <matrix>0.999755 0.0220195 0.00212142 0 -0.0220602 0.985266 0.169599 0 0.00164433 -0.169605 0.985511 0 0 0 0 1</matrix>
+                          <node id="RightShoulder" name="RightShoulder">
+                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                            <node id="RightArm_$AssimpFbx$_Translation" name="RightArm_$AssimpFbx$_Translation">
+                              <matrix>1 0 0 0.0016 0 1 0 12.2475 0 0 1 -0.0126 0 0 0 1</matrix>
+                              <node id="RightArm_$AssimpFbx$_PreRotation" name="RightArm_$AssimpFbx$_PreRotation">
+                                <matrix>0.958428 -0.12535 -0.256325 0 0 0.898335 -0.439311 0 0.285334 0.421048 0.86099 0 0 0 0 1</matrix>
+                                <node id="RightArm_$AssimpFbx$_Rotation" name="RightArm_$AssimpFbx$_Rotation">
+                                  <matrix>0.999319 -0.035289 0.0108217 0 0.0206415 0.77734 0.628743 0 -0.0305998 -0.628091 0.777538 0 0 0 0 1</matrix>
+                                  <node id="RightArm" name="RightArm">
+                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                    <node id="RightForeArm_$AssimpFbx$_Translation" name="RightForeArm_$AssimpFbx$_Translation">
+                                      <matrix>1 0 0 -0.1264 0 1 0 29.223 0 0 1 -1 0 0 0 1</matrix>
+                                      <node id="RightForeArm_$AssimpFbx$_PreRotation" name="RightForeArm_$AssimpFbx$_PreRotation">
+                                        <matrix>0.956567 0.290079 0.0288666 0 -0.290946 0.956184 0.032582 0 -0.0181504 -0.0395655 0.999052 0 0 0 0 1</matrix>
+                                        <node id="RightForeArm_$AssimpFbx$_Rotation" name="RightForeArm_$AssimpFbx$_Rotation">
+                                          <matrix>0.939511 -0.342516 -0.00134746 0 0.342515 0.939512 -0.000633876 0 0.00148307 0.000134008 0.999999 0 0 0 0 1</matrix>
+                                          <node id="RightForeArm" name="RightForeArm">
+                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                            <node id="RightHand_$AssimpFbx$_Translation" name="RightHand_$AssimpFbx$_Translation">
+                                              <matrix>1 0 0 1.5087 0 1 0 29.6265 0 0 1 -0.0575 0 0 0 1</matrix>
+                                              <node id="RightHand_$AssimpFbx$_PreRotation" name="RightHand_$AssimpFbx$_PreRotation">
+                                                <matrix>0.985097 -0.0431313 0.166502 0 0.062324 0.991772 -0.111824 0 -0.160308 0.120534 0.97968 0 0 0 0 1</matrix>
+                                                <node id="RightHand_$AssimpFbx$_Rotation" name="RightHand_$AssimpFbx$_Rotation">
+                                                  <matrix>0.935601 0.10468 -0.337183 0 -0.0604824 0.988438 0.139042 0 0.347839 -0.109694 0.931115 0 0 0 0 1</matrix>
+                                                  <node id="RightHand" name="RightHand">
+                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                    <node id="RightHandIndex1_$AssimpFbx$_Translation" name="RightHandIndex1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 2.9387 0 1 0 13.2173 0 0 1 -0.5374 0 0 0 1</matrix>
+                                                      <node id="RightHandIndex1_$AssimpFbx$_PreRotation" name="RightHandIndex1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.920936 -0.175917 0.347749 0 -0.209811 -0.975773 0.062021 0 0.328413 -0.130079 -0.935534 0 0 0 0 1</matrix>
+                                                        <node id="RightHandIndex1_$AssimpFbx$_Rotation" name="RightHandIndex1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.974301 0.225167 0.00607387 0 -0.225079 0.972165 0.065081 0 0.00874928 -0.0647756 0.997862 0 0 0 0 1</matrix>
+                                                          <node id="RightHandIndex1" name="RightHandIndex1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="RightHandIndex2_$AssimpFbx$_Translation" name="RightHandIndex2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 0.0545 0 1 0 -2.1968 0 0 1 -0.0027 0 0 0 1</matrix>
+                                                              <node id="RightHandIndex2_$AssimpFbx$_PreRotation" name="RightHandIndex2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.998426 -0.0337717 -0.0447661 0 0.0260523 0.986281 -0.163004 0 0.0496569 0.161582 0.985609 0 0 0 0 1</matrix>
+                                                                <node id="RightHandIndex2_$AssimpFbx$_Rotation" name="RightHandIndex2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.998575 0.0532598 -0.00328778 0 -0.0516847 0.980689 0.188622 0 0.0132702 -0.188183 0.982044 0 0 0 0 1</matrix>
+                                                                  <node id="RightHandIndex2" name="RightHandIndex2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="RightHandIndex3_$AssimpFbx$_Translation" name="RightHandIndex3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 0.0782 0 1 0 -1.5069 0 0 1 -0.0429 0 0 0 1</matrix>
+                                                                      <node id="RightHandIndex3_$AssimpFbx$_PreRotation" name="RightHandIndex3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.998688 -0.0508279 0.00625 0 0.0507591 0.998654 0.0107069 0 -0.00678579 -0.0103756 0.999923 0 0 0 0 1</matrix>
+                                                                        <node id="RightHandIndex3_$AssimpFbx$_Rotation" name="RightHandIndex3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.998297 -0.0583156 -0.00140599 0 0.0582529 0.997904 -0.0281954 0 0.00304727 0.0280655 0.999601 0 0 0 0 1</matrix>
+                                                                          <node id="RightHandIndex3" name="RightHandIndex3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="RightHandIndex4_$AssimpFbx$_Translation" name="RightHandIndex4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 -0.0932 0 1 0 -1.6303 0 0 1 -0.0173 0 0 0 1</matrix>
+                                                                              <node id="RightHandIndex4_$AssimpFbx$_PreRotation" name="RightHandIndex4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>0.938429 -0.28421 0.196407 0 -0.298677 -0.953156 0.0478142 0 0.173617 -0.103533 -0.979356 0 0 0 0 1</matrix>
+                                                                                <node id="RightHandIndex4" name="RightHandIndex4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="RightHandThumb1_$AssimpFbx$_Translation" name="RightHandThumb1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 4.054 0 1 0 6.091 0 0 1 2.9939 0 0 0 1</matrix>
+                                                      <node id="RightHandThumb1_$AssimpFbx$_PreRotation" name="RightHandThumb1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.703213 -0.694045 0.154247 0 -0.631875 -0.510636 0.583082 0 -0.325921 -0.507497 -0.797636 0 0 0 0 1</matrix>
+                                                        <node id="RightHandThumb1_$AssimpFbx$_Rotation" name="RightHandThumb1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.973295 0.226798 0.0354926 0 -0.224908 0.911152 0.34528 0 0.0459697 -0.344042 0.937828 0 0 0 0 1</matrix>
+                                                          <node id="RightHandThumb1" name="RightHandThumb1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="RightHandThumb2_$AssimpFbx$_Translation" name="RightHandThumb2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 0.1078 0 1 0 -2.3343 0 0 1 -0.1113 0 0 0 1</matrix>
+                                                              <node id="RightHandThumb2_$AssimpFbx$_PreRotation" name="RightHandThumb2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.98227 0.186501 0.0190296 0 -0.185412 0.981469 -0.0483809 0 -0.0277001 0.0439948 0.998648 0 0 0 0 1</matrix>
+                                                                <node id="RightHandThumb2_$AssimpFbx$_Rotation" name="RightHandThumb2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.961433 -0.275019 -0.0034624 0 0.27504 0.96138 0.0100815 0 0.000556074 -0.010645 0.999943 0 0 0 0 1</matrix>
+                                                                  <node id="RightHandThumb2" name="RightHandThumb2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="RightHandThumb3_$AssimpFbx$_Translation" name="RightHandThumb3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 -0.0716 0 1 0 -1.5927 0 0 1 -0.0143 0 0 0 1</matrix>
+                                                                      <node id="RightHandThumb3_$AssimpFbx$_PreRotation" name="RightHandThumb3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.93437 0.356299 -0.00200699 0 -0.356304 0.934365 -0.002907 0 0.000839503 0.00343131 0.999994 0 0 0 0 1</matrix>
+                                                                        <node id="RightHandThumb3_$AssimpFbx$_Rotation" name="RightHandThumb3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.9542 -0.298925 0.0120669 0 0.299151 0.953804 -0.0276857 0 -0.00323348 0.0300275 0.999544 0 0 0 0 1</matrix>
+                                                                          <node id="RightHandThumb3" name="RightHandThumb3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="RightHandThumb4_$AssimpFbx$_Translation" name="RightHandThumb4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 0.0397 0 1 0 -2.5465 0 0 1 0.0614 0 0 0 1</matrix>
+                                                                              <node id="RightHandThumb4_$AssimpFbx$_PreRotation" name="RightHandThumb4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>0.241416 0.379052 0.89333 0 -0.150937 0.924022 -0.351286 0 -0.958612 -0.0500306 0.280286 0 0 0 0 1</matrix>
+                                                                                <node id="RightHandThumb4" name="RightHandThumb4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="RightHandMiddle1_$AssimpFbx$_Translation" name="RightHandMiddle1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 0.1189 0 1 0 13.0973 0 0 1 0.02 0 0 0 1</matrix>
+                                                      <node id="RightHandMiddle1_$AssimpFbx$_PreRotation" name="RightHandMiddle1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.99794 0.0373065 0.0521897 0 0.0186457 -0.947077 0.320463 0 0.061383 -0.31883 -0.945822 0 0 0 0 1</matrix>
+                                                        <node id="RightHandMiddle1_$AssimpFbx$_Rotation" name="RightHandMiddle1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.999113 -0.0420546 -0.00234732 0 0.0405707 0.945888 0.321946 0 -0.011319 -0.321755 0.946755 0 0 0 0 1</matrix>
+                                                          <node id="RightHandMiddle1" name="RightHandMiddle1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="RightHandMiddle2_$AssimpFbx$_Translation" name="RightHandMiddle2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 -0.0326 0 1 0 -2.2841 0 0 1 -0.0058 0 0 0 1</matrix>
+                                                              <node id="RightHandMiddle2_$AssimpFbx$_PreRotation" name="RightHandMiddle2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.99755 0.0213758 -0.066617 0 -0.0346208 0.978248 -0.204529 0 0.0607959 0.206334 0.976591 0 0 0 0 1</matrix>
+                                                                <node id="RightHandMiddle2_$AssimpFbx$_Rotation" name="RightHandMiddle2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.999867 0.015294 -0.00573272 0 -0.0138009 0.97882 0.204256 0 0.00873519 -0.20415 0.978901 0 0 0 0 1</matrix>
+                                                                  <node id="RightHandMiddle2" name="RightHandMiddle2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="RightHandMiddle3_$AssimpFbx$_Translation" name="RightHandMiddle3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 0.0848 0 1 0 -2.3867 0 0 1 -0.0033 0 0 0 1</matrix>
+                                                                      <node id="RightHandMiddle3_$AssimpFbx$_PreRotation" name="RightHandMiddle3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.999998 -0.00113956 0.00184285 0 0.00131423 0.995211 -0.0977438 0 -0.00172264 0.097746 0.99521 0 0 0 0 1</matrix>
+                                                                        <node id="RightHandMiddle3_$AssimpFbx$_Rotation" name="RightHandMiddle3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.999945 -0.00087443 -0.0104499 0 0.00397043 0.953897 0.300108 0 0.0097057 -0.300133 0.953848 0 0 0 0 1</matrix>
+                                                                          <node id="RightHandMiddle3" name="RightHandMiddle3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="RightHandMiddle4_$AssimpFbx$_Translation" name="RightHandMiddle4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 0.0737 0 1 0 -2.3113 0 0 1 -0.4892 0 0 0 1</matrix>
+                                                                              <node id="RightHandMiddle4_$AssimpFbx$_PreRotation" name="RightHandMiddle4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>0.0470622 0.0861447 0.99517 0 -0.0626163 0.994569 -0.0831315 0 -0.996927 -0.0584015 0.0522007 0 0 0 0 1</matrix>
+                                                                                <node id="RightHandMiddle4" name="RightHandMiddle4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="RightHandRing1_$AssimpFbx$_Translation" name="RightHandRing1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 -2.4991 0 1 0 12.2382 0 0 1 0.8943 0 0 0 1</matrix>
+                                                      <node id="RightHandRing1_$AssimpFbx$_PreRotation" name="RightHandRing1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.935641 0.235027 -0.263323 0 0.318642 -0.883333 0.343789 0 -0.151803 -0.405569 -0.901371 0 0 0 0 1</matrix>
+                                                        <node id="RightHandRing1_$AssimpFbx$_Rotation" name="RightHandRing1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.946527 -0.315786 -0.0660744 0 0.318462 0.881718 0.348074 0 -0.051658 -0.350504 0.935136 0 0 0 0 1</matrix>
+                                                          <node id="RightHandRing1" name="RightHandRing1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="RightHandRing2_$AssimpFbx$_Translation" name="RightHandRing2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 0.0239 0 1 0 -2.1661 0 0 1 -0.0229 0 0 0 1</matrix>
+                                                              <node id="RightHandRing2_$AssimpFbx$_PreRotation" name="RightHandRing2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.996571 -0.0793595 -0.0234079 0 0.0748206 0.985152 -0.154525 0 0.0353234 0.152244 0.987711 0 0 0 0 1</matrix>
+                                                                <node id="RightHandRing2_$AssimpFbx$_Rotation" name="RightHandRing2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.998631 0.051984 0.00586023 0 -0.0522796 0.98769 0.147429 0 0.00187583 -0.147533 0.989055 0 0 0 0 1</matrix>
+                                                                  <node id="RightHandRing2" name="RightHandRing2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="RightHandRing3_$AssimpFbx$_Translation" name="RightHandRing3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 -0.0229 0 1 0 -1.876 0 0 1 -0.007 0 0 0 1</matrix>
+                                                                      <node id="RightHandRing3_$AssimpFbx$_PreRotation" name="RightHandRing3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.999269 0.0119351 0.0363103 0 -0.0116055 0.99989 -0.00927624 0 -0.036417 0.00884807 0.999297 0 0 0 0 1</matrix>
+                                                                        <node id="RightHandRing3_$AssimpFbx$_Rotation" name="RightHandRing3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.997893 -0.0645871 -0.00619156 0 0.0645003 0.977124 0.202654 0 -0.00703893 -0.202627 0.979231 0 0 0 0 1</matrix>
+                                                                          <node id="RightHandRing3" name="RightHandRing3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="RightHandRing4_$AssimpFbx$_Translation" name="RightHandRing4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 -0.1359 0 1 0 -2.0453 0 0 1 -0.4133 0 0 0 1</matrix>
+                                                                              <node id="RightHandRing4_$AssimpFbx$_PreRotation" name="RightHandRing4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>-0.218559 0.0267568 0.975457 0 0.00208397 0.999635 -0.0269531 0 -0.975821 -0.00385802 -0.218535 0 0 0 0 1</matrix>
+                                                                                <node id="RightHandRing4" name="RightHandRing4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                    <node id="RightHandPinky1_$AssimpFbx$_Translation" name="RightHandPinky1_$AssimpFbx$_Translation">
+                                                      <matrix>1 0 0 -4.6268 0 1 0 10.9519 0 0 1 1.775 0 0 0 1</matrix>
+                                                      <node id="RightHandPinky1_$AssimpFbx$_PreRotation" name="RightHandPinky1_$AssimpFbx$_PreRotation">
+                                                        <matrix>0.800701 0.30173 -0.517529 0 0.524036 -0.771389 0.361034 0 -0.290281 -0.560285 -0.775769 0 0 0 0 1</matrix>
+                                                        <node id="RightHandPinky1_$AssimpFbx$_Rotation" name="RightHandPinky1_$AssimpFbx$_Rotation">
+                                                          <matrix>0.842821 -0.532249 -0.0797786 0 0.525744 0.782526 0.333536 0 -0.115095 -0.323054 0.939356 0 0 0 0 1</matrix>
+                                                          <node id="RightHandPinky1" name="RightHandPinky1">
+                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                            <node id="RightHandPinky2_$AssimpFbx$_Translation" name="RightHandPinky2_$AssimpFbx$_Translation">
+                                                              <matrix>1 0 0 0.0031 0 1 0 -1.5625 0 0 1 0.0541 0 0 0 1</matrix>
+                                                              <node id="RightHandPinky2_$AssimpFbx$_PreRotation" name="RightHandPinky2_$AssimpFbx$_PreRotation">
+                                                                <matrix>0.985666 0.0377842 0.164421 0 -0.0137462 0.989344 -0.144948 0 -0.168145 0.14061 0.975682 0 0 0 0 1</matrix>
+                                                                <node id="RightHandPinky2_$AssimpFbx$_Rotation" name="RightHandPinky2_$AssimpFbx$_Rotation">
+                                                                  <matrix>0.999998 -0.000640709 -0.00174296 0 0.000945382 0.983508 0.180864 0 0.00159833 -0.180865 0.983507 0 0 0 0 1</matrix>
+                                                                  <node id="RightHandPinky2" name="RightHandPinky2">
+                                                                    <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                    <node id="RightHandPinky3_$AssimpFbx$_Translation" name="RightHandPinky3_$AssimpFbx$_Translation">
+                                                                      <matrix>1 0 0 0.0118 0 1 0 -1.2784 0 0 1 -0.0025 0 0 0 1</matrix>
+                                                                      <node id="RightHandPinky3_$AssimpFbx$_PreRotation" name="RightHandPinky3_$AssimpFbx$_PreRotation">
+                                                                        <matrix>0.990616 -0.00158881 -0.136667 0 -0.00201596 0.999654 -0.0262339 0 0.136661 0.0262632 0.99027 0 0 0 0 1</matrix>
+                                                                        <node id="RightHandPinky3_$AssimpFbx$_Rotation" name="RightHandPinky3_$AssimpFbx$_Rotation">
+                                                                          <matrix>0.996667 -0.0810906 -0.00885152 0 0.0811697 0.975126 0.206254 0 -0.00809389 -0.206285 0.978459 0 0 0 0 1</matrix>
+                                                                          <node id="RightHandPinky3" name="RightHandPinky3">
+                                                                            <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                            <node id="RightHandPinky4_$AssimpFbx$_Translation" name="RightHandPinky4_$AssimpFbx$_Translation">
+                                                                              <matrix>1 0 0 -0.124 0 1 0 -1.7251 0 0 1 -0.3233 0 0 0 1</matrix>
+                                                                              <node id="RightHandPinky4_$AssimpFbx$_PreRotation" name="RightHandPinky4_$AssimpFbx$_PreRotation">
+                                                                                <matrix>-0.435371 -0.1939 0.879121 0 -0.206791 0.971957 0.111966 0 -0.876179 -0.133047 -0.463259 0 0 0 0 1</matrix>
+                                                                                <node id="RightHandPinky4" name="RightHandPinky4">
+                                                                                  <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                                                                </node>
+                                                                              </node>
+                                                                            </node>
+                                                                          </node>
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                  </node>
+                                                                </node>
+                                                              </node>
+                                                            </node>
+                                                          </node>
+                                                        </node>
+                                                      </node>
+                                                    </node>
+                                                  </node>
+                                                </node>
+                                              </node>
+                                            </node>
+                                          </node>
+                                        </node>
+                                      </node>
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node id="LeftUpLeg_$AssimpFbx$_Translation" name="LeftUpLeg_$AssimpFbx$_Translation">
+          <matrix>1 0 0 12.1043 0 1 0 -6.0532 0 0 1 -1.2332 0 0 0 1</matrix>
+          <node id="LeftUpLeg_$AssimpFbx$_PreRotation" name="LeftUpLeg_$AssimpFbx$_PreRotation">
+            <matrix>-0.999605 -0.0280997 2.88826e-07 0 0.0280769 -0.998796 -0.0402384 0 0.00113097 -0.0402225 0.99919 0 0 0 0 1</matrix>
+            <node id="LeftUpLeg_$AssimpFbx$_Rotation" name="LeftUpLeg_$AssimpFbx$_Rotation">
+              <matrix>0.999756 -0.021948 0.00230913 0 0.0220491 0.997827 -0.0620823 0 -0.000941526 0.0621181 0.998068 0 0 0 0 1</matrix>
+              <node id="LeftUpLeg" name="LeftUpLeg">
+                <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                <node id="LeftLeg_$AssimpFbx$_Translation" name="LeftLeg_$AssimpFbx$_Translation">
+                  <matrix>1 0 0 -0.3334 0 1 0 46.605 0 0 1 -0.1882 0 0 0 1</matrix>
+                  <node id="LeftLeg_$AssimpFbx$_PreRotation" name="LeftLeg_$AssimpFbx$_PreRotation">
+                    <matrix>0.999493 0.00384511 -0.0316066 0 -0.00132578 0.996846 0.0793467 0 0.031812 -0.0792646 0.996346 0 0 0 0 1</matrix>
+                    <node id="LeftLeg_$AssimpFbx$_Rotation" name="LeftLeg_$AssimpFbx$_Rotation">
+                      <matrix>1 -0.000751091 8.20389e-05 0 0.000748746 0.999672 0.0255855 0 -0.000101229 -0.0255855 0.999673 0 0 0 0 1</matrix>
+                      <node id="LeftLeg" name="LeftLeg">
+                        <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                        <node id="LeftFoot_$AssimpFbx$_Translation" name="LeftFoot_$AssimpFbx$_Translation">
+                          <matrix>1 0 0 -0.4389 0 1 0 50.4788 0 0 1 0.4051 0 0 0 1</matrix>
+                          <node id="LeftFoot_$AssimpFbx$_PreRotation" name="LeftFoot_$AssimpFbx$_PreRotation">
+                            <matrix>0.998565 0.0371979 0.0385223 0 0.0162341 0.475232 -0.879711 0 -0.0510305 0.879074 0.473946 0 0 0 0 1</matrix>
+                            <node id="LeftFoot_$AssimpFbx$_Rotation" name="LeftFoot_$AssimpFbx$_Rotation">
+                              <matrix>0.999742 0.0117332 -0.0194656 0 -0.0110229 0.999284 0.0362058 0 0.0198765 -0.0359819 0.999155 0 0 0 0 1</matrix>
+                              <node id="LeftFoot" name="LeftFoot">
+                                <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                <node id="LeftToeBase_$AssimpFbx$_Translation" name="LeftToeBase_$AssimpFbx$_Translation">
+                                  <matrix>1 0 0 0 0 1 0 17.6962 0 0 1 0 0 0 0 1</matrix>
+                                  <node id="LeftToeBase_$AssimpFbx$_PreRotation" name="LeftToeBase_$AssimpFbx$_PreRotation">
+                                    <matrix>0.999153 -0.0235038 -0.0337816 0 0 0.820865 -0.571122 0 0.0411537 0.570638 0.82017 0 0 0 0 1</matrix>
+                                    <node id="LeftToeBase_$AssimpFbx$_Rotation" name="LeftToeBase_$AssimpFbx$_Rotation">
+                                      <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                      <node id="LeftToeBase" name="LeftToeBase">
+                                        <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                        <node id="LeftToe_End" name="LeftToe_End">
+                                          <matrix>1 0 0 0 0 1 0 6.9357 0 0 1 0 0 0 0 1</matrix>
+                                        </node>
+                                      </node>
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node id="RightUpLeg_$AssimpFbx$_Translation" name="RightUpLeg_$AssimpFbx$_Translation">
+          <matrix>1 0 0 -12.2502 0 1 0 -6.0532 0 0 1 -1.2332 0 0 0 1</matrix>
+          <node id="RightUpLeg_$AssimpFbx$_PreRotation" name="RightUpLeg_$AssimpFbx$_PreRotation">
+            <matrix>-0.999605 0.0280997 -2.88826e-07 0 -0.0280769 -0.998796 -0.0402384 0 -0.00113097 -0.0402225 0.99919 0 0 0 0 1</matrix>
+            <node id="RightUpLeg_$AssimpFbx$_Rotation" name="RightUpLeg_$AssimpFbx$_Rotation">
+              <matrix>0.999756 0.0219493 -0.00229029 0 -0.0220491 0.997827 -0.062088 0 0.000922523 0.0621234 0.998068 0 0 0 0 1</matrix>
+              <node id="RightUpLeg" name="RightUpLeg">
+                <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                <node id="RightLeg_$AssimpFbx$_Translation" name="RightLeg_$AssimpFbx$_Translation">
+                  <matrix>1 0 0 0.3334 0 1 0 46.605 0 0 1 -0.1882 0 0 0 1</matrix>
+                  <node id="RightLeg_$AssimpFbx$_PreRotation" name="RightLeg_$AssimpFbx$_PreRotation">
+                    <matrix>0.999493 -0.00384511 0.0316066 0 0.00132578 0.996846 0.0793467 0 -0.031812 -0.0792646 0.996346 0 0 0 0 1</matrix>
+                    <node id="RightLeg_$AssimpFbx$_Rotation" name="RightLeg_$AssimpFbx$_Rotation">
+                      <matrix>1 0.000750869 -7.33059e-05 0 -0.000748746 0.999672 0.0255978 0 9.25024e-05 -0.0255977 0.999672 0 0 0 0 1</matrix>
+                      <node id="RightLeg" name="RightLeg">
+                        <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                        <node id="RightFoot_$AssimpFbx$_Translation" name="RightFoot_$AssimpFbx$_Translation">
+                          <matrix>1 0 0 0.4389 0 1 0 50.4788 0 0 1 0.4051 0 0 0 1</matrix>
+                          <node id="RightFoot_$AssimpFbx$_PreRotation" name="RightFoot_$AssimpFbx$_PreRotation">
+                            <matrix>0.998565 -0.0371979 -0.0385223 0 -0.0162341 0.475232 -0.879711 0 0.0510305 0.879074 0.473946 0 0 0 0 1</matrix>
+                            <node id="RightFoot_$AssimpFbx$_Rotation" name="RightFoot_$AssimpFbx$_Rotation">
+                              <matrix>0.999742 -0.0117564 0.0194514 0 0.0110467 0.999284 0.0362005 0 -0.019863 -0.0359763 0.999155 0 0 0 0 1</matrix>
+                              <node id="RightFoot" name="RightFoot">
+                                <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                <node id="RightToeBase_$AssimpFbx$_Translation" name="RightToeBase_$AssimpFbx$_Translation">
+                                  <matrix>1 0 0 -0 0 1 0 17.6962 0 0 1 0 0 0 0 1</matrix>
+                                  <node id="RightToeBase_$AssimpFbx$_PreRotation" name="RightToeBase_$AssimpFbx$_PreRotation">
+                                    <matrix>0.999153 0.0235038 0.0337816 0 0 0.820865 -0.571122 0 -0.0411537 0.570638 0.82017 0 0 0 0 1</matrix>
+                                    <node id="RightToeBase_$AssimpFbx$_Rotation" name="RightToeBase_$AssimpFbx$_Rotation">
+                                      <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                      <node id="RightToeBase" name="RightToeBase">
+                                        <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+                                        <node id="RightToe_End" name="RightToe_End">
+                                          <matrix>1 0 0 0 0 1 0 6.9357 0 0 1 0 0 0 0 1</matrix>
+                                        </node>
+                                      </node>
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#RootNode" />
+  </scene>
+</COLLADA>

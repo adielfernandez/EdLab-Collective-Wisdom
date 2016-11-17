@@ -88,7 +88,20 @@ void TiledObject::triggerWave(ofVec2f epicenter){
         
     } else {
         
+        
         nextImg = round(ofRandom( images.size() - 1 ));
+        
+        //make sure the next image selected isn't the same as the current one
+        if(nextImg == currentImg){
+            
+            nextImg += (int)ofRandom(images.size() - 1);
+            
+            //wrap around
+            if(nextImg > images.size() - 1){
+                nextImg -= images.size();
+            }
+            
+        }
     }
     
     //then store it for the next time

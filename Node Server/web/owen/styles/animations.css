@@ -1,0 +1,9 @@
+@keyframes title-animate-up {
+  from {
+    height: 100vh;
+  }
+
+  to {
+    height: 20vh;
+  }
+}

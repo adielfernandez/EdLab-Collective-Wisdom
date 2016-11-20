@@ -1,0 +1,233 @@
+@keyframes fade-in {
+  from {
+    opacity: 0.01;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes title-animate-up {
+  from {
+    height: 100vh;
+    top: -8px;
+  }
+
+  to {
+    height: 20vh;
+    top: 0px;
+  }
+}
+
+@keyframes translate-left {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('../fonts/bebas-neue/BebasNeue.eot'),
+       url('../fonts/bebas-neue/BebasNeue.woff') format('woff'),
+       url('../fonts/bebas-neue/BebasNeue.ttf')  format('truetype');
+}
+
+@font-face {
+  font-family: 'Geo Sans';
+  src: url('../fonts/geo-sans/geosanslight.eot'),
+       url('../fonts/geo-sans/geosanslight.woff') format('woff'),
+       url('../fonts/geo-sans/geosanslight.ttf')  format('truetype');
+}
+
+body {
+  background: url('../images/background.png');
+  background-size: auto 100%;
+  height: 100vh;
+  font-family: 'Geo Sans', sans-serif;
+  min-width: 320px;
+  overflow: hidden;
+  width: 100%;
+}
+
+/************************************************
+HEADER ******************************************
+*************************************************/
+
+header {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  top: -8px;
+  transition: all 500ms cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  width: 100%;
+}
+
+header.is-before {
+  transform: translateX(-100%);
+}
+
+.header-wrapper {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  height: 20vh;
+  width: 100%;
+}
+
+.header-title {
+  color: #CEBA8E;
+  font-size: 48px;
+  font-family: 'Bebas Neue', sans-serif;
+  line-height: 42px;
+  margin-top: 7px;
+  padding: 0 20px;
+}
+
+/************************************************
+SECTION *****************************************
+*************************************************/
+
+main {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+section {
+  background-color: rgba(0, 0, 0, 0.75);
+  height: 100vh;
+  left: 0;
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  transition: all 500ms cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  width:100%;
+}
+
+section.is-before {
+  transform: translateX(-100%);
+}
+
+section.is-after {
+  transform: translateX(100%);
+}
+
+.section-wrapper {
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 480px;
+}
+
+.section-title {
+  color: #CEBA8E;
+  font-size: 48px;
+  font-family: 'Bebas Neue', sans-serif;
+  line-height: 42px;
+  margin-bottom: 20px;
+}
+
+.section-subtitle {
+  color: #CEBA8E;
+  font-size: 36px;
+  font-family: 'Bebas Neue', sans-serif;
+  line-height: 32px;
+  margin: 40px 0 20px;
+}
+
+.section-paragraph {
+  color: #EFE6D1;
+  font-size: 16px;
+  line-height: 18px;
+  margin-bottom: 20px;
+}
+
+.section-btn-wrapper {
+  width: 100%;
+}
+
+.section-btn {
+  background: transparent;
+  border: 1px solid #CEBA8E;
+  border-radius: 5px;
+  color: #CEBA8E;
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  margin: 40px auto 20px;
+  padding: 10px;
+  width: 180px;
+}
+
+.section-link {
+  color: #02B0EF;
+}
+
+/************************************************
+CONTRIBUTE **************************************
+*************************************************/
+.contribute-form-wrapper {
+  padding-bottom: 15px;
+}
+
+.contribute-form-label.section-paragraph {
+  margin-bottom: 5px;
+}
+
+.input-contribution,
+.input-name {
+  border: 0;
+  color: #111;
+  font-size: 14px;
+  outline: none;
+  resize: none;
+  padding: 10px;
+  width: 100%;
+}
+
+/************************************************
+ERROR *******************************************
+*************************************************/
+
+.error-img-wrapper {
+  padding: 20px 0;
+  width: 100%;
+}
+
+.error-img {
+  display: block;
+  margin: 0 auto;
+  max-width: 160px;
+  width: 50%;
+}
+
+/************************************************
+ABOUT *******************************************
+*************************************************/
+
+.about-sponsors {
+  padding: 20px 0;
+  width: 100%;
+}
+
+.about-sponsors-img-wrapper {
+  padding: 10px 0;
+}
+
+.about-sponsors-img-wrapper > img {
+  display: block;
+  margin: 0 auto;
+  max-height: 40px;
+  max-width: 100%;
+}
+
+.about-sponsors-img-wrapper--theater > img {
+  max-height: 70px;
+}

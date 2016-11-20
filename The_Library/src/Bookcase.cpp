@@ -1033,6 +1033,12 @@ void Bookcase::mapMesh(){
     }
 
     
+    
+    //get location of the shelves
+    shelf1Pos = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[14], controlPoints[3]);
+    shelf2Pos = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[12], controlPoints[5]);
+    shelf3Pos = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[10], controlPoints[7]);
+    
 }
 
 

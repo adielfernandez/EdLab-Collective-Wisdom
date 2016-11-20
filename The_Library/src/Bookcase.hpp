@@ -42,11 +42,15 @@ public:
     void saveSettings();
     void loadSettings();
     
-    static int sharedCurrentImg, sharedNextImg;
-    
+
     
     //LEFT or RIGHT
     bool bLeftCase;
+    
+    //lower left corner of shelves
+    ofVec2f shelf1Pos; //top
+    ofVec2f shelf2Pos; //middle
+    ofVec2f shelf3Pos; //bottom shelf
     
     
     //Tile coordinates are based on

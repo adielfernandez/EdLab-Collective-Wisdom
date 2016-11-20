@@ -6,6 +6,8 @@
 #include "Wallpaper.hpp"
 #include "Frame.hpp"
 #include "Bookcase.hpp"
+#include "BookController.hpp"
+
 
 class ofApp : public ofBaseApp{
 
@@ -43,12 +45,18 @@ class ofApp : public ofBaseApp{
     
     bool bShowGUIs;
     
+    //----------Scene Setup----------
+    
     Wallpaper wallpaper;
     
     Frame frame;
     
     Bookcase leftBookcase;
     Bookcase rightBookcase;
+    
+    BookController bookController;
+    
+    ofxAssimpModelLoader model;
     
     //show coordinates of mouse to
     //help place things on screen

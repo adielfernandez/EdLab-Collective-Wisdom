@@ -41,10 +41,10 @@
 		C6C3882A0B0872D1485F3874 /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E38D74C62B19279B65BC7 /* Client.cpp */; };
 		CCD326ED8E01272042317DD2 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A781C912CD5B01022F6BB2C /* Util.cpp */; };
 		D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A4DD23693DFAB8EC05FAA5D /* ofxCvShortImage.cpp */; };
+		D77C64B01DDE4EF900D4ECED /* BookController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D77C64AE1DDE4EF900D4ECED /* BookController.cpp */; };
 		D78A612D1DDBC02000333FFA /* Book.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D78A612B1DDBC02000333FFA /* Book.cpp */; };
 		D7C168541DCED11800BA1A42 /* Tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C1684E1DCED11800BA1A42 /* Tile.cpp */; };
 		D7C168551DCED11800BA1A42 /* Wallpaper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C168501DCED11800BA1A42 /* Wallpaper.cpp */; };
-		D7C168561DCED11800BA1A42 /* Wireframe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C168521DCED11800BA1A42 /* Wireframe.cpp */; };
 		D7C168591DCEEF8800BA1A42 /* TiledObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C168571DCEEF8800BA1A42 /* TiledObject.cpp */; };
 		D7C1685C1DCFD0D500BA1A42 /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C1685A1DCFD0D500BA1A42 /* Frame.cpp */; };
 		D7C168611DD1439800BA1A42 /* Bookcase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7C1685F1DD1439800BA1A42 /* Bookcase.cpp */; };
@@ -391,14 +391,14 @@
 		D5BB6F0357B6422E1B1656B4 /* ofxCvColorImage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvColorImage.h; path = ../../../addons/ofxOpenCv/src/ofxCvColorImage.h; sourceTree = SOURCE_ROOT; };
 		D6426FE9886FD3B4A831A446 /* exposure_compensate.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = exposure_compensate.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/stitching/detail/exposure_compensate.hpp; sourceTree = SOURCE_ROOT; };
 		D76A59E7B3601E76351C9BDB /* cvaux.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvaux.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cvaux.h; sourceTree = SOURCE_ROOT; };
+		D77C64AE1DDE4EF900D4ECED /* BookController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookController.cpp; sourceTree = "<group>"; };
+		D77C64AF1DDE4EF900D4ECED /* BookController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BookController.hpp; sourceTree = "<group>"; };
 		D78A612B1DDBC02000333FFA /* Book.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Book.cpp; sourceTree = "<group>"; };
 		D78A612C1DDBC02000333FFA /* Book.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Book.hpp; sourceTree = "<group>"; };
 		D7C1684E1DCED11800BA1A42 /* Tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tile.cpp; sourceTree = "<group>"; };
 		D7C1684F1DCED11800BA1A42 /* Tile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Tile.hpp; sourceTree = "<group>"; };
 		D7C168501DCED11800BA1A42 /* Wallpaper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wallpaper.cpp; sourceTree = "<group>"; };
 		D7C168511DCED11800BA1A42 /* Wallpaper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wallpaper.hpp; sourceTree = "<group>"; };
-		D7C168521DCED11800BA1A42 /* Wireframe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wireframe.cpp; sourceTree = "<group>"; };
-		D7C168531DCED11800BA1A42 /* Wireframe.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wireframe.hpp; sourceTree = "<group>"; };
 		D7C168571DCEEF8800BA1A42 /* TiledObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TiledObject.cpp; sourceTree = "<group>"; };
 		D7C168581DCEEF8800BA1A42 /* TiledObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TiledObject.hpp; sourceTree = "<group>"; };
 		D7C1685A1DCFD0D500BA1A42 /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frame.cpp; sourceTree = "<group>"; };
@@ -1458,15 +1458,15 @@
 				D7C1685B1DCFD0D500BA1A42 /* Frame.hpp */,
 				D7C1685A1DCFD0D500BA1A42 /* Frame.cpp */,
 				D7C168601DD1439800BA1A42 /* Bookcase.hpp */,
-				D78A612B1DDBC02000333FFA /* Book.cpp */,
-				D78A612C1DDBC02000333FFA /* Book.hpp */,
 				D7C1685F1DD1439800BA1A42 /* Bookcase.cpp */,
 				D7C168581DCEEF8800BA1A42 /* TiledObject.hpp */,
 				D7C168571DCEEF8800BA1A42 /* TiledObject.cpp */,
 				D7C1684F1DCED11800BA1A42 /* Tile.hpp */,
 				D7C1684E1DCED11800BA1A42 /* Tile.cpp */,
-				D7C168531DCED11800BA1A42 /* Wireframe.hpp */,
-				D7C168521DCED11800BA1A42 /* Wireframe.cpp */,
+				D77C64AF1DDE4EF900D4ECED /* BookController.hpp */,
+				D77C64AE1DDE4EF900D4ECED /* BookController.cpp */,
+				D78A612C1DDBC02000333FFA /* Book.hpp */,
+				D78A612B1DDBC02000333FFA /* Book.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1657,7 +1657,6 @@
 				2023EF517ED2D8B397511D4B /* Helpers.cpp in Sources */,
 				311DF864378748129984EA1D /* Kalman.cpp in Sources */,
 				C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */,
-				D7C168561DCED11800BA1A42 /* Wireframe.cpp in Sources */,
 				7CDAD32BE4FA46701E3552C7 /* RunningBackground.cpp in Sources */,
 				10B69DE456AED1288FC9316B /* Tracker.cpp in Sources */,
 				A6668C5B1272D7FCD5B5A16F /* Utilities.cpp in Sources */,
@@ -1672,6 +1671,7 @@
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
 				9EF1133BC23669A5C94FE30F /* jsoncpp.cpp in Sources */,
+				D77C64B01DDE4EF900D4ECED /* BookController.cpp in Sources */,
 				C6C3882A0B0872D1485F3874 /* Client.cpp in Sources */,
 				A78C77753D562AE8F0E928ED /* Connection.cpp in Sources */,
 				F1AC6AEFB9B93C6AC45C9CA8 /* Events.cpp in Sources */,

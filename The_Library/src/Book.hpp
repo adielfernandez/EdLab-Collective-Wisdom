@@ -16,6 +16,7 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 
+#pragma once
 
 class Book{
     
@@ -24,9 +25,14 @@ public:
     
     Book();
     
-    void setup();
+    void setup(int type, ofTexture *_tex);
     void update();
     void draw();
+    
+    //Support Methods
+    
+    //Book type: 0 = short, 1 = medium, 2 = tall
+    int bookType;
     
     ofxAssimpModelLoader model;
     
@@ -34,7 +40,9 @@ public:
     
     ofMaterial material;
     
-    vector<ofTexture> textures;
+    ofTexture *tex;
+    
+    ofVec3f pos;
     
     
     /*
@@ -67,7 +75,7 @@ public:
     //the vertices to get real world size (in px)
     const float vertScale = 32.4672;
     
-    
+    ofVec3f modelRealDim;
     float realMaxX;
     float realMinX;
     float realMaxY;

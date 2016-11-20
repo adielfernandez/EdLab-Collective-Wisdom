@@ -5,7 +5,7 @@ void ofApp::setup(){
 
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
-//    ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetLogLevel(OF_LOG_VERBOSE);
     
     
     //----------WebSocket Connection----------
@@ -36,6 +36,13 @@ void ofApp::setup(){
     
     bgEdgeMask.load("images/interface/bgMask.png");
     
+//    bookController.setup(&leftBookcase, &rightBookcase);
+    
+    
+    model.loadModel("books/bookMedium.fbx", false);
+    
+    cout << "Num meshes: " << model.getNumMeshes() << endl;
+    
     
     //----------Camera Setup----------
     
@@ -60,6 +67,7 @@ void ofApp::update(){
     leftBookcase.update();
     rightBookcase.update();
     
+    bookController.update();
     
     //Heartbeat to Server
     if(connectToServer){
@@ -95,6 +103,8 @@ void ofApp::draw(){
         
         leftBookcase.draw();
         rightBookcase.draw();
+        
+        bookController.draw();
 
         bgEdgeMask.draw(-1, -1, bgEdgeMask.getWidth(), bgEdgeMask.getHeight() + 2);
         

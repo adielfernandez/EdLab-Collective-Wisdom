@@ -12,10 +12,8 @@ void ofApp::setup(){
     bAnimateMouse = false;
     animationPosition = 0;
     
+    model.loadModel("working/bookMedium.fbx", false);
 
-    model.loadModel("working/book07.fbx", false);
-    
-    
     
 //    model.setPosition(ofGetWidth() * 0.5, (float)ofGetHeight() * 0.75 , 0);
     model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
@@ -257,9 +255,6 @@ void ofApp::draw(){
     ofDisableLighting();
 
     ofDrawAxis(1000);
-    
-    
-    model.getMesh(0);
     
     
     //draw lines to find the bounds of the book

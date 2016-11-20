@@ -77,5 +77,6 @@ class ofApp : public ofBaseApp{
 
     unsigned long long lastHeartbeatTime;
     int heartbeatInterval;
+    bool bSendHeartbeat;
     
 };

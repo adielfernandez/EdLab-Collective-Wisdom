@@ -5,21 +5,21 @@ void ofApp::setup(){
 
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
-    ofSetLogLevel(OF_LOG_VERBOSE);
+//    ofSetLogLevel(OF_LOG_VERBOSE);
     
     
     //----------WebSocket Connection----------
-    connectToServer = false;
+    connectToServer = true;
     
     if(connectToServer){
 //    client.connect("54.68.243.245", 8081);
         client.connect("localhost", 8081);
         client.addListener(this);
-        
+        bSendHeartbeat = true;
     }
 
     lastHeartbeatTime = 0;
-    heartbeatInterval = 500;
+    heartbeatInterval = 250;
     
     
     //----------Scene Setup----------
@@ -39,9 +39,8 @@ void ofApp::setup(){
 //    bookController.setup(&leftBookcase, &rightBookcase);
     
     
-    model.loadModel("books/bookMedium.fbx", false);
-    
-    cout << "Num meshes: " << model.getNumMeshes() << endl;
+//    model.loadModel("books/bookMedium.fbx", false);
+//    cout << "Num meshes: " << model.getNumMeshes() << endl;
     
     
     //----------Camera Setup----------
@@ -70,7 +69,7 @@ void ofApp::update(){
     bookController.update();
     
     //Heartbeat to Server
-    if(connectToServer){
+    if(connectToServer && bSendHeartbeat){
         if(ofGetElapsedTimeMillis() - lastHeartbeatTime > heartbeatInterval){
             client.send("HB");
             lastHeartbeatTime = ofGetElapsedTimeMillis();
@@ -183,6 +182,10 @@ void ofApp::keyPressed(int key){
     
     if(key == ' '){
         bShowGUIs = !bShowGUIs;
+    }
+    
+    if(key == 'h'){
+        bSendHeartbeat = !bSendHeartbeat;
     }
     
 }

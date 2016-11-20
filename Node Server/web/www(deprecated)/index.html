@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Collective Wisdom</title>
+  </head>
+  <body>
+
+	<div id="connected_inputs">
+		<div id="message">
+			<span class="fieldTitle">Message:</span>
+			<br>
+			<textarea maxlength="250" rows="4" cols="50" id="messageBox"/></textarea>
+		</div>
+		<div id="from">
+			<span class="fieldTitle">Name:</span>
+			<br>
+			<input maxlength="40" id="nameBox" />
+		</div>
+		<br>
+		<button id="sendButton">Send</button>
+		
+	</div>	
+
+	<div id="not_connected_error">
+		<div>
+			<p>
+				Unable to connect to Library. Please check back again soon.
+				<br>
+				<br>
+				We apologize for any inconvenience
+			</p>
+		</div>		
+	</div>	
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/main.js"></script>
+  </body>
+</html>

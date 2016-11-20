@@ -1,38 +1,113 @@
-<!DOCTYPE html>
+<!doctype HTML>
 <html>
   <head>
     <title>Collective Wisdom</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' href='styles/reset.css'>
+    <link rel='stylesheet' type='text/css' href='styles/animations.css'>
+    <link rel='stylesheet' type='text/css' href='styles/main.css'>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   </head>
   <body>
-
-	<div id="connected_inputs">
-		<div id="message">
-			<span class="fieldTitle">Message:</span>
-			<br>
-			<textarea maxlength="250" rows="4" cols="50" id="messageBox"/></textarea>
-		</div>
-		<div id="from">
-			<span class="fieldTitle">Name:</span>
-			<br>
-			<input maxlength="40" id="nameBox" />
-		</div>
-		<br>
-		<button id="sendButton">Send</button>
-		
-	</div>	
-
-	<div id="not_connected_error">
-		<div>
-			<p>
-				Unable to connect to Library. Please check back again soon.
-				<br>
-				<br>
-				We apologize for any inconvenience
-			</p>
-		</div>		
-	</div>	
-
+      <header>
+        <div class='header-wrapper'>
+          <h1 class='header-title'>
+            Collective Wisdom
+          </h1>
+        </div>
+      </header>
+      <main>
+        <section class='section-contribute is-after'>
+          <div class='section-wrapper'>
+            <h1 class='section-title'>
+              Collective Wisdom
+            </h1>
+            <p class='section-paragraph'>
+              Your unique experiences and knowledge are an invaluable resource in our community of educators. Won't you share with the collective?
+            </p>
+            <p class='section-paragraph'>
+              In 250 characters or less, what is a small bit of practical wisdom you've gained that might help someone else become a more efficient educator?
+            </p>
+            <div class='contribute-form-wrapper'>
+              <h5 class='contribute-form-label section-paragraph'>
+                Your contribution
+              </h5>
+              <textarea class='input-contribution' data-ref='input-contribution' maxlength="250" rows="6"></textarea>
+            </div>
+            <div class='contribute-form-wrapper'>
+              <h5 class='contribute-form-label section-paragraph'>
+                Name (optional)
+              </h5>
+              <input class='input-name' data-ref='input-name' type='text' />
+            </div>
+            <div class='section-btn-wrapper'>
+              <button class='section-btn' data-ref='contribute-btn'>
+                Send
+              </button>
+            </div>
+          </div>
+        </section>
+        <section class='section-error is-after'>
+          <div class='section-wrapper'>
+            <h1 class='section-title'>
+              Collective Wisdom
+            </h1>
+            <p class='section-paragraph'>
+              Unable to connect to the library. Please check back again soon.
+            </p>
+            <p class='section-paragraph'>
+              We apologize for any inconvenience.
+            </p>
+            <div class='error-img-wrapper'>
+              <img class='error-img' src='images/cloud-error.png' />
+            </div>
+          </div>
+        </section>
+        <section class='section-thank-you is-after'>
+          <div class='section-wrapper'>
+            <h1 class='section-title'>
+              Collective Wisdom
+            </h1>
+            <h2 class='section-subtitle'>
+              Thank you!
+            </h2>
+            <p class='section-paragraph'>
+              As a valued member of our community of educators, your knowledge and unique experiences deeply enrich the wisdom of the collective. With this community library, our goal is to make this wisdom available to those looking to improve their practice and become more effective educators.
+            </p>
+            <div class='section-btn-wrapper'>
+              <button class='section-btn' data-ref='thanks-btn'>
+                About this installation
+              </button>
+            </div>
+          </div>
+        </section>
+        <section class='section-about is-after'>
+          <div class='section-wrapper'>
+            <h1 class='section-title'>
+              Collective Wisdom
+            </h1>
+            <p class='section-paragraph'>
+              Collective Wisdom is an installation create by Adiel Fernandez, commissioned by the Edlab at Columbia University's Teachers College.
+            </p>
+            <p class='section-paragraph'>
+              The physical portion of the installation is an interactive, projection mapped library within the newly developed Learning Theater of the Gottesman Libraries. For more information, visit <a class='section-link' href='http://adielfernandez.com' target='_blank'>AdielFernandez.com</a>.
+            </p>
+            <div class='about-sponsors'>
+              <div class='about-sponsors-img-wrapper'>
+                <img src='images/edlab.png' />
+              </div>
+              <div class='about-sponsors-img-wrapper about-sponsors-img-wrapper--theater'>
+                <img src='images/learningtheater.png' />
+              </div>
+              <div class='about-sponsors-img-wrapper'>
+                <img src='images/gottesman.png' />
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="./js/main.js"></script>
+    <script src='scripts/index.js'></script>
   </body>
 </html>

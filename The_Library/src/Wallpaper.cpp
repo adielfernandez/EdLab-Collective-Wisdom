@@ -20,25 +20,27 @@ void Wallpaper::setup(){
     
     
     //load all the images from file
+    //load all the images from file
     ofDirectory dir;
+    dir.listDir("images/wallpapers/");
+    dir.sort();
     
-    dir.listDir("images/Wallpapers/");
-    dir.sort(); // in linux the file system doesn't return file lists ordered in alphabetical order
-    
-    //allocate the vector with correct # of images
-    if( dir.size() ){
-        images.assign(dir.size(), ofImage());
-    }
-    
+    //load images with manual file names
+    //loading with ofDirectory conflicts with ofxAssimp
     for(int i = 0; i < (int)dir.size(); i++){
-        images[i].load(dir.getPath(i));
+        
+        ofImage img;
+        img.load(dir.getPath(i));
+        
+        images.push_back(img);
+        
     }
-
+    
     currentImg = round(ofRandom( images.size() - 1 ));
     
     //scene variables
     sceneDim.set(1920, 1200);
-    
+
     //-----Construct the mesh-----
     
     //Common factors of 1920x1200 for square grid sizing:

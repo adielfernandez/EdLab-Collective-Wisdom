@@ -39,8 +39,6 @@
 
   socket.on('heartbeat', function(data) {
     
-
-
     var d = new Date();
     lastHeartbeatTime = d.getTime();
 

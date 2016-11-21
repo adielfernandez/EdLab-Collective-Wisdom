@@ -229,10 +229,11 @@ void ofApp::draw(){
     
     ofPushMatrix();
     
-    //rotate and translate book so that it
-//    ofRotateX(90);
-//    ofRotateY(180);
-//    ofTranslate(0, 0, -realMaxZ);
+    //rotate and translate book so that it is oriented as it
+    //would be in a bookshelf facing the user
+//    ofRotateX(-90);
+//    ofRotateZ(90);
+//    ofTranslate(0, 0, realMinZ);
     
     model.disableTextures();
     if(newSkin.isAllocated()) newSkin.getTexture().bind();
@@ -241,7 +242,8 @@ void ofApp::draw(){
 
     if(newSkin.isAllocated()) newSkin.getTexture().unbind();
     
-
+    //draw local axes
+    ofDrawAxis(300);
     
     ofPopMatrix();
 //#ifndef TARGET_PROGRAMMABLE_GL
@@ -259,20 +261,20 @@ void ofApp::draw(){
     
     //draw lines to find the bounds of the book
     //in Y=minY plane
-    ofSetLineWidth(1);
-    ofSetColor(255, 0, 255);
-    ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
-    ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
-    ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
-    ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
-    
-    //in Y=maxY plane
-    ofPushMatrix();
-    ofTranslate(0, realMaxY, 0);
-    ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
-    ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
-    ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
-    ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
+//    ofSetLineWidth(1);
+//    ofSetColor(255, 0, 255);
+//    ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
+//    ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
+//    ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
+//    ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
+//    
+//    //in Y=maxY plane
+//    ofPushMatrix();
+//    ofTranslate(0, realMaxY, 0);
+//    ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
+//    ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
+//    ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
+//    ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
     
     ofPopMatrix();
     
@@ -314,7 +316,7 @@ void ofApp::draw(){
             newSkin.begin();
             ofSetColor(0, 255, 0, 255);
 
-            int drawSize = 20;
+            int drawSize = 10;
             
             ofDrawEllipse(mouseX/fboScale, (mouseY - fboDrawPos.y)/fboScale, drawSize/fboScale, drawSize/fboScale);
             

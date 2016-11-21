@@ -27,6 +27,7 @@ public:
     
     BookController();
     
+    void loadModels();
     void setup(Bookcase *leftCase, Bookcase *rightCase);
     void update();
     void draw();

@@ -19,20 +19,20 @@ Frame::Frame(){
 void Frame::setup(string name){
     
     
-    
     //load all the images from file
     ofDirectory dir;
-    
     dir.listDir("images/frames/");
-    dir.sort(); // in linux the file system doesn't return file lists ordered in alphabetical order
+    dir.sort();
     
-    //allocate the vector with correct # of images
-    if( dir.size() ){
-        images.assign(dir.size(), ofImage());
-    }
-    
+    //load images with manual file names
+    //loading with ofDirectory conflicts with ofxAssimp
     for(int i = 0; i < (int)dir.size(); i++){
-        images[i].load(dir.getPath(i));
+        
+        ofImage img;
+        img.load(dir.getPath(i));
+        
+        images.push_back(img);
+        
     }
     
     currentImg = round(ofRandom( images.size() - 1 ));
@@ -40,23 +40,20 @@ void Frame::setup(string name){
     
     //prepare the portrait
     ofDirectory portraitDirectory;
-    
     portraitDirectory.listDir("images/portraits/");
-    portraitDirectory.sort(); // in linux the file system doesn't return file lists ordered in alphabetical order
-    
-    //allocate the vector with correct # of images
-    if( portraitDirectory.size() ){
-        portraits.assign(portraitDirectory.size(), ofImage());
-    }
+    portraitDirectory.sort();
     
     for(int i = 0; i < (int)portraitDirectory.size(); i++){
-        portraits[i].load(portraitDirectory.getPath(i));
+
+        ofImage img;
+        img.load(portraitDirectory.getPath(i));
+        
+        portraits.push_back(img);
     }
     
     currentPortrait = round(ofRandom( portraits.size() - 1 ));
+
     
-    cout << "Num Portraits: " << portraits.size() << endl;
-    cout << "Current Portrait: " << currentPortrait << endl;
     
     //allocate FBO
     //This will be mapped to a mesh to fit inside the portrait

@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-    connectToServer = true;
+    connectToServer = false;
     
     if(connectToServer){
 //    client.connect("54.68.243.245", 8081);
@@ -27,20 +27,22 @@ void ofApp::setup(){
     currentView = 0;
     numViews = 5;
     
-    wallpaper.setup();
+    //Book models need to be loaded before anything else
+    //because of a bug in ofxAssimpModelLoader
+    bookController.loadModels();
     
+    
+    wallpaper.setup();
+
     frame.setup("frame");
 
     leftBookcase.setup("leftBookcase", true);
     rightBookcase.setup("rightBookcase", false);
     
+    bookController.setup(&leftBookcase, &rightBookcase);
+    
     bgEdgeMask.load("images/interface/bgMask.png");
     
-//    bookController.setup(&leftBookcase, &rightBookcase);
-    
-    
-//    model.loadModel("books/bookMedium.fbx", false);
-//    cout << "Num meshes: " << model.getNumMeshes() << endl;
     
     
     //----------Camera Setup----------
@@ -91,7 +93,7 @@ void ofApp::draw(){
         ofPushMatrix();
         ofTranslate(0, 0, -1);
 
-        wallpaper.draw();
+//        wallpaper.draw();
         ofPopMatrix();
         
         
@@ -103,6 +105,7 @@ void ofApp::draw(){
         leftBookcase.draw();
         rightBookcase.draw();
         
+        ofEnableDepthTest();
         bookController.draw();
 
         bgEdgeMask.draw(-1, -1, bgEdgeMask.getWidth(), bgEdgeMask.getHeight() + 2);
@@ -125,7 +128,7 @@ void ofApp::draw(){
         }
         
         
-        ofEnableDepthTest();
+
         
     } else if(currentView == 1){
         
@@ -226,6 +229,7 @@ void ofApp::mousePressed(int x, int y, int button){
         } else {
             wallpaper.triggerWave(ofVec2f(x, y));
         }
+        
     }
     
 }

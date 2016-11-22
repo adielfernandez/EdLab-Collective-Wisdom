@@ -32,7 +32,7 @@ public:
     void update();
     void draw();
     
-    Book singleBook;
+
     
     vector<Book> books;
     vector<ofTexture> textures;
@@ -43,5 +43,11 @@ public:
     Bookcase *leftBookcase;
     Bookcase *rightBookcase;
     
+    int numBooksPerShelf;
+    int numShelves;
     
+    vector<int> activeBooks;
 };
+
+
+

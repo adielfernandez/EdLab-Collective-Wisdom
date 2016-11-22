@@ -32,7 +32,7 @@ public:
     
     void draw();
     
-    ofMesh mesh;
+    ofVboMesh mesh;
     
     vector<ofImage> *images;
     int activeTexNum;

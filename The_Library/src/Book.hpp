@@ -37,7 +37,7 @@ public:
     
     ofxAssimpModelLoader model;
     
-    ofFbo liveTexture;
+    ofFbo textureFBO;
     
     ofMaterial material;
     

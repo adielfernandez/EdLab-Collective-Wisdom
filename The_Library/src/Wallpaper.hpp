@@ -28,6 +28,7 @@ public:
     Wallpaper();
     
     void setup();
+    void loadMedia();
     void update();
     void draw();
     

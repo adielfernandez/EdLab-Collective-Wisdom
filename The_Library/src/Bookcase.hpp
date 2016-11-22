@@ -28,13 +28,21 @@ public:
     Bookcase();
     
     void setup(string name, bool _leftCase);
-    
+    void loadMedia();
     void prepareMesh();
     void mapMesh();
     
     void update();
     void draw();
     void drawDebug();
+    
+    void drawShadow();
+    ofPath shadow;
+    
+    //"Shadow", i.e. black rect that covers
+    //the underside of the books
+    ofPath shelf1Shadow;
+    
     
     void setupGui();
     void drawGui();
@@ -48,10 +56,14 @@ public:
     bool bLeftCase;
     
     //lower left corner of shelves
-    ofVec2f shelf1Pos; //top
-    ofVec2f shelf2Pos; //middle
-    ofVec2f shelf3Pos; //bottom shelf
-    
+    ofVec2f shelf1Start; //top
+    ofVec2f shelf2Start; //middle
+    ofVec2f shelf3Start; //bottom shelf
+
+    //lower right corner of shelves
+    ofVec2f shelf1End; //top
+    ofVec2f shelf2End; //middle
+    ofVec2f shelf3End; //bottom shelf
     
     //Tile coordinates are based on
     //the frame corners and the percentages

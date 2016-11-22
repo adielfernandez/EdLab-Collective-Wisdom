@@ -16,8 +16,7 @@ Frame::Frame(){
     
 }
 
-void Frame::setup(string name){
-    
+void Frame::loadMedia(){
     
     //load all the images from file
     ofDirectory dir;
@@ -36,7 +35,7 @@ void Frame::setup(string name){
     }
     
     currentImg = round(ofRandom( images.size() - 1 ));
-
+    
     
     //prepare the portrait
     ofDirectory portraitDirectory;
@@ -44,7 +43,7 @@ void Frame::setup(string name){
     portraitDirectory.sort();
     
     for(int i = 0; i < (int)portraitDirectory.size(); i++){
-
+        
         ofImage img;
         img.load(portraitDirectory.getPath(i));
         
@@ -52,8 +51,11 @@ void Frame::setup(string name){
     }
     
     currentPortrait = round(ofRandom( portraits.size() - 1 ));
-
     
+}
+
+void Frame::setup(string name){
+        
     
     //allocate FBO
     //This will be mapped to a mesh to fit inside the portrait
@@ -170,6 +172,16 @@ void Frame::update(){
     }
     
     
+    
+}
+
+//shadow is the black background behind the bookcase that
+//prevents the wallpaper from being visible on the physicall
+//raised wooden frames
+void Frame::drawShadow(){
+    
+    shadow.setColor(ofColor(0));
+    shadow.draw();
     
 }
 
@@ -382,9 +394,9 @@ void Frame::prepareMesh(){
      
      */
     
-    //Get texCoords from the image template
-    frameWidth = images[0].getWidth();
-    frameHeight = images[0].getHeight();
+    //Get texCoords from the image template: 367 x 487
+    frameWidth = 367;
+    frameHeight = 487;
     
     //Thickness of frame border from template as a fraction of the width/height
     borderWidthPct = 0.1296;
@@ -724,6 +736,16 @@ void Frame::mapMesh(){
     }
     
 
+    //reset the shadow with the new corners
+    shadow.clear();
+    shadow.moveTo(frameCorners[0]);
+    shadow.lineTo(frameCorners[1]);
+    shadow.lineTo(frameCorners[2]);
+    shadow.lineTo(frameCorners[3]);
+    shadow.lineTo(frameCorners[0]);
+    shadow.close();
+    
+    
     
     //map Portrait mesh
     portraitVerts.clear();

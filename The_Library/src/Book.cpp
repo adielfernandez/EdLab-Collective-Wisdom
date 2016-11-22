@@ -36,13 +36,10 @@ void Book::setup(ofTexture *_tex){
     
     
     //Start working with model
-    model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
-    model.playAllAnimations();
-    model.setPausedForAllAnimations(true);
+//    model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
+//    model.playAllAnimations();
+//    model.setPausedForAllAnimations(true);
 
-
-    
-    
     
     //figure out the minimum and maximum dimensions
     int totalVerts;
@@ -73,12 +70,12 @@ void Book::setup(ofTexture *_tex){
     
     
     
-    cout << "Min X: " << minX << endl;
-    cout << "Max X: " << maxX << endl;
-    cout << "Min Y: " << minY << endl;
-    cout << "Max Y: " << maxY << endl;
-    cout << "Min Z: " << minZ << endl;
-    cout << "Max Z: " << maxZ << endl;
+//    cout << "Min X: " << minX << endl;
+//    cout << "Max X: " << maxX << endl;
+//    cout << "Min Y: " << minY << endl;
+//    cout << "Max Y: " << maxY << endl;
+//    cout << "Min Z: " << minZ << endl;
+//    cout << "Max Z: " << maxZ << endl;
     
     /*
      //When model scale = 1.0,
@@ -99,10 +96,10 @@ void Book::setup(ofTexture *_tex){
     model.setScaleNormalization(false);
     model.setScale(1.0, 1.0, 1.0); //unnecessary
     
-    float desiredBookHeight = 140.0;
+    float desiredBookHeight = 130.0;
     modelScale = desiredBookHeight/ ( abs(minZ) + abs(maxZ) );
     
-    cout << "Model Scale for [approx.] height of " << desiredBookHeight << " px: " << modelScale << endl;
+//    cout << "Model Scale for [approx.] height of " << desiredBookHeight << " px: " << modelScale << endl;
     
 
     
@@ -115,15 +112,15 @@ void Book::setup(ofTexture *_tex){
     realMinZ = minZ * modelScale;
     
     //print real pixel dimensions
-    cout << "realMin X: " << realMinX << endl;
-    cout << "realMax X: " << realMaxX << endl;
-    cout << "realMin Y: " << realMinY << endl;
-    cout << "realMax Y: " << realMaxY << endl;
-    cout << "realMin Z: " << realMinZ << endl;
-    cout << "realMax Z: " << realMaxZ << endl;
+//    cout << "realMin X: " << realMinX << endl;
+//    cout << "realMax X: " << realMaxX << endl;
+//    cout << "realMin Y: " << realMinY << endl;
+//    cout << "realMax Y: " << realMaxY << endl;
+//    cout << "realMin Z: " << realMinZ << endl;
+//    cout << "realMax Z: " << realMaxZ << endl;
     
     //Move model so it sits with the bottom of the spine at the origin
-    model.setPosition(0, 0, -minZ);
+    model.setPosition(0, 0, -maxZ);
     
     
     //store the real dimensions
@@ -132,9 +129,19 @@ void Book::setup(ofTexture *_tex){
     thickness = abs(realMaxY) + abs(realMinY);
     depth = abs(realMaxX) + abs(realMinX);
     height = abs(realMaxZ) + abs(realMinZ);
-    cout << "Thickness: " << thickness << endl;
-    cout << "Depth: " << depth << endl;
-    cout << "Height: " << height << endl;
+//    cout << "Thickness: " << thickness << endl;
+//    cout << "Depth: " << depth << endl;
+//    cout << "Height: " << height << endl;
+    
+    
+    textureFBO.allocate(tex -> getWidth(), tex -> getHeight());
+    
+    textureFBO.begin();
+    ofClear(255, 255, 255, 255);
+    ofSetColor(255);
+    tex -> draw(0, 0);
+    
+    textureFBO.end();
     
 }
 
@@ -144,78 +151,46 @@ void Book::update(){
     model.update();
     
     
+    textureFBO;
+    
+    
     
 }
 
 void Book::draw(){
-    
-    float mouseVal = ofMap(ofGetMouseX(), 0, ofGetWidth(), -600, 600);
 
     
     ofPushMatrix();{
         
         
         //translate the book to the position on the shelf
-        ofTranslate(pos);// + ofVec2f(ofGetMouseX(), ofGetMouseY()));
+        ofTranslate(pos);
+        
+//        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -90, 90);
+//        float z = ofMap(ofGetMouseY(), 0, ofGetHeight(), -90, 90);
+//        cout << "XZ: " << x << ", " << z << endl;
+        
+        //now rotate and translate book so that it has the lower left corner of the spine
+        //as its origin and is oriented properly: book stored in shelf
+        ofRotateX(-90);
+        ofRotateZ(90);
         
         
-        ofPushMatrix();{
-            
-            //now rotate and translate book so that it has the lower left corner of the spine
-            //as its origin and is oriented properly: book stored in shelf
-            ofRotateX(90);
-            ofRotateZ(90);
-//            ofTranslate(0, 0, mouseVal);
-            
-            
-            model.disableTextures();
-            
-//            if(liveTexture.isAllocated()) liveTexture.getTexture().bind();
-            
-            
-            ofScale(modelScale, modelScale, modelScale);
-            
-            tex -> bind();
-            
-            ofSetColor(255);
-            model.drawFaces();
-            
-            tex -> unbind();
-            
-            ofDisableDepthTest();
-            ofDrawAxis(200);
-            
-//            if(liveTexture.isAllocated()) liveTexture.getTexture().unbind();
-            
-            
-            //in Y=minY plane
-//            ofSetLineWidth(1);
-//            ofSetColor(255, 0, 255);
-//            ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
-//            ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
-//            ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
-//            ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
-//            
-//            //in Y=maxY plane
-//            ofPushMatrix();
-//            ofTranslate(0, realMaxY, 0);
-//            ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
-//            ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
-//            ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
-//            ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
-//            ofPopMatrix();
-            
-            
-        }ofPopMatrix();
         
-        ofSetColor(0, 255, 0);
-        ofDrawCircle(0, 0, 1);
-        
+        //scale the model up
+        ofScale(modelScale, modelScale, modelScale);
 
-        
-        
+        //disable the model textures so we can use our own
+        model.disableTextures();
+        if(textureFBO.isAllocated()) textureFBO.getTexture().bind();
+
         ofSetColor(255);
-        ofDrawBitmapStringHighlight(ofToString(mouseVal), 0, -30);
+        model.drawFaces();
+
+        if(textureFBO.isAllocated()) textureFBO.getTexture().unbind();
+        
+        
+        
         
     }ofPopMatrix();
     

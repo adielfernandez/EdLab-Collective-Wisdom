@@ -42,6 +42,8 @@ class ofApp : public ofBaseApp{
     //Interface elements
     ofImage bgEdgeMask;
     
+    ofEasyCam camera;
+    
     
     bool bShowGUIs;
     

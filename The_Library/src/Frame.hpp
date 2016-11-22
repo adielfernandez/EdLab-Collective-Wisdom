@@ -29,13 +29,16 @@ public:
     Frame();
     
     void setup(string name);
-    
+    void loadMedia();
     void prepareMesh();
     void mapMesh();
     
     void update();
     void draw();
     void drawDebug();
+    
+    void drawShadow();
+    ofPath shadow;
     
     void setupGui();
     void drawGui(int x, int y);

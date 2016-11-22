@@ -12,7 +12,9 @@ void ofApp::setup(){
     bAnimateMouse = false;
     animationPosition = 0;
     
-    model.loadModel("working/bookMedium.fbx", false);
+//    model.loadModel("working/bookMedium.fbx", false);
+    model.loadModel("ship/Ship N181113.3DS", false);
+    
 
     
 //    model.setPosition(ofGetWidth() * 0.5, (float)ofGetHeight() * 0.75 , 0);
@@ -28,12 +30,19 @@ void ofApp::setup(){
     //get original texture
     origTex = model.getTextureForMesh(meshNum);
     
+//    ofImage t;
+//    t.load("bust/tex.jpg");
+//    
+//    origTex = t.getTexture();
+    
     //copy it to an FBO we'll actually draw with
     newSkin.allocate(origTex.getWidth(), origTex.getHeight());
     
     newSkin.begin();
     ofClear(255, 255, 255, 255);
     ofSetColor(255);
+    
+//    t.draw(0, 0);
     model.getTextureForMesh(meshNum).draw(0, 0);
     
     newSkin.end();
@@ -235,12 +244,12 @@ void ofApp::draw(){
 //    ofRotateZ(90);
 //    ofTranslate(0, 0, realMinZ);
     
-    model.disableTextures();
-    if(newSkin.isAllocated()) newSkin.getTexture().bind();
+//    model.disableTextures();
+//    if(newSkin.isAllocated()) newSkin.getTexture().bind();
     
     model.drawFaces();
 
-    if(newSkin.isAllocated()) newSkin.getTexture().unbind();
+//    if(newSkin.isAllocated()) newSkin.getTexture().unbind();
     
     //draw local axes
     ofDrawAxis(300);

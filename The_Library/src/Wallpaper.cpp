@@ -16,10 +16,8 @@ Wallpaper::Wallpaper(){
     
 }
 
-void Wallpaper::setup(){
+void Wallpaper::loadMedia(){
     
-    
-    //load all the images from file
     //load all the images from file
     ofDirectory dir;
     dir.listDir("images/wallpapers/");
@@ -38,6 +36,13 @@ void Wallpaper::setup(){
     
     currentImg = round(ofRandom( images.size() - 1 ));
     
+}
+
+void Wallpaper::setup(){
+    
+    
+
+    
     //scene variables
     sceneDim.set(1920, 1200);
 
@@ -47,8 +52,8 @@ void Wallpaper::setup(){
     //20, 24, 30, 40, 48, 60, 80, 120, 240
     gridSpacing = 80;
     
-    for(int x = 0; x < sceneDim.x + 1 ; x += gridSpacing){
-        for(int y = 0; y < sceneDim.y + 1; y += gridSpacing){
+    for(int x = 0; x < sceneDim.x; x += gridSpacing){
+        for(int y = 0; y < sceneDim.y; y += gridSpacing){
             
             /*
              Tiles vertex arrangement
@@ -128,7 +133,6 @@ void Wallpaper::draw(){
 
     
     TiledObject::draw();
-    
     
 }
 

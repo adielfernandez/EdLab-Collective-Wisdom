@@ -3,8 +3,8 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    ofSetVerticalSync(true);
-    ofSetFrameRate(60);
+    ofSetVerticalSync(false);
+    ofSetFrameRate(200);
 //    ofSetLogLevel(OF_LOG_VERBOSE);
     
     
@@ -27,27 +27,44 @@ void ofApp::setup(){
     currentView = 0;
     numViews = 5;
     
-    //Book models need to be loaded before anything else
-    //because of a bug in ofxAssimpModelLoader
-    bookController.loadModels();
     
-    
+    //set up objects without loading image data
     wallpaper.setup();
-
     frame.setup("frame");
-
     leftBookcase.setup("leftBookcase", true);
     rightBookcase.setup("rightBookcase", false);
+
     
+    //Book models need to be loaded before other objects load their media
+    //because of a bug in ofxAssimpModelLoader
+    bookController.loadModels();
+
+    //Now load their media
+    wallpaper.loadMedia();
+    frame.loadMedia();
+    leftBookcase.loadMedia();
+    rightBookcase.loadMedia();
+    
+    //Finally, now that the book models have been loaded
+    //and the bookcases have been setup, we can setup book textures
+    //and place them in the right spots
     bookController.setup(&leftBookcase, &rightBookcase);
+    
     
     bgEdgeMask.load("images/interface/bgMask.png");
     
     
     
-    //----------Camera Setup----------
+    //----------Depth Camera Setup----------
     
     
+    
+    
+    //----------Lighting/Material/Camera Setup----------
+    camera.enableOrtho();
+    camera.setTarget(ofVec3f(ofGetWidth()/2, ofGetHeight()/2, 0));
+//    camera.setFarClip(10000);
+//    camera.setNearClip(-100);
     
     
     
@@ -78,37 +95,62 @@ void ofApp::update(){
         }
     }
     
+    
+//    float zPos = ofMap(mouseX, 0, ofGetWidth(), -2000, 2000);
+//    cout << "Dist: " << zPos << endl;
+//    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, zPos);
+    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+    
+//    float x = ofMap(mouseX, 0, ofGetWidth(), -180, 180);
+//    float y = ofMap(mouseY, 0, ofGetHeight(), -180, 180);
+//    cout << "XY: " << x << ", " << y << endl;
+//    camera.setOrientation(ofVec3f(x, y, 0));
+    camera.setOrientation(ofVec3f(180, 0, 0));
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-    ofEnableDepthTest();
+    
+    
     
     if(currentView == 0 || currentView == 1){
         
         ofBackground(0);
+
+        camera.begin();
+        
+        //draw objects on top of wall paper regardless of depth
+        ofDisableDepthTest();
         
         //push wallpaper back a tiny bit so it's always in the background
         ofPushMatrix();
         ofTranslate(0, 0, -1);
 
-//        wallpaper.draw();
+        wallpaper.draw();
         ofPopMatrix();
         
+        //draw object shadows before we enable depth testing again
+        leftBookcase.drawShadow();
+        rightBookcase.drawShadow();
+        frame.drawShadow();
         
-        //draw objects on top of wall paper regardless of depth
-        ofDisableDepthTest();
+        //now enable depth testing again so books and
+        //bookcases draw in their proper places
+        ofEnableDepthTest();
         
         frame.draw();
         
         leftBookcase.draw();
         rightBookcase.draw();
         
-        ofEnableDepthTest();
         bookController.draw();
 
         bgEdgeMask.draw(-1, -1, bgEdgeMask.getWidth(), bgEdgeMask.getHeight() + 2);
+        
+        
+        camera.end();
         
         
         if(bShowGUIs){

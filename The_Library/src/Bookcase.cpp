@@ -17,11 +17,7 @@ Bookcase::Bookcase(){
     
 }
 
-void Bookcase::setup(string name, bool _leftCase){
-    
-    //are we left or right
-    bLeftCase = _leftCase;
-    
+void Bookcase::loadMedia(){
     
     //load all the images from file
     ofDirectory dir;
@@ -39,7 +35,18 @@ void Bookcase::setup(string name, bool _leftCase){
         
     }
     
-    currentImg = round(ofRandom( images.size() - 1 ));
+//    currentImg = round(ofRandom( images.size() - 1 ));
+    currentImg = 0;
+    
+}
+
+void Bookcase::setup(string name, bool _leftCase){
+    
+    //are we left or right
+    bLeftCase = _leftCase;
+    
+    
+    
     
     //ALL THE BUSINESS HAPPENS IN HERE
     //This will need to be called whenever the mesh is altered by GUI/mouse
@@ -152,11 +159,24 @@ void Bookcase::update(){
     
 }
 
+//shadow is the black background behind the bookcase that
+//prevents the wallpaper from being visible on the physicall
+//raised wooden frames
+void Bookcase::drawShadow(){
+    
+    shadow.setColor(ofColor(0));
+    shadow.draw();
+    
+}
+
+
 void Bookcase::draw(){
     
+    
+
+
+    
     TiledObject::draw();
-    
-    
     
 }
 
@@ -306,12 +326,21 @@ void Bookcase::drawGui(int x, int y){
 }
 
 
+
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//------------------------------MESH PREPARATION AND TILING------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+
+
 void Bookcase::prepareMesh(){
 
     
-    //Get texCoords from the image template
-    bookcaseWidth = images[0].getWidth();
-    bookcaseHeight = images[0].getHeight();
+    //Get texCoords from the image template: 495 x 1076
+    bookcaseWidth = 495;
+    bookcaseHeight = 1076;
     
     //Tile sizes as percentage of overall width/height
     //see bookcase_mapping.png for details
@@ -1036,9 +1065,27 @@ void Bookcase::mapMesh(){
     
     
     //get location of the shelves
-    shelf1Pos = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[14], controlPoints[3]);
-    shelf2Pos = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[12], controlPoints[5]);
-    shelf3Pos = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[10], controlPoints[7]);
+    shelf1Start = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[14], controlPoints[3]);
+    shelf2Start = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[12], controlPoints[5]);
+    shelf3Start = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[10], controlPoints[7]);
+
+    shelf1End = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[14], controlPoints[3]);
+    shelf2End = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[12], controlPoints[5]);
+    shelf3End = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[10], controlPoints[7]);
+    
+    
+    //reset the shadow with the new corners
+    shadow.clear();
+    shadow.moveTo(bookcaseCorners[0]);
+    shadow.lineTo(bookcaseCorners[1]);
+    shadow.lineTo(bookcaseCorners[2]);
+    shadow.lineTo(bookcaseCorners[3]);
+    shadow.lineTo(bookcaseCorners[0]);
+    shadow.close();
+    
+    //reset the shadow underneath shelf1
+    
+    
     
 }
 

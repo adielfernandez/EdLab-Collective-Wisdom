@@ -48,7 +48,7 @@ void TiledObject::setupCommonGui(){
     gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
     gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 10.0f));
     gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
-    gui.add(easingBounceSlider.setup("Easing Bounce Amt", 1.0, 0.0, 4.0));
+    gui.add(backEasingSlider.setup("Easing Bounce Amt", 1.0, 0.0, 4.0));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     
@@ -70,7 +70,7 @@ void TiledObject::updateCommonGui(){
     
     for(int i = 0; i < tiles.size(); i++){
         tiles[i].effectDuration = effectDurationSlider;
-        tiles[i].easingBounce = easingBounceSlider;
+        tiles[i].backEasing = backEasingSlider;
     }
     
     

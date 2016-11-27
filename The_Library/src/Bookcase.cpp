@@ -157,24 +157,36 @@ void Bookcase::update(){
     //this will be set to true later if we're drawing the gui.
     bIsGuiActive = false;
     
+    
+
+    
 }
 
 //shadow is the black background behind the bookcase that
 //prevents the wallpaper from being visible on the physicall
-//raised wooden frames
+//raised wooden frames. Called from ofApp between
+//enable/disable depth test calls
 void Bookcase::drawShadow(){
     
-    shadow.setColor(ofColor(0));
+    ofSetColor(ofColor(0));
     shadow.draw();
     
 }
 
 
+//NOT WORKING: Mesh draws but alpha blending does not
+//work so objects behind are not visible
+void Bookcase::drawShelfOverlay(int shelfNum, int trans){
+    
+//    shelfOverlays[shelfNum].setColor(ofColor(0, 255, 0, trans));
+    ofSetColor(0, 255, 0, trans);
+    shelfOverlays[shelfNum].draw();
+    
+    
+}
+
+
 void Bookcase::draw(){
-    
-    
-
-
     
     TiledObject::draw();
     
@@ -230,6 +242,27 @@ void Bookcase::drawDebug(){
     //we'll update all the values in update()
     bIsGuiActive = true;
     
+}
+
+
+
+
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------GUI SETUP AND DRAWING---------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+
+void Bookcase::drawGui(){
+
+    gui.draw();
+    
+}
+
+void Bookcase::drawGui(int x, int y){
+    gui.setPosition(x, y);
+    gui.draw();
 }
 
 void Bookcase::setupGui(){
@@ -313,17 +346,7 @@ void Bookcase::saveSettings(){
     
 }
 
-void Bookcase::drawGui(){
-    gui.draw();
-    
-    
-    
-}
 
-void Bookcase::drawGui(int x, int y){
-    gui.setPosition(x, y);
-    gui.draw();
-}
 
 
 
@@ -1061,29 +1084,60 @@ void Bookcase::mapMesh(){
         
         startPct = 0.0f;
     }
-
-    
-    
-    //get location of the shelves
-    shelf1Start = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[14], controlPoints[3]);
-    shelf2Start = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[12], controlPoints[5]);
-    shelf3Start = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[10], controlPoints[7]);
-
-    shelf1End = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[14], controlPoints[3]);
-    shelf2End = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[12], controlPoints[5]);
-    shelf3End = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[10], controlPoints[7]);
     
     
     //reset the shadow with the new corners
     shadow.clear();
-    shadow.moveTo(bookcaseCorners[0]);
-    shadow.lineTo(bookcaseCorners[1]);
-    shadow.lineTo(bookcaseCorners[2]);
-    shadow.lineTo(bookcaseCorners[3]);
-    shadow.lineTo(bookcaseCorners[0]);
-    shadow.close();
+    shadow.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+    shadow.addVertex(bookcaseCorners[0]);
+    shadow.addVertex(bookcaseCorners[1]);
+    shadow.addVertex(bookcaseCorners[2]);
+    shadow.addVertex(bookcaseCorners[3]);
+    shadow.addColor(ofFloatColor(0));
+    shadow.addColor(ofFloatColor(0));
+    shadow.addColor(ofFloatColor(0));
+    shadow.addColor(ofFloatColor(0));
+
     
-    //reset the shadow underneath shelf1
+    
+    //get location of the shelf corners
+    shelfCorners.clear();
+    shelfCorners.resize(3);
+    
+    shelfCorners[0].resize(4);
+    shelfCorners[0][0] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[14], controlPoints[3]);
+    shelfCorners[0][1] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[14], controlPoints[3]);
+    shelfCorners[0][2] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[15], controlPoints[2]);
+    shelfCorners[0][3] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[15], controlPoints[2]);
+
+    shelfCorners[1].resize(4);
+    shelfCorners[1][0] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[12], controlPoints[5]);
+    shelfCorners[1][1] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[12], controlPoints[5]);
+    shelfCorners[1][2] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[13], controlPoints[4]);
+    shelfCorners[1][3] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[13], controlPoints[4]);
+    
+    shelfCorners[2].resize(4);
+    shelfCorners[2][0] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[10], controlPoints[7]);
+    shelfCorners[2][1] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[10], controlPoints[7]);
+    shelfCorners[2][2] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[11], controlPoints[6]);
+    shelfCorners[2][3] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[11], controlPoints[6]);
+    
+
+    //setup the transparent overlay underneath the book UI
+    
+    shelfOverlays.clear();
+    shelfOverlays.resize(3);
+    //3 shelves
+    for(int i = 0; i < shelfOverlays.size(); i++){
+
+        shelfOverlays[i].clear();
+        shelfOverlays[i].setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+        shelfOverlays[i].addVertex(shelfCorners[i][0]);
+        shelfOverlays[i].addVertex(shelfCorners[i][1]);
+        shelfOverlays[i].addVertex(shelfCorners[i][2]);
+        shelfOverlays[i].addVertex(shelfCorners[i][3]);
+                
+    }
     
     
     

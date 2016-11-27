@@ -41,12 +41,13 @@ void Tile::setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords){
         
     }
     
-    darkBacking.moveTo(mesh.getVertex(0));
-    darkBacking.lineTo(mesh.getVertex(1));
-    darkBacking.lineTo(mesh.getVertex(2));
-    darkBacking.lineTo(mesh.getVertex(3));
-    darkBacking.close();
-    darkBacking.setColor(ofColor(0));
+    
+    darkBacking = mesh;
+    darkBacking.clearColors();
+
+    for(int i = 0; i < darkBacking.getNumVertices(); i++){
+        darkBacking.addColor(ofFloatColor(0));
+    }
 
     bRotating = false;
     
@@ -68,7 +69,7 @@ void Tile::setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords){
     effectStagger = 0.0;
     effectEndTime = 0.0;
     effectDuration = 1.8;
-    easingBounce = 1.0;
+    backEasing = 1.0;
 
     distToEpicenter = 0;
     timeUntilWave = 0;
@@ -196,10 +197,10 @@ void Tile::update(){
     
     if(bFlipInOut || bFlipAxis || bFlipHoriz || bFlipVert){
         
-        float now = ofGetElapsedTimef();
+        double now = ofGetElapsedTimef();
         
-        //bounce ease the angle
-        currentAngle = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, startAngle, endAngle, &ofxeasing::back::easeOut_s, easingBounce);
+        //back ease the angle
+        currentAngle = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, startAngle, endAngle, &ofxeasing::back::easeOut_s, backEasing);
         
         
         if(now > effectStartTime + effectDuration){

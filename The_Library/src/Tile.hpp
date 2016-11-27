@@ -40,7 +40,7 @@ public:
     
     ofVec3f positionOnWall, tileCenter;
     
-    ofPath darkBacking;
+    ofVboMesh darkBacking;
     
     //key to allow sorting a vector of tiles
     //by distance (for wave effects)
@@ -77,7 +77,7 @@ public:
     
     float flipSpeed;
 
-    float easingBounce;
+    float backEasing;
     
     float startAngle, endAngle, currentAngle;
     ofVec3f rotAxis;

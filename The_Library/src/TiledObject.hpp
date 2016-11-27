@@ -51,7 +51,7 @@ public:
     ofxLabel settingsLabel;
     ofxFloatSlider waveSpeedSlider;
     ofxFloatSlider effectDurationSlider;
-    ofxFloatSlider easingBounceSlider;
+    ofxFloatSlider backEasingSlider;
     
     
     

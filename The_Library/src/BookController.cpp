@@ -16,36 +16,94 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 29;
-    numShelves = 6;
+    numBooksPerShelf = 8;
+    numShelves = 3;
     
     int numBooks = numBooksPerShelf * numShelves;
     
+    
+    //GROUPING ALGORITHM
+    //Populates shelves with small groupings of different book types and colors
+    //3 styles of book, short, medium, tall
+    int numBookTypes = 3;
+    int numTexTypes = 3;
+    
+    int placeInThisGroup = 0;
+    int numInThisGroup = round(ofRandom(2,4));
+    int groupBookType = 0; //floor(ofRandom(numBookTypes));
+    int groupTexType = floor(ofRandom(numTexTypes));
+    int lastGroupBookType = groupBookType;
+    int lastGroupTexType = groupTexType;
+    
+    //Model and texture used by this book
+    int thisBookType = 0;
+    int thisTexType = 0;
+
+    
     for(int i = 0; i < numBooks; i++){
         
-        //book type
-        int bookType = 1;  //make a grouping algorithm but for now set to working model
         
+        
+        if(placeInThisGroup < numInThisGroup){
+            
+            thisBookType = groupBookType;
+            thisTexType = groupTexType;
+            
+        } else {
+            
+            //New book grouping, make new properties
+            numInThisGroup = round(ofRandom(2,5));
+            
+            groupBookType = floor(ofRandom(numBookTypes));
+            groupTexType = floor(ofRandom(numTexTypes));
+
+            //If it's the same as last time, add one (wrap if too far)
+            if(groupBookType == lastGroupBookType){
+                groupBookType++;
+                if(groupBookType >= numBookTypes) groupBookType %= numBookTypes;
+                
+            }
+            if(groupTexType == lastGroupTexType){
+                groupTexType++;
+                if(groupTexType >= numTexTypes) groupTexType %= numTexTypes;
+            }
+            
+            placeInThisGroup = 0;
+            thisBookType = groupBookType;
+            thisTexType = groupTexType;
+            lastGroupTexType = groupTexType;
+            lastGroupBookType = groupBookType;
+        }
+        
+        cout << "Loading Book " << i << " - Place in this group " << placeInThisGroup << ", model " << thisBookType << ", texture " << thisTexType << endl;
         
         Book b;
-        b.loadModel(bookType);
+        b.loadModel(thisBookType, thisTexType);
         
         books.push_back(b);
+        
+        //book type
+//        thisBookType++;
+//        if(thisBookType == 3) thisBookType = 0;
+//        
+        placeInThisGroup++;
         
     }
     
 }
 
-void BookController::setup(Bookcase *leftCase, Bookcase *rightCase){
-    
+void BookController::setBookCaseRefs(Bookcase *leftCase, Bookcase *rightCase){
+
     leftBookcase = leftCase;
     rightBookcase = rightCase;
     
+}
+
+void BookController::setup(){
     
     //load images with manual file names
-    //loading with ofDirectory conflicts with ofxAssimp
     ofDirectory texDir;
-    texDir.listDir("books/images");
+    texDir.listDir("books/textures");
     
     for(int i = 0; i < (int)texDir.size(); i++){
         
@@ -59,10 +117,11 @@ void BookController::setup(Bookcase *leftCase, Bookcase *rightCase){
         
     }
     
-    ofVec3f shelfStart;
-    ofVec3f dirToShelfEnd;
     
-
+    
+    ofVec3f shelfStart, shelfEnd;
+    ofVec3f dirToShelfEnd;
+    ofVec3f midShelfBottom, midShelfTop;
     
     //distance from one book to the next
     float bookSpacing = 1;
@@ -74,37 +133,20 @@ void BookController::setup(Bookcase *leftCase, Bookcase *rightCase){
     //set up books on both bookcases
     for(int j = 0; j < numShelves; j++){
         
-        if(j == 0){
-            
-            shelfStart = leftBookcase -> shelf1Start;
-            dirToShelfEnd = (leftBookcase -> shelf1End) - (leftBookcase -> shelf1Start);
-            
-        } else if(j == 1) {
+        
+        //first three shelves in LEFT bookcase j = 0,1,2
+        //second three shelves are in RIGHT bookcase (j - 3) = 0,1,2
+        int shelfNum = (j < 3) ? j : j - 3;
+        
+        Bookcase *leftOrRight = (j < 3) ? leftOrRight = leftBookcase : leftOrRight = rightBookcase;
+        
+        shelfStart = leftOrRight -> shelfCorners[shelfNum][0];
+        dirToShelfEnd = (leftOrRight -> shelfCorners[shelfNum][1]) - (leftOrRight -> shelfCorners[shelfNum][0]);
+        shelfEnd = leftOrRight -> shelfCorners[shelfNum][1];
+        
+        midShelfBottom = (leftOrRight -> shelfCorners[shelfNum][0] + leftOrRight -> shelfCorners[shelfNum][1])/2.0f;
+        midShelfTop = (leftOrRight -> shelfCorners[shelfNum][2] + leftOrRight -> shelfCorners[shelfNum][3])/2.0f;
 
-            shelfStart = leftBookcase -> shelf2Start;
-            dirToShelfEnd = (leftBookcase -> shelf2End) - (leftBookcase -> shelf2Start);
-            
-        } else if(j == 2) {
-            
-            shelfStart = leftBookcase -> shelf3Start;
-            dirToShelfEnd = (leftBookcase -> shelf3End) - (leftBookcase -> shelf3Start);
-            
-        } else if(j == 3) {
-           
-            shelfStart = rightBookcase -> shelf1Start;
-            dirToShelfEnd = (rightBookcase -> shelf1End) - (rightBookcase -> shelf1Start);
-            
-        } else if(j == 4) {
-            
-            shelfStart = rightBookcase -> shelf2Start;
-            dirToShelfEnd = (rightBookcase -> shelf2End) - (rightBookcase -> shelf2Start);
-            
-        } else if(j == 5) {
-            
-            shelfStart = rightBookcase -> shelf3Start;
-            dirToShelfEnd = (rightBookcase -> shelf3End) - (rightBookcase -> shelf3Start);
-            
-        }
         
         
         //get the direction vector from the left side of the shelf to the right
@@ -118,60 +160,109 @@ void BookController::setup(Bookcase *leftCase, Bookcase *rightCase){
         //move to the next shelf on the next loop
         booksThisShelf += numBooksPerShelf;
         
+        ofVec2f currentShelfPos = shelfStart;
+        
         for(int i = bookCounter; i < booksThisShelf; i++){
             
-            books[i].setup(&textures[1]);
+            //now that all the positions and defaults have been set, set it up
+            books[i].setup(&textures[ books[i].texType ]);
             
             //get the place of the current book on its own shelf
             int bookNumThisShelf = i % numBooksPerShelf;
             
             //after setup (once book has found its own dimensions),
             //set its position in the bookcase
-            books[i].pos = shelfStart + dirToShelfEnd * bookNumThisShelf * (books[i].thickness + bookSpacing);
+//            books[i].pos = shelfStart + dirToShelfEnd * bookNumThisShelf * (books[i].thickness + bookSpacing);
+            books[i].pos = currentShelfPos;
+            //add the book thickness to the shelf to place the next book
+            currentShelfPos += dirToShelfEnd * (books[i].thickness + bookSpacing);
             
-            cout << "Book " << i << " pos: " << books[i].pos << endl;
+            //figure out the display position of this book: the center
+            //of the current shelf, raised so book is centered
+            books[i].displayPos = (midShelfBottom + midShelfTop)/2.0f;
+
+            //shift the book up (y) a bit to center it and out (z) towards the viewer
+            books[i].displayPos += ofVec3f(0, books[i].height/2.0, -20);
+            
+            books[i].storedPos = books[i].pos;
+            
+            float sideShift = -100; //ofMap(pctOfShelf, 0.0, 1.0, -50, -lengthOfShelf/3.0f);
+            
+            //shift the position to the left, move it up so it's centered (like displayPos)
+            //and pull it out the depth of the book
+            books[i].pulledOutPos = books[i].pos + ofVec3f(sideShift, 0, -(books[i].depth));
+
+            books[i].shelfNum = j;
+            
+//            cout << "Book " << i << " pos: " << books[i].pos << endl;
+//            cout << "Book " << i << " displayPos: " << books[i].displayPos << endl;
+//            cout << "Book " << i << " storedPos: " << books[i].storedPos << endl;
+//            cout << "Book " << i << " pulledOutPos: " << books[i].pulledOutPos << endl;
+//            cout << endl;
             
             //move on to next book
             bookCounter++;
         }
     }
 
-    activeBooks.resize(3);
-    int rand = (int)ofRandom(books.size() - 3);
-    activeBooks[0] = rand;
-    activeBooks[1] = rand + 1;
-    activeBooks[2] = rand + 2;
+    
+    //initialize shelves as not in use
+    bShelvesInUse.assign(numShelves, false);
+    
+
+    
+}
+
+void BookController::checkMouseBookTrigger(int x, int y){
+    
+    
+    //update all books
+    for(int i = 0; i < books.size(); i++){
+        
+        //first check whether or not this book is on a shelf that is in use
+//        if(bShelvesInUse[ books[i].shelfNum ] == false){
+//        
+//            bShelvesInUse[i] = true;
+        
+            //see if mouse is inside book
+            //remember: book pos is lower left corner
+            if(x > books[i].pos.x && x < books[i].pos.x + books[i].thickness
+               && y < books[i].pos.y && y > books[i].pos.y - books[i].height){
+                
+                books[i].triggerDisplay();
+                
+                //add listener to this book so we know when it is done with the shelf
+//                ofAddListener(books[i].bookReturnedEvt, this, &BookController::bookReturnedEvt());
+                
+            }
+            
+//        }
+        
+    }
     
 }
 
 void BookController::update(){
-
-    //randomize the books
-    if(ofGetElapsedTimeMillis() % 5000 < 10){
-        int rand = (int)ofRandom(books.size() - 3);
-        activeBooks[0] = rand;
-        activeBooks[1] = rand + 1;
-        activeBooks[2] = rand + 2;
-        cout << "randomize!" << endl;
-    }
     
     
-    //go through the active books and see if
-    for(int i = 0; i < activeBooks.size(); i++){
-        
-        books[ activeBooks[i] ].update();
+    //update all books
+    for(int i = 0; i < books.size(); i++){
+        books[i].update();
     }
     
 }
 
 void BookController::draw(){
     
-//    ofDisableArbTex();
 
     
-    for(int i = 0; i < activeBooks.size(); i++){
-        books[ activeBooks[i] ].draw();
+//    ofDisableArbTex();
+
+
+    for(int i = 0; i < books.size(); i++){
+        books[i].draw();
     }
+    
     
 //    ofEnableArbTex();
     

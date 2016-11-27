@@ -34,10 +34,8 @@ class ofApp : public ofBaseApp{
     //Scaling of model through
     //AssImp methods
     float modelScale;
-    //Actual amount needed to scale
-    //the vertices to get real world size
-    float scale;
 
+    float normFactor;
     
     int meshNum;
     ofVec3f meshCenter;
@@ -48,7 +46,6 @@ class ofApp : public ofBaseApp{
     float maxZ;
     float minZ;
     
-    bool bMouseScale;
 
     float realMaxX;
     float realMinX;

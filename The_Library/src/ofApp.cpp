@@ -33,10 +33,11 @@ void ofApp::setup(){
     frame.setup("frame");
     leftBookcase.setup("leftBookcase", true);
     rightBookcase.setup("rightBookcase", false);
+    bookController.setBookCaseRefs(&leftBookcase, &rightBookcase);
 
     
     //Book models need to be loaded before other objects load their media
-    //because of a bug in ofxAssimpModelLoader
+    //because of a bug in ofxAssimpModelLoader, otherwise loading will crash
     bookController.loadModels();
 
     //Now load their media
@@ -47,8 +48,8 @@ void ofApp::setup(){
     
     //Finally, now that the book models have been loaded
     //and the bookcases have been setup, we can setup book textures
-    //and place them in the right spots
-    bookController.setup(&leftBookcase, &rightBookcase);
+    //and place them on the shelves
+    bookController.setup();
     
     
     bgEdgeMask.load("images/interface/bgMask.png");
@@ -62,6 +63,7 @@ void ofApp::setup(){
     
     //----------Lighting/Material/Camera Setup----------
     camera.enableOrtho();
+//    camera.disableMouseInput();
     camera.setTarget(ofVec3f(ofGetWidth()/2, ofGetHeight()/2, 0));
 //    camera.setFarClip(10000);
 //    camera.setNearClip(-100);
@@ -72,6 +74,7 @@ void ofApp::setup(){
     bShowGUIs = false;
     bShowMouseCoords = false;
     
+
 }
 
 //--------------------------------------------------------------
@@ -139,7 +142,7 @@ void ofApp::draw(){
         //now enable depth testing again so books and
         //bookcases draw in their proper places
         ofEnableDepthTest();
-        
+
         frame.draw();
         
         leftBookcase.draw();
@@ -154,7 +157,7 @@ void ofApp::draw(){
         
         
         if(bShowGUIs){
-            
+            ofDisableDepthTest();
             frame.drawDebug();
             frame.drawGui();
             
@@ -272,6 +275,11 @@ void ofApp::mousePressed(int x, int y, int button){
             wallpaper.triggerWave(ofVec2f(x, y));
         }
         
+    }
+    
+    
+    if(button == 0){
+        bookController.checkMouseBookTrigger(x, y);
     }
     
 }

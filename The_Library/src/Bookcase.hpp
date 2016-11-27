@@ -37,13 +37,9 @@ public:
     void drawDebug();
     
     void drawShadow();
-    ofPath shadow;
-    
-    //"Shadow", i.e. black rect that covers
-    //the underside of the books
-    ofPath shelf1Shadow;
-    
-    
+    void drawShelfOverlay(int shelfNum, int trans);
+    ofVboMesh shadow;
+        
     void setupGui();
     void drawGui();
     void drawGui(int x, int y);
@@ -55,15 +51,12 @@ public:
     //LEFT or RIGHT
     bool bLeftCase;
     
-    //lower left corner of shelves
-    ofVec2f shelf1Start; //top
-    ofVec2f shelf2Start; //middle
-    ofVec2f shelf3Start; //bottom shelf
-
-    //lower right corner of shelves
-    ofVec2f shelf1End; //top
-    ofVec2f shelf2End; //middle
-    ofVec2f shelf3End; //bottom shelf
+    //Shelf corners
+    //Corners defined counter-clockwise
+    //from bottom left
+    //3 groups of 4 points 
+    vector<vector<ofVec3f>> shelfCorners;
+    
     
     //Tile coordinates are based on
     //the frame corners and the percentages
@@ -74,6 +67,10 @@ public:
     vector<ofVec2f> texCoordControlPts;
     vector<ofVec2f> texCoordCorners;
     
+    //transparent shelf overlay underneat
+    //open book UI
+    vector<ofVboMesh> shelfOverlays;
+    
     
     //mesh prepping variables
     //see bookcase_mapping.png for details
@@ -82,6 +79,8 @@ public:
     float topTileHeight, bookTileHeight;
     float shelfTileHeight, bottomTileHeight;
     
+
+    //----------GUI SETUP----------
     bool bIsGuiActive;
     
     ofxLabel mappingLabel;

@@ -12,8 +12,9 @@ void ofApp::setup(){
     bAnimateMouse = false;
     animationPosition = 0;
     
+    model.loadModel("converted/bookTall.fbx", false);
 //    model.loadModel("working/bookMedium.fbx", false);
-    model.loadModel("ship/Ship N181113.3DS", false);
+//    model.loadModel("ship/Ship N181113.3DS", false);
     
 
     
@@ -49,22 +50,15 @@ void ofApp::setup(){
     
     
     
-    //Start working with model
-    //NOTE: Assimp models do not draw on their mesh vertices
-    //Scaling and translations do not affect the mesh vertices themselves
-    //So trying to find things like the dimensions of the model need to be
-    //done visually since finding the min/max XYZ bounds will always return
-    //the original bounds of the model, pre scaling/translation
     
-    modelScale = 0.2;
-    model.setScale(modelScale, modelScale, modelScale);
+    //NOTE: Assimp scaling does not affect vertices themselves. In addition
+    //scaling using .setScale() does not give reliable results. So, set scale
+    //normalization to false and use your own scaling with push/pop matrices.
+    model.setScaleNormalization(false);
+    model.setScale(1.0f, 1.0f, 1.0f);
     model.setPosition(0, 0, 0);
     
-    //rotate mesh 0 by 90 degrees in X axis
-    //NOTE: this method doesn't allow chained rotations
-    //(i.e. rotate in X THEN rotate in y, etc.)
-    //it's easier to do it in run time with multiple calls to ofRotate()
-//    model.setRotation(0, 90, 1, 0, 0);
+
     
     cout << "Number of meshes: " << model.getNumMeshes() << endl;
     
@@ -92,6 +86,7 @@ void ofApp::setup(){
         
         ofMesh thisMesh = model.getMesh(i);
         
+
         for(int j = 0; j < thisMesh.getNumVertices(); j++){
             
             ofVec3f thisVert = thisMesh.getVertex(j);
@@ -107,8 +102,7 @@ void ofApp::setup(){
             if(thisVert.z < minZ) minZ = thisVert.z;
             
         }
-        
-        
+
         
         totalVerts += thisMesh.getNumVertices();
     }
@@ -125,27 +119,60 @@ void ofApp::setup(){
     cout << "Min Z: " << minZ << endl;
     cout << "Max Z: " << maxZ << endl;
 
-    //negate the x and y
-    minX *= -1;
-    maxX *= -1;
-    minY *= -1;
-    maxY *= -1;
+    float actualThickness = abs(maxY) + abs(minY);
+    float actualDepth = abs(maxX) + abs(minX);
+    float actualHeight = abs(maxZ) + abs(minZ);
     
-    scale = 32.4672;
-    realMaxX = maxX * scale * modelScale;
-    realMinX = minX * scale * modelScale;
-    realMaxY = maxY * scale * modelScale;
-    realMinY = minY * scale * modelScale;
-    realMaxZ = maxZ * scale * modelScale;
-    realMinZ = minZ * scale * modelScale;
+    cout << "Actual Thickness: " << actualThickness << endl;
+    cout << "Actual Depth: " << actualDepth << endl;
+    cout << "Actual Height: " << actualHeight << endl;
+
+    
+    
+//    float desiredBookHeight = 200;
+//    modelScale = desiredBookHeight/ ( abs(minZ) + abs(maxZ) );
+//    cout << "Desired Scale: " << modelScale << endl;
+    
+    //Scale is figured out visually
+    //Scale of 661.697 yields book height = 100
+    //Scale of 1323.394 yields book height = 200
+    modelScale = 661.697;
+    
+    realMaxX = maxX * modelScale;
+    realMinX = minX * modelScale;
+    realMaxY = maxY * modelScale;
+    realMinY = minY * modelScale;
+    realMaxZ = maxZ * modelScale;
+    realMinZ = minZ * modelScale;
+    
+    //store the real dimensions
+    //Model's orientation within its own coordinate system is different
+    //so Y = thickness, etc.
+    float thickness = abs(realMaxY) + abs(realMinY);
+    float depth = abs(realMaxX) + abs(realMinX);
+    float height = abs(realMaxZ) + abs(realMinZ);
+
+    
+    realMaxX = maxX * modelScale;
+    realMinX = minX * modelScale;
+    realMaxY = maxY * modelScale;
+    realMinY = minY * modelScale;
+    realMaxZ = maxZ * modelScale;
+    realMinZ = minZ * modelScale;
     
     //print real pixel dimensions
+    cout << "Model Scale: " << modelScale << endl;
+    
     cout << "realMin X: " << realMinX << endl;
     cout << "realMax X: " << realMaxX << endl;
     cout << "realMin Y: " << realMinY << endl;
     cout << "realMax Y: " << realMaxY << endl;
     cout << "realMin Z: " << realMinZ << endl;
     cout << "realMax Z: " << realMaxZ << endl;
+    
+    cout << "Thickness: " << thickness << endl;
+    cout << "Depth: " << depth << endl;
+    cout << "Height: " << height << endl;
     
     //-----LIGHTING & CAMERA-----
     
@@ -177,7 +204,7 @@ void ofApp::setup(){
     material.setSpecularColor(ofColor(255, 255, 255, 255));
     
     cam.setNearClip(0);
-    cam.setFarClip(100000);
+    cam.setFarClip(1000000);
     
 }
 
@@ -187,22 +214,13 @@ void ofApp::update(){
     model.update();
     
     if(bAnimateMouse) {
+        animationPosition = mouseY / (float)ofGetHeight();
         model.setPositionForAllAnimations(animationPosition);
     }
     
     
-    if(bMouseScale){
-        scale = ofMap(ofGetMouseX(), 0, ofGetWidth(), 1, 50);
-    }
-    
-    
-    realMaxX = maxX * scale * modelScale;
-    realMinX = minX * scale * modelScale;
-    realMaxY = maxY * scale * modelScale;
-    realMinY = minY * scale * modelScale;
-    realMaxZ = maxZ * scale * modelScale;
-    realMinZ = minZ * scale * modelScale;
-    
+
+//    modelScale = ofMap(ofGetMouseX(), 0, ofGetWidth(), 1300, 1400);
     
     //Lighting Angle finder (to get quaternion angles)
     
@@ -224,32 +242,33 @@ void ofApp::draw(){
     ofEnableBlendMode(OF_BLENDMODE_ALPHA);
     
     ofEnableDepthTest();
-    ofEnableLighting();
+//    ofEnableLighting();
 //#ifndef TARGET_PROGRAMMABLE_GL
 //    glShadeModel(GL_SMOOTH); //some model / light stuff
 //#endif
     
-    frontLight.enable();
-    backLight.enable();
-    spineLight.enable();
+//    frontLight.enable();
+//    backLight.enable();
+//    spineLight.enable();
     cam.begin();
-    ofEnableSeparateSpecularLight();
+//    ofEnableSeparateSpecularLight();
 
     
     ofPushMatrix();
-    
+    ofScale(modelScale, modelScale, modelScale);
+//    ofScale(1.0, 1.0, 1.0);
     //rotate and translate book so that it is oriented as it
     //would be in a bookshelf facing the user
 //    ofRotateX(-90);
 //    ofRotateZ(90);
 //    ofTranslate(0, 0, realMinZ);
     
-//    model.disableTextures();
-//    if(newSkin.isAllocated()) newSkin.getTexture().bind();
+    model.disableTextures();
+    if(newSkin.isAllocated()) newSkin.getTexture().bind();
     
     model.drawFaces();
 
-//    if(newSkin.isAllocated()) newSkin.getTexture().unbind();
+    if(newSkin.isAllocated()) newSkin.getTexture().unbind();
     
     //draw local axes
     ofDrawAxis(300);
@@ -259,33 +278,46 @@ void ofApp::draw(){
 //    glEnable(GL_NORMALIZE);
 //#endif
     
-    ofDisableDepthTest();
-    frontLight.disable();
-    backLight.disable();
-    spineLight.disable();
-    ofDisableLighting();
+//    ofDisableDepthTest();
+//    frontLight.disable();
+//    backLight.disable();
+//    spineLight.disable();
+//    ofDisableLighting();
 
     ofDrawAxis(1000);
+
     
-    
-    //draw lines to find the bounds of the book
+    //Draw at ACTUAL coordinates from vertices
+    float lineLength = 2000;
+    ofSetLineWidth(1);
+    ofSetColor(255, 200, 0);
     //in Y=minY plane
-//    ofSetLineWidth(1);
-//    ofSetColor(255, 0, 255);
-//    ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
-//    ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
-//    ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
-//    ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
-//    
-//    //in Y=maxY plane
-//    ofPushMatrix();
-//    ofTranslate(0, realMaxY, 0);
-//    ofDrawLine(realMinX, realMinY, -1000, realMinX, realMinY, 1000);
-//    ofDrawLine(realMaxX, realMinY, -1000, realMaxX, realMinY, 1000);
-//    ofDrawLine(-1000, realMinY, realMinZ, 1000, realMinY, realMinZ);
-//    ofDrawLine(-1000, realMinY, realMaxZ, 1000, realMinY, realMaxZ);
+    ofDrawLine(minX, minY, -lineLength, minX, minY, lineLength);
+    ofDrawLine(maxX, minY, -lineLength, maxX, minY, lineLength);
+    ofDrawLine(-lineLength, minY, minZ, lineLength, minY, minZ);
+    ofDrawLine(-lineLength, minY, maxZ, lineLength, minY, maxZ);
     
-    ofPopMatrix();
+    //in Y=maxY plane
+    ofDrawLine(minX, maxY, -lineLength, minX, maxY, lineLength);
+    ofDrawLine(maxX, maxY, -lineLength, maxX, maxY, lineLength);
+    ofDrawLine(-lineLength, maxY, minZ, lineLength, maxY, minZ);
+    ofDrawLine(-lineLength, maxY, maxZ, lineLength, maxY, maxZ);
+
+    
+    //Draw at scaled coordinates
+    ofSetColor(0, 255, 0);
+    //in Y=minY plane
+    ofDrawLine(realMinX, realMinY, -lineLength, realMinX, realMinY, lineLength);
+    ofDrawLine(realMaxX, realMinY, -lineLength, realMaxX, realMinY, lineLength);
+    ofDrawLine(-lineLength, realMinY, realMinZ, lineLength, realMinY, realMinZ);
+    ofDrawLine(-lineLength, realMinY, realMaxZ, lineLength, realMinY, realMaxZ);
+    
+    //in Y=realMaxY plane
+    ofDrawLine(realMinX, realMaxY, -lineLength, realMinX, realMaxY, lineLength);
+    ofDrawLine(realMaxX, realMaxY, -lineLength, realMaxX, realMaxY, lineLength);
+    ofDrawLine(-lineLength, realMaxY, realMinZ, lineLength, realMaxY, realMinZ);
+    ofDrawLine(-lineLength, realMaxY, realMaxZ, lineLength, realMaxY, realMaxZ);
+
     
     cam.end();
     
@@ -335,18 +367,23 @@ void ofApp::draw(){
         }
     }
     
+    if(bAnimateMouse){
+        ofDrawBitmapStringHighlight("Anim Pos: " + ofToString(animationPosition), mouseX + 10, mouseY + 20);
+    } else {
+        ofDrawBitmapStringHighlight("modelScale: " + ofToString(modelScale), mouseX, mouseY - 10);
+    }
+    
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
-    ofPoint modelPosition(ofGetWidth() * 0.5, (float)ofGetHeight() * 0.75);
-    
     
     if(key == ' '){
         bAnimate = !bAnimate;
     } else if(key == 'c'){
         newSkin.begin();
+        ofClear(255, 255, 255, 255);
         ofSetColor(255);
         origTex.draw(0, 0);
         newSkin.end();
@@ -357,27 +394,12 @@ void ofApp::keyPressed(int key){
         
         // pause all animations, so we can scrub through them manually.
         model.setPausedForAllAnimations(true);
-        animationPosition = mouseY / (float)ofGetHeight();
+        
         bAnimateMouse = true;
         
-    } else if(key == 's'){
-        bMouseScale = true;
     }
     
     
-    
-    
-    else if(key == OF_KEY_RIGHT){
-        meshNum++;
-        
-        if(meshNum > model.getNumMeshes()) meshNum = 0;
-        
-    }  else if(key == OF_KEY_LEFT){
-        meshNum--;
-
-        if(meshNum < 0) meshNum = model.getNumMeshes();
-    
-    }
     
     model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
     model.playAllAnimations();
@@ -391,6 +413,15 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
 
+    if(key == '1'){
+        model.loadModel("converted/bookShort.fbx", false);
+    } else if(key == '2'){
+        model.loadModel("converted/bookMedium.fbx", false);
+    } else if(key == '3'){
+        model.loadModel("converted/bookTall.fbx", false);
+    }
+    
+    
     bAnimateMouse = false;
     
     if(bAnimate) {
@@ -398,18 +429,7 @@ void ofApp::keyReleased(int key){
         
     }
     
-    if(key == 's'){
-        
-        bMouseScale = false;
-        cout << "Scale: " << scale << endl;
-        cout << "realMin X: " << realMinX << endl;
-        cout << "realMax X: " << realMaxX << endl;
-        cout << "realMin Y: " << realMinY << endl;
-        cout << "realMax Y: " << realMaxY << endl;
-        cout << "realMin Z: " << realMinZ << endl;
-        cout << "realMax Z: " << realMaxZ << endl;
-        
-    }
+
     
     drawOnTex = false;
     cam.enableMouseInput();

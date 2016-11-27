@@ -28,15 +28,19 @@ public:
     BookController();
     
     void loadModels();
-    void setup(Bookcase *leftCase, Bookcase *rightCase);
+    void setBookCaseRefs(Bookcase *leftCase, Bookcase *rightCase);
+    void setup();
     void update();
     void draw();
     
-
+    void checkMouseBookTrigger(int x, int y);
+    
+    vector<ofTrueTypeFont> fonts;
     
     vector<Book> books;
-    vector<ofTexture> textures;
     
+    //textures: book cover/page textures
+    vector<ofTexture> textures;
     
     //get pointers to the bookcase where we'll
     //be putting the books
@@ -45,8 +49,11 @@ public:
     
     int numBooksPerShelf;
     int numShelves;
+
+    vector<bool> bShelvesInUse;
+
+    void bookReturnedEvt();
     
-    vector<int> activeBooks;
 };
 
 

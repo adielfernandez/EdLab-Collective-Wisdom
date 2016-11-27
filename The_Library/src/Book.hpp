@@ -15,6 +15,7 @@
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
+#include "ofxEasing.h"
 
 #pragma once
 
@@ -25,42 +26,78 @@ public:
     
     Book();
     
-    void loadModel(int type);
+    void loadModel(int bType, int tType);
     void setup(ofTexture *_tex);
     void update();
+    void triggerDisplay();
     void draw();
     
     //Support Methods
+    bool bPrintDebug;
+    
     
     //Book type: 0 = short, 1 = medium, 2 = tall
     int bookType;
+    int texType;
     
+    //shelf numbers left 0,1,2 and right 3,4,5
+    int shelfNum;
+    
+    bool bIsActive;
+    bool bIsAnimating;
+    
+    //visuals and texturing
     ofxAssimpModelLoader model;
-    
     ofFbo textureFBO;
-    
     ofMaterial material;
-    
     ofTexture *tex;
+    ofVboMesh spineMesh;
     
+    //positioning and animation
     ofVec3f pos;
+    ofVec3f pulledOutPos;
+    ofVec3f displayPos;
+    ofVec3f storedPos;
+    const float storedRotX = -90;
+    const float storedRotZ = 90;
+    const float displayRotX = -90;
+    const float displayRotZ = 180;
+    float currentRotX, currentRotZ;
     
+    double animStartTime;
+    float animPos;
+    //animation key frames (normalized)
+    const float animationStart = 0.0;
+    const float animFirstPages = 0.34;
+    const float animSecondPages = 0.56;
+    const float animThirdPages = 0.77;
+    const float animationEnd = 0.94;
+    
+    //event to notify bookController that
+    //the book has returned to the shelf
+    ofEvent<bool> bookReturnedEvt;
+    void bookReturned();
+    
+    //-----Dimensions-----
+    
+    //This is the fudge factor.
+    //AssImp models do not reliable scale
+    //resize to expected results. This factor
+    //is determined visually to give
+    //books the desired size
+    float scaleFactor;
     
     //these are the actual min/max
     //dimensions of the closed book
+    float modelScale;
+    float thickness, depth, height;
+
     float maxX;
     float minX;
     float maxY;
     float minY;
     float maxZ;
     float minZ;
-    
-    
-    //Scaling of model through
-    //AssImp methods
-    float modelScale;
-    
-    float thickness, depth, height;
     float realMaxX;
     float realMinX;
     float realMaxY;

@@ -17,7 +17,7 @@ Book::Book(){
 void Book::loadModel(int bType, int tType){
 
     bookType = bType;
-    texType = bType;
+    texType = tType;
     
     if(bookType == 0){
         model.loadModel("books/bookShort.fbx", false);
@@ -33,72 +33,58 @@ void Book::loadModel(int bType, int tType){
 }
 
 
-void Book::setup(ofTexture *_tex){
+void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
 
     tex = _tex;
+    font = _font;
     
     bPrintDebug = false;
     
-    
-    //figure out the minimum and maximum dimensions
-    maxX = -100000;
-    minX =  100000;
-    maxY = -100000;
-    minY =  100000;
-    maxZ = -100000;
-    minZ =  100000;
-    
-    
-    
-    ofMesh m0 = model.getMesh(0);
-    for(int i = 0; i < m0.getNumVertices(); i++){
+    if(bPrintDebug){
         
-        ofVec3f thisVert = m0.getVertex(i);
+        //figure out the minimum and maximum dimensions
+        float maxX = -100000;
+        float minX =  100000;
+        float maxY = -100000;
+        float minY =  100000;
+        float maxZ = -100000;
+        float minZ =  100000;
         
-        if(thisVert.x > maxX) maxX = thisVert.x;
-        if(thisVert.x < minX) minX = thisVert.x;
         
-        if(thisVert.y > maxY) maxY = thisVert.y;
-        if(thisVert.y < minY) minY = thisVert.y;
+        ofMesh m0 = model.getMesh(0);
+        for(int i = 0; i < m0.getNumVertices(); i++){
+            
+            ofVec3f thisVert = m0.getVertex(i);
+            
+            if(thisVert.x > maxX) maxX = thisVert.x;
+            if(thisVert.x < minX) minX = thisVert.x;
+            
+            if(thisVert.y > maxY) maxY = thisVert.y;
+            if(thisVert.y < minY) minY = thisVert.y;
+            
+            if(thisVert.z > maxZ) maxZ = thisVert.z;
+            if(thisVert.z < minZ) minZ = thisVert.z;
+            
+        }
         
-        if(thisVert.z > maxZ) maxZ = thisVert.z;
-        if(thisVert.z < minZ) minZ = thisVert.z;
+        //Print model sizing for debug
+        //values listed above
+        cout << "Min X: " << minX << endl;
+        cout << "Max X: " << maxX << endl;
+        cout << "Min Y: " << minY << endl;
+        cout << "Max Y: " << maxY << endl;
+        cout << "Min Z: " << minZ << endl;
+        cout << "Max Z: " << maxZ << endl;
         
+        cout << "Model Scale: " << modelScale << endl;
+        cout << "Thickness: " << thickness << endl;
+        cout << "Depth: " << depth << endl;
+        cout << "Height: " << height << endl;
+
     }
     
     
 
-    
-    /*
-     
-     BOOK DIMENSIONS:
-     Medium: height-thickness aspect = 5:1
-     Short: same thickeness as medium, 10% shorter
-     Tall: 10% taller than medium, 75% of the width
-     
-     
-     //When model scale = 1.0,
-     The pixel dimensions are below
-     
-     Min X: 0.0384481
-     Max X: 13.3184
-     Min Y: 0.0603343
-     Max Y: 1.82742
-     Min Z: -10.4535
-     Max Z: 9.24601
-     
-     For a book height of 130px, the dimensions are:
-     realMin X: 0.253725
-     realMax X: 87.89
-     realMin Y: 0.398155
-     realMax Y: 12.0594
-     realMin Z: -68.9841
-     realMax Z: 61.0159
-     Thickness: 12.4576
-     Depth: 88.1437
-     Height: 130
-     
-     */
     
     //Start working with model
     model.setLoopStateForAllAnimations(OF_LOOP_NONE);
@@ -116,74 +102,62 @@ void Book::setup(ofTexture *_tex){
     model.setScale(1.0, 1.0, 1.0); //unnecessary
 
     
-    //-------------------------------------
-    //define modelScale according to height
-    //-------------------------------------
+    //-----------------------------------------
+    //    define modelScale and dimensions
+    //-----------------------------------------
+    
+    //Since model Scale and dimensions are mostly hardcoded to give good values
+    //bulkScale scales all of them equally to make minor adjustments
+    float bulkScale = 1.0f;
     
     //Scale is figured out visually since AssImp Model does not give reliable sizing
     //Scale factor (as a function of book height)
-    scaleFactor = 7.29;
+//    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 600, 900);
+//    modelScale = x;
+//    cout << modelScale << endl;
+    modelScale = 819.219 * bulkScale;
     
-    //Set the scale so that the middle size book (bookMedium.fbx)
-    //sizes to approximately 120px. Then other books will
-    //scale to their own heights
-    float desiredHeight = 120;
-    modelScale = desiredHeight * scaleFactor;
+    //Real pixel dimensions determined visually at the scale above (819.219)
+    //Short book
+    //x = 24.2906, y= 111.599
+    //Medium book
+    //x = 24.2344, y= 124.109
+    //Tall book
+    //x = 18.401, y = 136.316
     
-    
-    realMaxX = maxX * modelScale;
-    realMinX = minX * modelScale;
-    realMaxY = maxY * modelScale;
-    realMinY = minY * modelScale;
-    realMaxZ = maxZ * modelScale;
-    realMinZ = minZ * modelScale;
-    
-    //store the "real" dimensions, i.e. apparent dimensions
-    //first get the depth and thickness as proportion of height.
-
-    float modelHeight = abs(realMaxZ) + abs(realMinZ);
-    float modelThickness = abs(realMaxY) + abs(realMinY);
-    float modelDepth = abs(realMaxX) + abs(realMinX);
-
-    float thicknessRatio = modelThickness/modelHeight;
-    float depthRatio = modelDepth/modelHeight;
-    
-    height = desiredHeight;
-    thickness = desiredHeight * thicknessRatio;
-    depth = desiredHeight * depthRatio;
-
-    
-    if(bPrintDebug){
-        //Print model sizing for debug
-        //values listed above
-        cout << "Min X: " << minX << endl;
-        cout << "Max X: " << maxX << endl;
-        cout << "Min Y: " << minY << endl;
-        cout << "Max Y: " << maxY << endl;
-        cout << "Min Z: " << minZ << endl;
-        cout << "Max Z: " << maxZ << endl;
-        
-        //print real pixel dimensions
-        cout << "realMin X: " << realMinX << endl;
-        cout << "realMax X: " << realMaxX << endl;
-        cout << "realMin Y: " << realMinY << endl;
-        cout << "realMax Y: " << realMaxY << endl;
-        cout << "realMin Z: " << realMinZ << endl;
-        cout << "realMax Z: " << realMaxZ << endl;
-        
-        cout << "Model Scale: " << modelScale << endl;
-        cout << "Thickness: " << thickness << endl;
-        cout << "Depth: " << depth << endl;
-        cout << "Height: " << height << endl;
+    if(bookType == 0) {
+        height = 111.599;
+        thickness = 24.2906;
+    } else if(bookType == 1) {
+        height = 124.109;
+        thickness = 24.2906;
+    } else {
+        height = 136.316;
+        thickness = 18.401;
     }
+
+    height *= bulkScale;
+    thickness *= bulkScale;
+    
+    
+    //depth is almost arbitrary since camera ortho is disabled
+    //just pick a usable number so book pulls out of shelf properly
+    depth = 100;
+
     
     //model positioned at bottom left corner of spine
     //values acquired visually since AssImp model does not give reliable size/scaling
-//    float m = ofMap(ofGetMouseY(), 0, ofGetHeight(), -0.1, 0);
-//    cout << m << endl;
-    model.setPosition(-0.0473501, -0.0148567, -0.0682016);
-    
-    
+//    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -0.1, 0);
+//    float y = ofMap(ofGetMouseY(), 0, ofGetHeight(), -0.1, 0);
+//    model.setPosition(-0.0477083, -0.0147917, -0.0833189);
+//    cout << x << ", " << y << endl;
+    if(bookType == 0){
+        model.setPosition(-0.0477083, -0.0147917, -0.0682016);
+    } else if(bookType == 1){
+        model.setPosition(-0.0477083, -0.0147917, -0.0757602);
+    } else {
+        model.setPosition(-0.0477083, -0.0147917, -0.0833189);
+    }
 
     
     textureFBO.allocate(tex -> getWidth(), tex -> getHeight());
@@ -206,10 +180,27 @@ void Book::setup(ofTexture *_tex){
     
     
     
+    //Texture coordinages and dimensions of the page regions
+    //within the book texture
+    pageTexCoords.resize(6);
     
+    pageTexCoords[0].set(1118.503, 112.136);
+    pageTexCoords[1].set(1584.182, 112.136);
+    pageTexCoords[2].set(  57.516, 863.598);
+    pageTexCoords[3].set( 559.016, 863.598);
+    pageTexCoords[4].set(1050.016, 862.695);
+    pageTexCoords[5].set(1542.516, 862.695);
     
+    pageDims.resize(6);
     
-    bIsActive = true;
+    pageDims[0].set(431.985, 695.695);
+    pageDims[1].set(431.985, 695.695);
+    pageDims[2].set(459.516, 746.028);
+    pageDims[3].set(459.516, 746.028);
+    pageDims[4].set(459.516, 746.028);
+    pageDims[5].set(459.516, 746.028);
+    
+    bIsActive = false;
     bIsAnimating = false;
     
     //Rotation/translation variables to move book
@@ -376,11 +367,22 @@ void Book::draw(){
         //translate the book to the position on the shelf
         //with the bottom left corner of the spine at pos
         ofTranslate(pos);
-
-//        ofSetLineWidth(2);
+        
+//        //draw axes and scale up so we can position things visually more precisely
+//        //See "model.setPosition(...)" in setup
+//        ofTranslate(0, 300, 0);
+//        ofSetLineWidth(1);
 //        ofDrawAxis(100);
-//
-//        ofScale(6, 6, 6);
+//        ofScale(3, 3, 3);
+//        
+//        
+//        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 17, 27);
+//        float y = ofMap(ofGetMouseY(), 0, ofGetHeight(), 100, 150);
+//        cout << x << ", " << y << endl;
+//        ofSetColor(255, 200, 0);
+//        ofDrawRectangle(0, 0, x, -y);
+        
+
         
         if(bIsActive){
             

@@ -67,7 +67,8 @@ void ofApp::setup(){
     camera.setTarget(ofVec3f(ofGetWidth()/2, ofGetHeight()/2, 0));
 //    camera.setFarClip(10000);
 //    camera.setNearClip(-100);
-    
+    camera.setOrientation(ofVec3f(180, 0, 0));
+    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
     
     
     //----------Debug Tools----------

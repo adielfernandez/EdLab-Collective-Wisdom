@@ -27,7 +27,7 @@ public:
     Book();
     
     void loadModel(int bType, int tType);
-    void setup(ofTexture *_tex);
+    void setup(ofTexture *_tex, ofTrueTypeFont *_font);
     void update();
     void triggerDisplay();
     void draw();
@@ -39,6 +39,7 @@ public:
     //Book type: 0 = short, 1 = medium, 2 = tall
     int bookType;
     int texType;
+    int fontType;
     
     //shelf numbers left 0,1,2 and right 3,4,5
     int shelfNum;
@@ -51,6 +52,7 @@ public:
     ofFbo textureFBO;
     ofMaterial material;
     ofTexture *tex;
+    ofTrueTypeFont *font;
     ofVboMesh spineMesh;
     
     //positioning and animation
@@ -85,25 +87,14 @@ public:
     //resize to expected results. This factor
     //is determined visually to give
     //books the desired size
-    float scaleFactor;
+    float modelScale;
     
     //these are the actual min/max
     //dimensions of the closed book
-    float modelScale;
     float thickness, depth, height;
 
-    float maxX;
-    float minX;
-    float maxY;
-    float minY;
-    float maxZ;
-    float minZ;
-    float realMaxX;
-    float realMinX;
-    float realMaxY;
-    float realMinY;
-    float realMaxZ;
-    float realMinZ;
+    vector<ofVec2f> pageTexCoords;
+    vector<ofVec2f> pageDims;
     
     
     

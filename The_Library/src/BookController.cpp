@@ -16,38 +16,46 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 8;
+    numBooksPerShelf = 16;
     numShelves = 3;
     
     int numBooks = numBooksPerShelf * numShelves;
     
     
+    ofDirectory texDir;
+    texDir.listDir("books/textures");
+    
     //GROUPING ALGORITHM
     //Populates shelves with small groupings of different book types and colors
     //3 styles of book, short, medium, tall
+    //Various fonts and textures
+    //Each group has a consistent model, texture and font
     int numBookTypes = 3;
-    int numTexTypes = 3;
+    int numTexTypes = texDir.size();
+    int numFontTypes = 5;
     
     int placeInThisGroup = 0;
     int numInThisGroup = round(ofRandom(2,4));
-    int groupBookType = 0; //floor(ofRandom(numBookTypes));
+    int groupBookType = floor(ofRandom(numBookTypes));
     int groupTexType = floor(ofRandom(numTexTypes));
+    int groupFontType = floor(ofRandom(numFontTypes));
+    
     int lastGroupBookType = groupBookType;
     int lastGroupTexType = groupTexType;
+    int lastGroupFontType = groupFontType;
     
     //Model and texture used by this book
     int thisBookType = 0;
     int thisTexType = 0;
-
+    int thisFontType = 0;
     
     for(int i = 0; i < numBooks; i++){
-        
-        
         
         if(placeInThisGroup < numInThisGroup){
             
             thisBookType = groupBookType;
             thisTexType = groupTexType;
+            thisFontType = groupFontType;
             
         } else {
             
@@ -56,6 +64,7 @@ void BookController::loadModels(){
             
             groupBookType = floor(ofRandom(numBookTypes));
             groupTexType = floor(ofRandom(numTexTypes));
+            groupFontType = floor(ofRandom(numFontTypes));
 
             //If it's the same as last time, add one (wrap if too far)
             if(groupBookType == lastGroupBookType){
@@ -67,12 +76,19 @@ void BookController::loadModels(){
                 groupTexType++;
                 if(groupTexType >= numTexTypes) groupTexType %= numTexTypes;
             }
+            if(groupFontType == lastGroupFontType){
+                groupFontType++;
+                if(groupFontType >= numFontTypes) groupFontType %= numFontTypes;
+            }
             
             placeInThisGroup = 0;
             thisBookType = groupBookType;
             thisTexType = groupTexType;
+            thisFontType = groupFontType;
+            
             lastGroupTexType = groupTexType;
             lastGroupBookType = groupBookType;
+            lastGroupFontType = groupFontType;
         }
         
         cout << "Loading Book " << i << " - Place in this group " << placeInThisGroup << ", model " << thisBookType << ", texture " << thisTexType << endl;
@@ -114,6 +130,18 @@ void BookController::setup(){
         t = img.getTexture();
         
         textures.push_back(t);
+        
+    }
+    
+    ofDirectory fontDir;
+    fontDir.listDir("fonts");
+    
+    for(int i = 0; i < (int)fontDir.size(); i++){
+        
+        ofTrueTypeFont f;
+        f.load(fontDir.getPath(i), 25);
+        
+        fonts.push_back(f);
         
     }
     
@@ -165,7 +193,7 @@ void BookController::setup(){
         for(int i = bookCounter; i < booksThisShelf; i++){
             
             //now that all the positions and defaults have been set, set it up
-            books[i].setup(&textures[ books[i].texType ]);
+            books[i].setup(&textures[ books[i].texType ], &fonts[ books[i].fontType ] );
             
             //get the place of the current book on its own shelf
             int bookNumThisShelf = i % numBooksPerShelf;

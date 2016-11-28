@@ -13,10 +13,44 @@ void ofApp::setup(){
     animationPosition = 0;
     
     model.loadModel("converted/bookTall.fbx", false);
-//    model.loadModel("working/bookMedium.fbx", false);
+//    model.loadModel("converted/bookMedium.fbx", false);
+//    model.loadModel("converted/bookShort.fbx", false);
 //    model.loadModel("ship/Ship N181113.3DS", false);
     
-
+/*
+ 
+ 
+ DIMENSIONS
+ SHORT:
+ Min X: -836
+ Max X: 836
+ Min Y: -264.067
+ Max Y: 264.067
+ Min Z: -1328
+ Max Z: 1328
+ 
+ MEDIUM:
+ Min X: -836
+ Max X: 836
+ Min Y: -264.067
+ Max Y: 264.067
+ Min Z: -1328
+ Max Z: 1328
+ 
+ TALL:
+ Min X: -836
+ Max X: 836
+ Min Y: -264.067
+ Max Y: 264.067
+ Min Z: -1328
+ Max Z: 1328
+ 
+ 
+ */
+    
+    
+    
+    
     
 //    model.setPosition(ofGetWidth() * 0.5, (float)ofGetHeight() * 0.75 , 0);
     model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);

@@ -16,7 +16,9 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "Book.hpp"
-#include "Bookcase.hpp"
+#include "../Furniture/Bookcase.hpp"
+#include "../Content/Contribution.hpp"
+#include "../Content/ContentManager.hpp"
 
 #pragma once
 
@@ -29,30 +31,31 @@ public:
     
     void loadModels();
     void setBookCaseRefs(Bookcase *leftCase, Bookcase *rightCase);
-    void setup();
+    void setup(vector<Contribution> *cList);
     void update();
     void draw();
     
     void checkMouseBookTrigger(int x, int y);
     
-    vector<ofTrueTypeFont> fonts;
+    //Content for all the books
+    vector<Contribution> *contributionList;
     
-    vector<Book> books;
-    
-    //textures: book cover/page textures
-    vector<ofTexture> textures;
+    void onNewContribution( Contribution& c );
     
     //get pointers to the bookcase where we'll
     //be putting the books
     Bookcase *leftBookcase;
     Bookcase *rightBookcase;
+
     
+    //Books vector and Assets
+    vector<Book> books;
+    vector<ofTexture> textures;
+    vector<ofTrueTypeFont> fonts;
+    
+    //Book placement and arrangment
     int numBooksPerShelf;
     int numShelves;
-
-    vector<bool> bShelvesInUse;
-
-    void bookReturnedEvt();
     
 };
 

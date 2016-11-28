@@ -14,10 +14,11 @@ Book::Book(){
     
 }
 
-void Book::loadModel(int bType, int tType){
+void Book::loadModel(int bType, int tType, int fType){
 
     bookType = bType;
     texType = tType;
+    fontType = fType;
     
     if(bookType == 0){
         model.loadModel("books/bookShort.fbx", false);
@@ -38,8 +39,10 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     tex = _tex;
     font = _font;
     
-    bPrintDebug = false;
     
+    //--------------------BOOK POSITIONING AND SCALING--------------------
+    
+    bPrintDebug = false;
     if(bPrintDebug){
         
         //figure out the minimum and maximum dimensions
@@ -84,19 +87,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     }
     
     
-
     
-    //Start working with model
-    model.setLoopStateForAllAnimations(OF_LOOP_NONE);
-    model.setPausedForAllAnimations(true);
-    
-    //don't play, we'll manually scrub through the animation
-//    model.playAllAnimations();
-
-    
-    //NOTE: Assimp scaling does not affect vertices themselves. In addition
-    //scaling using .setScale() does not give reliable results. So, set scale
-    //normalization to false and use your own scaling with push/pop matrices.
     
     model.setScaleNormalization(false);
     model.setScale(1.0, 1.0, 1.0); //unnecessary
@@ -111,11 +102,10 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     float bulkScale = 1.0f;
     
     //Scale is figured out visually since AssImp Model does not give reliable sizing
-    //Scale factor (as a function of book height)
-//    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 600, 900);
-//    modelScale = x;
-//    cout << modelScale << endl;
     modelScale = 819.219 * bulkScale;
+    
+    currentScale = modelScale;
+    displayScale = modelScale * 1.25;
     
     //Real pixel dimensions determined visually at the scale above (819.219)
     //Short book
@@ -147,10 +137,6 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     
     //model positioned at bottom left corner of spine
     //values acquired visually since AssImp model does not give reliable size/scaling
-//    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -0.1, 0);
-//    float y = ofMap(ofGetMouseY(), 0, ofGetHeight(), -0.1, 0);
-//    model.setPosition(-0.0477083, -0.0147917, -0.0833189);
-//    cout << x << ", " << y << endl;
     if(bookType == 0){
         model.setPosition(-0.0477083, -0.0147917, -0.0682016);
     } else if(bookType == 1){
@@ -160,47 +146,68 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     }
 
     
+    //--------------------BOOK TEXTURING--------------------
+    
     textureFBO.allocate(tex -> getWidth(), tex -> getHeight());
+    
+    cout << "TEX WIDTH: " <<tex -> getWidth() << endl;
     
     textureFBO.begin();
     ofClear(255, 255, 255, 255);
     ofSetColor(255);
     tex -> draw(0, 0);
-    
     textureFBO.end();
+    
+    
+    
+    //resize all the texCoords for a 500x500 texture
+    float texScaleDown = 1.0f;
+    
     
     
     //create a mesh from the texture to make the
     //spine placeholder for when the book is inactive
-    float texCoordX = 515; //position of spine in texture map
-    float texCoordY = 99;
-    float texWidth = 86;
-    float texHeight = 710;
+    //Texture dimensions: 1000px x 1000px
+    float texCoordX = 230.225 * texScaleDown; //position of spine in texture map
+    float texCoordY = 25.027 * texScaleDown;
+    float texWidth = 45.75 * texScaleDown;
+    float texHeight = 371.833 * texScaleDown;
     spineMesh = tex -> getMeshForSubsection(0, -height, 0, thickness, height, texCoordX, texCoordY, texWidth, texHeight, true, OF_RECTMODE_CORNER);
     
     
+    //--------------------Book Text and Page Layouts--------------------
     
     //Texture coordinages and dimensions of the page regions
-    //within the book texture
+    //within the book texture (tex = 1000px x 1000px)
+    
     pageTexCoords.resize(6);
     
-    pageTexCoords[0].set(1118.503, 112.136);
-    pageTexCoords[1].set(1584.182, 112.136);
-    pageTexCoords[2].set(  57.516, 863.598);
-    pageTexCoords[3].set( 559.016, 863.598);
-    pageTexCoords[4].set(1050.016, 862.695);
-    pageTexCoords[5].set(1542.516, 862.695);
+    pageTexCoords[0].set(510.354, 42.588);
+    pageTexCoords[1].set(754.459, 42.588);
+    pageTexCoords[2].set(  28.292, 422.088);
+    pageTexCoords[3].set( 272.959, 422.088);
+    pageTexCoords[4].set(513.625, 422.088);
+    pageTexCoords[5].set(753.959, 422.088);
     
-    pageDims.resize(6);
+    for(int i = 0; i < pageTexCoords.size(); i++){
+        pageTexCoords[i] *= texScaleDown;
+    }
     
-    pageDims[0].set(431.985, 695.695);
-    pageDims[1].set(431.985, 695.695);
-    pageDims[2].set(459.516, 746.028);
-    pageDims[3].set(459.516, 746.028);
-    pageDims[4].set(459.516, 746.028);
-    pageDims[5].set(459.516, 746.028);
     
-    bIsActive = false;
+    pageWidth = 223.105 * texScaleDown;
+    pageHeight = 363.878 * texScaleDown;
+
+
+    
+    //--------------------ANIMATION--------------------
+    model.setLoopStateForAllAnimations(OF_LOOP_NONE);
+    model.setPausedForAllAnimations(true);
+    
+    //don't play, we'll manually scrub through the animation
+    //    model.playAllAnimations();
+    
+    bIsUnused = true;
+    bIsActive = true;
     bIsAnimating = false;
     
     //Rotation/translation variables to move book
@@ -219,6 +226,114 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     
 }
 
+void Book::formatTextForDisplay(){
+    
+    //Go through the userContribution text and split it up
+    //into different pages based on line length and number
+    //of lines on page. Do checks to see if a whole word fits
+    //on a line, if not drop it to the next line by adding a '\n'
+
+    pageText.clear();
+    
+    //prepare the total string: intro to author, name, ***, user message
+    //the *** will make a page break in the text wrapping code below
+    string total;
+    total = "Contribution Authored by: " + userContribution.name + " *** " + userContribution.message;
+    
+    //split the whole string into a vector of words
+    vector<string> words = ofSplitString(total, " ");
+    
+    const int numCharsPerLine = 15;
+    const int linesPerPage = 8;
+    
+    int currentLine = 0;
+    int charsLeftInLine = numCharsPerLine;
+    
+    string textThisPage = "";
+    
+    for(int i = 0; i < words.size(); i++){
+        
+        //first check for the page break between the
+        //author page and rest of content
+        if( words[i].compare("***") == 0 ) {
+            
+            pageText.push_back(textThisPage);
+            
+            //Do not add *** to page, just make text blank
+            textThisPage = "";
+            currentLine = 0;
+            charsLeftInLine = numCharsPerLine;
+            
+            
+        } else {
+            
+            //check if the number of characters left in the current line
+            //is greater than or equal to the current word, add it
+            if(words[i].length() <= charsLeftInLine){
+                
+                //add the word
+                textThisPage += words[i];
+                charsLeftInLine -= words[i].length();
+                
+                //if there's no more room on the line...
+            } else {
+                
+                //and we're not at the bottom of the page
+                if(currentLine < linesPerPage){
+                    
+                    //go to next line
+                    textThisPage += "\n";
+                    currentLine++;
+                    charsLeftInLine = numCharsPerLine;
+                    
+                    //add the word
+                    textThisPage += words[i];
+                    charsLeftInLine -= words[i].length();
+                    
+                    //if we ARE at the bottom of the page...
+                } else {
+                    
+                    //add it to the pageText vector
+                    pageText.push_back(textThisPage);
+                    
+                    //add word to the fresh page
+                    textThisPage = words[i];
+                    currentLine = 0;
+                    charsLeftInLine -= words[i].length();
+                    
+                }
+                
+            }
+            
+            //add a space
+            textThisPage += " ";
+            charsLeftInLine--;
+            
+            //if thats the end of this line
+            //go to the next line
+            if(charsLeftInLine <= 0){
+                textThisPage += "\n";
+                currentLine++;
+                charsLeftInLine = numCharsPerLine;
+            }
+            
+            //if we're on the last word but havent reached the end of the page yet,
+            //add the text to the vector
+            if(i == words.size() - 1){
+                pageText.push_back(textThisPage);
+            }
+        }
+    }
+    
+//    for(int i = 0; i < pageText.size(); i++){
+//        cout << "Page: " << i << endl;
+//        cout << pageText[i] << endl;
+//        cout << "\n" << endl;
+//    }
+    
+}
+
+
 void Book::triggerDisplay(){
     
     bIsActive = true;
@@ -236,7 +351,6 @@ void Book::update(){
     if(bIsActive){
         model.update();
         
-        
         if(bIsAnimating){
             
             //----------------------------------------------------------//
@@ -253,8 +367,10 @@ void Book::update(){
             //Book is flipped to first open pages
             float firstPageTime = displayReadyTime + 2.0f;
             
+            float bookWait = firstPageTime + 20.0f; //wait with book open
+            
             //Book is flipped to second open pages
-            float secondPageTime = firstPageTime + 1.0f;
+            float secondPageTime = bookWait + 1.0f;
             
             //Book snaps closed
             float closeBookTime = secondPageTime + 1.0f;
@@ -288,10 +404,16 @@ void Book::update(){
                 //ease position and angle
                 pos = pulledOutPos.getInterpolated(displayPos, pct);
                 
+                currentScale = ofLerp(modelScale, displayScale, pct);
+                
             } else if(now < firstPageTime){
                 
                 //do a linear mapping of the animation and clamp it
                 animPos = ofMap(now, displayReadyTime, firstPageTime, animationStart, animFirstPages, true);
+            
+            } else if(now < bookWait){
+                
+                animPos = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
                 
             } else if(now < secondPageTime){
                 
@@ -313,6 +435,7 @@ void Book::update(){
                 //ease position and angle
                 pos = displayPos.getInterpolated(pulledOutPos, pct);
                 
+                currentScale = ofLerp(displayScale, modelScale, pct);
                 
             } else if(now < putBackTime + 0.1f){
                 //add in a tenth of a second to allow books to finish last
@@ -342,16 +465,47 @@ void Book::update(){
             model.setPositionForAllAnimations(animPos);
             
             
+            //-----DRAW TEXT ONTO TEXTURE
+            textureFBO.begin();
+            ofSetColor(255);
+            tex -> draw(0, 0);
+            ofDisableDepthTest();
+            //go through all the pages and draw them out
+            for(int i = 0; i < pageText.size(); i++){
+                
+                //if for some reason there is too much text (freak bug)
+                //hard limit to 6 pages
+                if(i < pageTexCoords.size()){
+                    
+                    ofVec2f textPos;
+                    textPos = pageTexCoords[i];
+                    float pageMargin = 15;
+                    float lineHeight = font -> stringHeight("A");
+                    textPos += ofVec2f(pageMargin, pageMargin + lineHeight);
+                    
+                    ofSetColor(0);
+                    font -> drawString(pageText[i], textPos.x, textPos.y);
+                    
+                }
+                
+            }
+            ofEnableDepthTest();
+//            ofSetColor(0, 128, 255);
+//            ofDrawRectangle(0, 0, textureFBO.getWidth(), textureFBO.getHeight());
+            
+            textureFBO.end();
+            
+            
+            
+        
         } else {
             
             //if we're not displaying
             
             
-        }
+        } //close bIsAnimating else loop
         
-        
-        
-    }
+    } //close bIsActive loop
     
     
     
@@ -401,7 +555,7 @@ void Book::draw(){
             
             
             //scale the model up
-            ofScale(modelScale, modelScale, modelScale);
+            ofScale(currentScale, currentScale, currentScale);
             
             //disable the model textures so we can use our own
             model.disableTextures();

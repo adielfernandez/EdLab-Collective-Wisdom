@@ -16,14 +16,14 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 16;
-    numShelves = 3;
+    numBooksPerShelf = 1;
+    numShelves = 1;
     
     int numBooks = numBooksPerShelf * numShelves;
     
     
-    ofDirectory texDir;
-    texDir.listDir("books/textures");
+//    ofDirectory texDir;
+//    texDir.listDir("books/textures");
     
     //GROUPING ALGORITHM
     //Populates shelves with small groupings of different book types and colors
@@ -31,11 +31,11 @@ void BookController::loadModels(){
     //Various fonts and textures
     //Each group has a consistent model, texture and font
     int numBookTypes = 3;
-    int numTexTypes = texDir.size();
+    int numTexTypes = 7;
     int numFontTypes = 5;
     
     int placeInThisGroup = 0;
-    int numInThisGroup = round(ofRandom(2,4));
+    int numInThisGroup = round(ofRandom(2,3));
     int groupBookType = floor(ofRandom(numBookTypes));
     int groupTexType = floor(ofRandom(numTexTypes));
     int groupFontType = floor(ofRandom(numFontTypes));
@@ -94,7 +94,8 @@ void BookController::loadModels(){
         cout << "Loading Book " << i << " - Place in this group " << placeInThisGroup << ", model " << thisBookType << ", texture " << thisTexType << endl;
         
         Book b;
-        b.loadModel(thisBookType, thisTexType);
+        b.loadModel(thisBookType, thisTexType, thisFontType);
+
         
         books.push_back(b);
         
@@ -115,7 +116,9 @@ void BookController::setBookCaseRefs(Bookcase *leftCase, Bookcase *rightCase){
     
 }
 
-void BookController::setup(){
+void BookController::setup(vector<Contribution> *cList){
+    
+    contributionList = cList;
     
     //load images with manual file names
     ofDirectory texDir;
@@ -142,6 +145,8 @@ void BookController::setup(){
         f.load(fontDir.getPath(i), 25);
         
         fonts.push_back(f);
+        
+        
         
     }
     
@@ -200,7 +205,6 @@ void BookController::setup(){
             
             //after setup (once book has found its own dimensions),
             //set its position in the bookcase
-//            books[i].pos = shelfStart + dirToShelfEnd * bookNumThisShelf * (books[i].thickness + bookSpacing);
             books[i].pos = currentShelfPos;
             //add the book thickness to the shelf to place the next book
             currentShelfPos += dirToShelfEnd * (books[i].thickness + bookSpacing);
@@ -221,12 +225,28 @@ void BookController::setup(){
             books[i].pulledOutPos = books[i].pos + ofVec3f(sideShift, 0, -(books[i].depth));
 
             books[i].shelfNum = j;
+
             
-//            cout << "Book " << i << " pos: " << books[i].pos << endl;
-//            cout << "Book " << i << " displayPos: " << books[i].displayPos << endl;
-//            cout << "Book " << i << " storedPos: " << books[i].storedPos << endl;
-//            cout << "Book " << i << " pulledOutPos: " << books[i].pulledOutPos << endl;
-//            cout << endl;
+            //Add the contributions from the list to the book
+            //if we don't have enough contributions, mark extra books as bIsUnused
+            if(i < contributionList -> size()){
+                
+                //mark book as used
+                books[i].bIsUnused = false;
+                
+                //copy the contribution into the book
+                books[i].userContribution = (*contributionList)[i];
+                
+                //and format the text to be displayed
+                //print the book number too
+                cout << "-----BOOK # " << i << "-----" <<endl;
+                books[i].formatTextForDisplay();
+                
+            } else {
+                
+                books[i].bIsUnused = true;
+                
+            }
             
             //move on to next book
             bookCounter++;
@@ -234,8 +254,7 @@ void BookController::setup(){
     }
 
     
-    //initialize shelves as not in use
-    bShelvesInUse.assign(numShelves, false);
+    
     
 
     
@@ -244,38 +263,39 @@ void BookController::setup(){
 void BookController::checkMouseBookTrigger(int x, int y){
     
     
-    //update all books
+    //Check all books for mouse presence
     for(int i = 0; i < books.size(); i++){
         
-        //first check whether or not this book is on a shelf that is in use
-//        if(bShelvesInUse[ books[i].shelfNum ] == false){
-//        
-//            bShelvesInUse[i] = true;
-        
-            //see if mouse is inside book
-            //remember: book pos is lower left corner
-            if(x > books[i].pos.x && x < books[i].pos.x + books[i].thickness
-               && y < books[i].pos.y && y > books[i].pos.y - books[i].height){
-                
-                books[i].triggerDisplay();
-                
-                //add listener to this book so we know when it is done with the shelf
-//                ofAddListener(books[i].bookReturnedEvt, this, &BookController::bookReturnedEvt());
-                
-            }
+        //see if mouse is inside book
+        //remember: book pos is lower left corner
+        if(x > books[i].pos.x && x < books[i].pos.x + books[i].thickness
+           && y < books[i].pos.y && y > books[i].pos.y - books[i].height){
             
-//        }
+            books[i].triggerDisplay();
+            
+            
+        }
         
     }
     
 }
+
+void BookController::onNewContribution( Contribution& c ){
+    
+    cout << "New Message Received by book controller" << endl;
+    cout << c.name << ", " << c.message << endl;
+    
+}
+
 
 void BookController::update(){
     
     
     //update all books
     for(int i = 0; i < books.size(); i++){
-        books[i].update();
+        if(books[i].bIsUnused == false){
+            books[i].update();
+        }
     }
     
 }
@@ -288,7 +308,9 @@ void BookController::draw(){
 
 
     for(int i = 0; i < books.size(); i++){
-        books[i].draw();
+        if(books[i].bIsUnused == false){
+            books[i].draw();
+        }
     }
     
     

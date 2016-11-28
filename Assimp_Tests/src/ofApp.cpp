@@ -12,7 +12,7 @@ void ofApp::setup(){
     bAnimateMouse = false;
     animationPosition = 0;
     
-    model.loadModel("converted/bookTall.fbx", false);
+    model.loadModel("newlyMapped/bookTall.fbx", false);
 //    model.loadModel("converted/bookMedium.fbx", false);
 //    model.loadModel("converted/bookShort.fbx", false);
 //    model.loadModel("ship/Ship N181113.3DS", false);
@@ -377,7 +377,7 @@ void ofApp::draw(){
     
 //    ofDrawBitmapString(ofToString(x) + ", " + ofToString(y), mouseX, mouseY);
     
-    float fboScale = 0.2;
+    float fboScale = 0.4;
     
     ofVec2f fboDrawPos(0, ofGetHeight() - fboScale * newSkin.getHeight());
     
@@ -448,11 +448,11 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
 
     if(key == '1'){
-        model.loadModel("converted/bookShort.fbx", false);
+        model.loadModel("newlyMapped/bookShort.fbx", false);
     } else if(key == '2'){
-        model.loadModel("converted/bookMedium.fbx", false);
+        model.loadModel("newlyMapped/bookMedium.fbx", false);
     } else if(key == '3'){
-        model.loadModel("converted/bookTall.fbx", false);
+        model.loadModel("newlyMapped/bookTall.fbx", false);
     }
     
     

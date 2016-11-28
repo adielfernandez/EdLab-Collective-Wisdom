@@ -39,17 +39,27 @@ void ofApp::setup(){
     //Book models need to be loaded before other objects load their media
     //because of a bug in ofxAssimpModelLoader, otherwise loading will crash
     bookController.loadModels();
-
+    
     //Now load their media
     wallpaper.loadMedia();
     frame.loadMedia();
     leftBookcase.loadMedia();
     rightBookcase.loadMedia();
     
+    
+    //Load contributions from file
+    contentManager.loadContent();
+    
+    
     //Finally, now that the book models have been loaded
     //and the bookcases have been setup, we can setup book textures
     //and place them on the shelves
-    bookController.setup();
+    bookController.setup(&contentManager.contributionList);
+    
+    
+    //add a listener in the Book controller for events
+    //in the content manager when it gets new messages
+    ofAddListener(contentManager.newContributionEvt, &bookController, &BookController::onNewContribution);
     
     
     bgEdgeMask.load("images/interface/bgMask.png");
@@ -103,13 +113,13 @@ void ofApp::update(){
 //    float zPos = ofMap(mouseX, 0, ofGetWidth(), -2000, 2000);
 //    cout << "Dist: " << zPos << endl;
 //    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, zPos);
-    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
-    
+//    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+
 //    float x = ofMap(mouseX, 0, ofGetWidth(), -180, 180);
 //    float y = ofMap(mouseY, 0, ofGetHeight(), -180, 180);
 //    cout << "XY: " << x << ", " << y << endl;
 //    camera.setOrientation(ofVec3f(x, y, 0));
-    camera.setOrientation(ofVec3f(180, 0, 0));
+//    camera.setOrientation(ofVec3f(180, 0, 0));
     
 }
 
@@ -237,6 +247,18 @@ void ofApp::keyPressed(int key){
         bSendHeartbeat = !bSendHeartbeat;
     }
     
+    if(key == 'c'){
+        
+        //reset camera
+        camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+        camera.setOrientation(ofVec3f(180, 0, 0));
+        
+    }
+    
+    if(key == 'm'){
+        contentManager.logNewContribution("Name", "Message. Message. Message. Message.");
+    }
+    
 }
 
 //--------------------------------------------------------------
@@ -351,7 +373,7 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
         
         cout << "From: " << name << "\nMessage: " << message << endl;
         
-        
+        contentManager.logNewContribution(name, message);
         
     }
     

@@ -16,6 +16,7 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "ofxEasing.h"
+#include "../Content/Contribution.hpp"
 
 #pragma once
 
@@ -26,10 +27,11 @@ public:
     
     Book();
     
-    void loadModel(int bType, int tType);
+    void loadModel(int bType, int tType, int fType);
     void setup(ofTexture *_tex, ofTrueTypeFont *_font);
     void update();
     void triggerDisplay();
+    void formatTextForDisplay();
     void draw();
     
     //Support Methods
@@ -44,9 +46,27 @@ public:
     //shelf numbers left 0,1,2 and right 3,4,5
     int shelfNum;
     
+    //for books that have no message and
+    //not needed in the library
+    bool bIsUnused;
+    
+    //Books stored in the shelves
     bool bIsActive;
+    
+    
     bool bIsAnimating;
     
+    
+    //Book Content and Page layouts
+    vector<ofVec2f> pageTexCoords;
+    float pageWidth, pageHeight;
+    
+    Contribution userContribution;
+    
+    vector<string> pageText;
+    
+
+
     //visuals and texturing
     ofxAssimpModelLoader model;
     ofFbo textureFBO;
@@ -75,11 +95,6 @@ public:
     const float animThirdPages = 0.77;
     const float animationEnd = 0.94;
     
-    //event to notify bookController that
-    //the book has returned to the shelf
-    ofEvent<bool> bookReturnedEvt;
-    void bookReturned();
-    
     //-----Dimensions-----
     
     //This is the fudge factor.
@@ -88,13 +103,14 @@ public:
     //is determined visually to give
     //books the desired size
     float modelScale;
+    float currentScale;
+    float displayScale;
     
     //these are the actual min/max
     //dimensions of the closed book
     float thickness, depth, height;
 
-    vector<ofVec2f> pageTexCoords;
-    vector<ofVec2f> pageDims;
+
     
     
     

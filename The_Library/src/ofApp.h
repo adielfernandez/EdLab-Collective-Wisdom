@@ -3,11 +3,12 @@
 #include "ofMain.h"
 #include "ofxLibwebsockets.h"
 #include "ofxAssimpModelLoader.h"
-#include "Wallpaper.hpp"
-#include "Frame.hpp"
-#include "Bookcase.hpp"
-#include "BookController.hpp"
-
+#include "Furniture/Wallpaper.hpp"
+#include "Furniture/Frame.hpp"
+#include "Furniture/Bookcase.hpp"
+#include "Books/BookController.hpp"
+#include "Content/Contribution.hpp"
+#include "Content/ContentManager.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -77,8 +78,18 @@ class ofApp : public ofBaseApp{
     
     ofxLibwebsockets::Client client;
 
+    //Heartbeat sending
     unsigned long long lastHeartbeatTime;
     int heartbeatInterval;
     bool bSendHeartbeat;
     
+    //-----MESSAGE LOGGING AND RETRIEVAL-----
+    ContentManager contentManager;
+    
+
 };
+
+
+
+
+

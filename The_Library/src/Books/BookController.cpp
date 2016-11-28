@@ -16,8 +16,8 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 1;
-    numShelves = 1;
+    numBooksPerShelf = 2;
+    numShelves = 6;
     
     int numBooks = numBooksPerShelf * numShelves;
     
@@ -282,8 +282,28 @@ void BookController::checkMouseBookTrigger(int x, int y){
 
 void BookController::onNewContribution( Contribution& c ){
     
-    cout << "New Message Received by book controller" << endl;
-    cout << c.name << ", " << c.message << endl;
+    //go through the book vector, look for the first unused book
+    //then mark it as used and add the contribution to it
+    for(int i = 0; i < books.size(); i++){
+        
+        if(books[i].bIsUnused == true){
+            
+            //mark book as used
+            books[i].bIsUnused = false;
+            
+            //copy the contribution into the book
+            books[i].userContribution = c;
+            
+            //and format the text to be displayed
+            //print the book number too
+            books[i].formatTextForDisplay();
+            
+            //now break out of the for loop
+            //so we only trigger one book
+            break;
+        }
+        
+    }
     
 }
 

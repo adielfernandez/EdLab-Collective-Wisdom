@@ -16,14 +16,17 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 2;
-    numShelves = 6;
+    numBooksPerShelf = 16;
+    numShelves = 3;
     
     int numBooks = numBooksPerShelf * numShelves;
     
     
-//    ofDirectory texDir;
-//    texDir.listDir("books/textures");
+    ofDirectory texDir;
+    texDir.listDir("books/textures");
+    
+    ofDirectory fontDir;
+    fontDir.listDir("fonts");
     
     //GROUPING ALGORITHM
     //Populates shelves with small groupings of different book types and colors
@@ -31,8 +34,8 @@ void BookController::loadModels(){
     //Various fonts and textures
     //Each group has a consistent model, texture and font
     int numBookTypes = 3;
-    int numTexTypes = 7;
-    int numFontTypes = 5;
+    int numTexTypes = texDir.size();
+    int numFontTypes = fontDir.size();
     
     int placeInThisGroup = 0;
     int numInThisGroup = round(ofRandom(2,3));
@@ -91,7 +94,7 @@ void BookController::loadModels(){
             lastGroupFontType = groupFontType;
         }
         
-        cout << "Loading Book " << i << " - Place in this group " << placeInThisGroup << ", model " << thisBookType << ", texture " << thisTexType << endl;
+        cout << "Loading Book " << i << " - Place in this group " << placeInThisGroup << ", model " << thisBookType << ", texture " << thisTexType << ", font " << thisFontType << endl;
         
         Book b;
         b.loadModel(thisBookType, thisTexType, thisFontType);
@@ -142,7 +145,7 @@ void BookController::setup(vector<Contribution> *cList){
     for(int i = 0; i < (int)fontDir.size(); i++){
         
         ofTrueTypeFont f;
-        f.load(fontDir.getPath(i), 25);
+        f.load(fontDir.getPath(i), 11);
         
         fonts.push_back(f);
         
@@ -211,10 +214,13 @@ void BookController::setup(vector<Contribution> *cList){
             
             //figure out the display position of this book: the center
             //of the current shelf, raised so book is centered
-            books[i].displayPos = (midShelfBottom + midShelfTop)/2.0f;
+            books[i].displayPos = (shelfStart + shelfEnd)/2.0f;
 
+            //shift the book out (z) towards the viewer
+            books[i].displayPos += ofVec3f(0, 0, -20);
+            
             //shift the book up (y) a bit to center it and out (z) towards the viewer
-            books[i].displayPos += ofVec3f(0, books[i].height/2.0, -20);
+//            books[i].displayPos += ofVec3f(0, books[i].h  eight/2.0, -20);
             
             books[i].storedPos = books[i].pos;
             
@@ -239,12 +245,20 @@ void BookController::setup(vector<Contribution> *cList){
                 
                 //and format the text to be displayed
                 //print the book number too
-                cout << "-----BOOK # " << i << "-----" <<endl;
                 books[i].formatTextForDisplay();
                 
             } else {
                 
-                books[i].bIsUnused = true;
+                books[i].bIsUnused = false;
+                
+                //-----REMOVE THIS WHEN DONE TESTING!!!-----
+                
+                //copy the contribution into the book
+                books[i].userContribution = (*contributionList)[0];
+                
+                //and format the text to be displayed
+                //print the book number too
+                books[i].formatTextForDisplay();
                 
             }
             

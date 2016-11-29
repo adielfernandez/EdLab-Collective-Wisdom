@@ -12,14 +12,14 @@ void ofApp::setup(){
     connectToServer = false;
     
     if(connectToServer){
-//    client.connect("54.68.243.245", 8081);
-        client.connect("localhost", 8081);
+//        client.connect("localhost", 8081);
+        client.connect("35.165.1.38", 8081);
         client.addListener(this);
         bSendHeartbeat = true;
     }
 
     lastHeartbeatTime = 0;
-    heartbeatInterval = 250;
+    heartbeatInterval = 200;
     
     
     //----------Scene Setup----------
@@ -154,14 +154,13 @@ void ofApp::draw(){
         //bookcases draw in their proper places
         ofEnableDepthTest();
 
-        frame.draw();
-        
+        frame.draw();        
         leftBookcase.draw();
         rightBookcase.draw();
         
         bookController.draw();
 
-        bgEdgeMask.draw(-1, -1, bgEdgeMask.getWidth(), bgEdgeMask.getHeight() + 2);
+        bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
         
         
         camera.end();

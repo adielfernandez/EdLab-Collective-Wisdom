@@ -105,7 +105,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     modelScale = 819.219 * bulkScale;
     
     currentScale = modelScale;
-    displayScale = modelScale * 1.25;
+    
     
     //Real pixel dimensions determined visually at the scale above (819.219)
     //Short book
@@ -115,16 +115,30 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     //Tall book
     //x = 18.401, y = 136.316
     
+    
     if(bookType == 0) {
+        
         height = 111.599;
         thickness = 24.2906;
+
+        
     } else if(bookType == 1) {
-        height = 124.109;
+        
+        height = 124.10;
         thickness = 24.2906;
+        
     } else {
+        
         height = 136.316;
         thickness = 18.401;
+        
     }
+
+    //make display scale different depending on model
+    //goal is to have book fill shelf height, so
+    //height * displayScale should be roughly 138-140
+    displayScale = modelScale * (140.0f/height);
+    
 
     height *= bulkScale;
     thickness *= bulkScale;
@@ -150,7 +164,6 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     
     textureFBO.allocate(tex -> getWidth(), tex -> getHeight());
     
-    cout << "TEX WIDTH: " <<tex -> getWidth() << endl;
     
     textureFBO.begin();
     ofClear(255, 255, 255, 255);
@@ -159,19 +172,13 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     textureFBO.end();
     
     
-    
-    //resize all the texCoords for a 500x500 texture
-    float texScaleDown = 1.0f;
-    
-    
-    
     //create a mesh from the texture to make the
     //spine placeholder for when the book is inactive
-    //Texture dimensions: 1000px x 1000px
-    float texCoordX = 230.225 * texScaleDown; //position of spine in texture map
-    float texCoordY = 25.027 * texScaleDown;
-    float texWidth = 45.75 * texScaleDown;
-    float texHeight = 371.833 * texScaleDown;
+    //Texture dimensions: 512px x 512px
+    float texCoordX = 118.397; //position of spine in texture map
+    float texCoordY = 13.254;
+    float texWidth = 22.125;
+    float texHeight = 189.917;
     spineMesh = tex -> getMeshForSubsection(0, -height, 0, thickness, height, texCoordX, texCoordY, texWidth, texHeight, true, OF_RECTMODE_CORNER);
     
     
@@ -182,20 +189,16 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     
     pageTexCoords.resize(6);
     
-    pageTexCoords[0].set(510.354, 42.588);
-    pageTexCoords[1].set(754.459, 42.588);
-    pageTexCoords[2].set(  28.292, 422.088);
-    pageTexCoords[3].set( 272.959, 422.088);
-    pageTexCoords[4].set(513.625, 422.088);
-    pageTexCoords[5].set(753.959, 422.088);
     
-    for(int i = 0; i < pageTexCoords.size(); i++){
-        pageTexCoords[i] *= texScaleDown;
-    }
+    pageTexCoords[0].set(261.299, 21.838);
+    pageTexCoords[1].set(385.824, 21.838);
+    pageTexCoords[2].set(  14.281, 216.057);
+    pageTexCoords[3].set( 140.605, 215.922);
+    pageTexCoords[4].set(263.491, 215.922);
+    pageTexCoords[5].set(386.88, 215.419);
     
-    
-    pageWidth = 223.105 * texScaleDown;
-    pageHeight = 363.878 * texScaleDown;
+    pageWidth = 114.16;
+    pageHeight = 186.273;
 
 
     
@@ -207,7 +210,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     //    model.playAllAnimations();
     
     bIsUnused = true;
-    bIsActive = true;
+    bIsActive = false;
     bIsAnimating = false;
     
     //Rotation/translation variables to move book
@@ -331,6 +334,9 @@ void Book::formatTextForDisplay(){
 //        cout << "\n" << endl;
 //    }
     
+
+
+    
 }
 
 
@@ -344,15 +350,79 @@ void Book::triggerDisplay(){
 }
 
 void Book::update(){
-
-
+    
+//    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0, 1.0);
+//    float y = ofMap(ofGetMouseY(), 0, ofGetHeight(), 0, 30);
+//
+//
+//    
+//    pos.set(displayPos.x, displayPos.y + 200);
+//    currentRotX = displayRotX;
+//    currentRotZ = displayRotZ;
+//    model.update();
+//    model.setPositionForAllAnimations(x);
+//    currentScale = displayScale;
+//    
+////    font -> setLineHeight(y);
+//
+//    
+//    //-----DRAW TEXT ONTO TEXTURE
+//    textureFBO.begin();
+//    ofClear(255, 255, 255, 255);
+//    ofSetColor(255);
+//    tex -> draw(0, 0);
+//    
+//    ofDisableDepthTest();
+//    for(int i = 0; i < pageText.size(); i++){
+//    
+//        ofPushMatrix();
+//        ofTranslate(pageTexCoords[i]);
+//        
+//        //circle and cross hairs at page origin
+//        ofSetColor(0, 180, 0);
+//        ofDrawCircle(0, 0, 5);
+//        
+//        ofSetColor(0);
+//        ofSetLineWidth(1);
+//        ofDrawLine(-10, 0, 10, 0);
+//        ofDrawLine(0, -10, 0, 10);
+//
+//        //left pages draw closer to page edge
+//        //right pages draw further to get past page curvature
+//        float leftMargin = (i % 2 == 1 ? 10 : 5);
+//        float topMargin = 18.5;
+//        
+//        ofTranslate(leftMargin, topMargin);
+//        
+//        //red dot at text center
+//        ofSetColor(255, 0, 0);
+//        ofDrawCircle(0, 0, 3);
+//        
+//        ofSetColor(93, 50, 0);
+//        float lineHeight = font -> stringHeight("A");
+//        font -> drawString(pageText[i], 0, 0); //-lineHeight);
+//        
+//        ofPopMatrix();
+//    
+//    
+//    }
+//    
+//    ofEnableDepthTest();
+//    
+//    textureFBO.end();
+//    
+//
+//    if(ofGetMousePressed())
+//        cout << x << ", " << y << endl;
+    
     
     
     if(bIsActive){
         model.update();
-        
+
+
         if(bIsAnimating){
-            
+
             //----------------------------------------------------------//
             //--------------------ANIMATION SEQUENCE--------------------//
             //----------------------------------------------------------//
@@ -367,7 +437,7 @@ void Book::update(){
             //Book is flipped to first open pages
             float firstPageTime = displayReadyTime + 2.0f;
             
-            float bookWait = firstPageTime + 20.0f; //wait with book open
+            float bookWait = firstPageTime + 10.0f; //wait with book open
             
             //Book is flipped to second open pages
             float secondPageTime = bookWait + 1.0f;
@@ -413,7 +483,7 @@ void Book::update(){
             
             } else if(now < bookWait){
                 
-                animPos = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
+//                animPos = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
                 
             } else if(now < secondPageTime){
                 
@@ -462,36 +532,42 @@ void Book::update(){
                 bIsActive = false;
             }
             
+            
+//            animPos = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
             model.setPositionForAllAnimations(animPos);
             
             
             //-----DRAW TEXT ONTO TEXTURE
             textureFBO.begin();
+            
+            //clear the FBO from the last frame
+            ofClear(255, 255, 255, 255);
+
+            //draw the base texture first
             ofSetColor(255);
             tex -> draw(0, 0);
+            
             ofDisableDepthTest();
-            //go through all the pages and draw them out
+            //go through all the pages and draw out the text
             for(int i = 0; i < pageText.size(); i++){
+
+                ofPushMatrix();
                 
-                //if for some reason there is too much text (freak bug)
-                //hard limit to 6 pages
-                if(i < pageTexCoords.size()){
-                    
-                    ofVec2f textPos;
-                    textPos = pageTexCoords[i];
-                    float pageMargin = 15;
-                    float lineHeight = font -> stringHeight("A");
-                    textPos += ofVec2f(pageMargin, pageMargin + lineHeight);
-                    
-                    ofSetColor(0);
-                    font -> drawString(pageText[i], textPos.x, textPos.y);
-                    
-                }
+                //left pages draw closer to page edge
+                //right pages draw further to get past page curvature
+                float leftMargin = (i % 2 == 1 ? 10 : 5);
+                float topMargin = 18.5;
+                
+                ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + topMargin);
+                
+                ofSetColor(93, 50, 0);
+                //                    float lineHeight = font -> stringHeight("A");
+                font -> drawString(pageText[i], 0, 0); //-lineHeight);
+                
+                ofPopMatrix();
                 
             }
             ofEnableDepthTest();
-//            ofSetColor(0, 128, 255);
-//            ofDrawRectangle(0, 0, textureFBO.getWidth(), textureFBO.getHeight());
             
             textureFBO.end();
             
@@ -522,6 +598,29 @@ void Book::draw(){
         //with the bottom left corner of the spine at pos
         ofTranslate(pos);
         
+//        ofVec3f textPos(0, - height, -40);
+//        ofVec2f margins(10, 20);
+//        float lineHeight = font -> stringHeight("A");
+//        textPos += margins;
+//        
+//        //font is at size 100, scale down to desired size
+//        float fontScale = ofMap(ofGetMouseY(), 0, ofGetHeight(), 0.1, 1.0);
+//        cout << "Font Scale: " << fontScale << endl;
+//        
+//        
+//        ofPushMatrix();
+//        ofTranslate(-textPos.x, -textPos.y, textPos.z);
+//        
+//        ofScale(fontScale, fontScale);
+//        
+//        
+//        ofSetColor(0, 255, 0);
+//        font -> drawString(pageText[2], 0, -lineHeight * fontScale);
+//        
+//        ofPopMatrix();
+
+        
+        
 //        //draw axes and scale up so we can position things visually more precisely
 //        //See "model.setPosition(...)" in setup
 //        ofTranslate(0, 300, 0);
@@ -539,9 +638,6 @@ void Book::draw(){
 
         
         if(bIsActive){
-            
-            //with the bottom left corner of the spine at pos
-//            ofTranslate(thickness/2, -height/2, depth/2);
             
             //        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -90, 90);
             //        float z = ofMap(ofGetMouseY(), 0, ofGetHeight(), -90, 90);
@@ -565,6 +661,10 @@ void Book::draw(){
             model.drawFaces();
             
             if(textureFBO.isAllocated()) textureFBO.getTexture().unbind();
+
+
+            
+            
 
             
         } else {

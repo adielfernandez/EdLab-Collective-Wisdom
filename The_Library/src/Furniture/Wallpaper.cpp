@@ -34,7 +34,7 @@ void Wallpaper::loadMedia(){
         
     }
     
-    currentImg = round(ofRandom( images.size() - 1 ));
+    currentImg = 3; //round(ofRandom( images.size() - 1 ));
     
 }
 

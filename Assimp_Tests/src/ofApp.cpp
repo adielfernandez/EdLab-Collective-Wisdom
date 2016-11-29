@@ -63,12 +63,12 @@ void ofApp::setup(){
     meshNum = 0;
     
     //get original texture
-    origTex = model.getTextureForMesh(meshNum);
+//    origTex = model.getTextureForMesh(meshNum);
     
-//    ofImage t;
-//    t.load("bust/tex.jpg");
-//    
-//    origTex = t.getTexture();
+    ofImage t;
+    t.load("newlyMapped/textures/01.png");
+    
+    origTex = t.getTexture();
     
     //copy it to an FBO we'll actually draw with
     newSkin.allocate(origTex.getWidth(), origTex.getHeight());
@@ -77,12 +77,13 @@ void ofApp::setup(){
     ofClear(255, 255, 255, 255);
     ofSetColor(255);
     
-//    t.draw(0, 0);
-    model.getTextureForMesh(meshNum).draw(0, 0);
+    t.draw(0, 0);
+//    model.getTextureForMesh(meshNum).draw(0, 0);
     
     newSkin.end();
     
-    
+    cout << "TEX Width: " << origTex.getWidth() << ", Height: " << origTex.getHeight() << endl;
+    cout << "FBO Width: " << newSkin.getWidth() << ", Height: " << newSkin.getHeight() << endl;
     
     
     //NOTE: Assimp scaling does not affect vertices themselves. In addition
@@ -377,7 +378,12 @@ void ofApp::draw(){
     
 //    ofDrawBitmapString(ofToString(x) + ", " + ofToString(y), mouseX, mouseY);
     
-    float fboScale = 0.4;
+    
+    float origWidth = newSkin.getWidth();
+    
+    float desiredWidth = 400;
+    
+    float fboScale = desiredWidth/origWidth;
     
     ofVec2f fboDrawPos(0, ofGetHeight() - fboScale * newSkin.getHeight());
     

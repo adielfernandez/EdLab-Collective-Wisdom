@@ -17,6 +17,7 @@
 #include "ofxCv.h"
 #include "ofxOrbbecAstra.h"
 #include "ofxGui.h"
+#include "Touch.hpp"
 
 #pragma once
 
@@ -45,8 +46,22 @@ public:
     void setup(string _camName, const char* deviceName);
     void update();
     void setupGui();
+    
+    void drawRaw(int x, int y);
+    void drawThresh(int x, int y, bool bDrawShifted);
+
+    
     void drawGui(int x, int y);
-    void sendSettingsToThread();
+    
+    
+    float camFrameRate;
+    
+    const int camWidth = 640;
+    const int camHeight = 480;
+    
+    unsigned long long lastFrameTime;
+    float lastFrameRate; //for smoothing
+
     
     //members safe to access
     //from GL thread
@@ -54,24 +69,44 @@ public:
     ofPixels threshPix;
     ofxCv::ContourFinder contours;
     
-    float camFrameRate;
+    //touch data we'll send elsewhere
+    vector<Touch> touches;
+    vector<ofVec2f> lowPoints;
     
-    int camWidth, camHeight;
+    float thresholdHeight;
     
-    unsigned long long lastFrameTime;
-    float lastFrameRate; //for smoothing
-
+    
+    //GUI SETTINGS
+    string filePath;
     string camName;
+    void saveSettings();
+    void loadSettings();
     
     ofxPanel gui;
     
+    ofxLabel cameraLabel;
+    ofxIntSlider nearClipSlider;
+    ofxIntSlider farClipSlider;
+    
     ofxLabel cvLabel;
-    ofxIntSlider farThreshSlider;
     ofxIntSlider nearThreshSlider;
+    ofxIntSlider farThreshSlider;
     ofxIntSlider blurAmountSlider;
-    ofxToggle useThresholdsToggle;
+    ofxIntSlider numErosionsSlider;
+    ofxIntSlider numDilationsSlider;
+
+    ofxLabel roiLabel;
+    ofxIntSlider roiDepthSlider;
+    ofxIntSlider wallCutoffSlider;
+
+    ofxLabel contoursLabel;
+    ofxToggle drawContoursToggle;
+    ofxToggle drawBlobInfoToggle;
     ofxIntSlider minBlobAreaSlider;
     ofxIntSlider maxBlobAreaSlider;
+    ofxIntSlider persistenceSlider;
+    ofxIntSlider maxDistanceSlider;
+    
     
     unsigned long long lastFrameToThread;
     
@@ -79,7 +114,6 @@ public:
     
 private:
     
-    int nearClip, farClip;
     
     long frameNum;
     

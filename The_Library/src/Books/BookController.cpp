@@ -16,8 +16,8 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 16;
-    numShelves = 3;
+    numBooksPerShelf = 5;
+    numShelves = 6;
     
     int numBooks = numBooksPerShelf * numShelves;
     

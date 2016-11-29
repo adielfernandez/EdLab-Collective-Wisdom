@@ -5,7 +5,8 @@
 #include "ofxGui.h"
 #include "ofxOrbbecAstra.h"
 #include "WallCam.h"
-#include "OverheadCam.h"
+#include "Touch.hpp"
+
 
 class ofApp : public ofBaseApp{
 
@@ -27,8 +28,10 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
     WallCam leftCam;
-    WallCam rightCam;
-    WallCam centerCam;
+//    WallCam rightCam;
+//    WallCam centerCam;
+    
+
     
     int currentCam, numCams;
     int threshold;

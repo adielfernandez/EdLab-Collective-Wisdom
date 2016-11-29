@@ -168,8 +168,10 @@ void Bookcase::update(){
 //enable/disable depth test calls
 void Bookcase::drawShadow(){
     
-    ofSetColor(ofColor(0));
+    ofSetColor(ofColor(255));
+    images[currentImg].getTexture().bind();
     shadow.draw();
+    images[currentImg].getTexture().unbind();
     
 }
 
@@ -1093,12 +1095,10 @@ void Bookcase::mapMesh(){
     shadow.addVertex(bookcaseCorners[1]);
     shadow.addVertex(bookcaseCorners[2]);
     shadow.addVertex(bookcaseCorners[3]);
-    shadow.addColor(ofFloatColor(0));
-    shadow.addColor(ofFloatColor(0));
-    shadow.addColor(ofFloatColor(0));
-    shadow.addColor(ofFloatColor(0));
-
-    
+    shadow.addTexCoord(texCoordCorners[0]);
+    shadow.addTexCoord(texCoordCorners[1]);
+    shadow.addTexCoord(texCoordCorners[2]);
+    shadow.addTexCoord(texCoordCorners[3]);
     
     //get location of the shelf corners
     shelfCorners.clear();

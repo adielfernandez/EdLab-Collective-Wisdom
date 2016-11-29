@@ -1,0 +1,22 @@
+<LeftCam>
+	<___IMAGE_PROCESSING/>
+	<Blur>6</Blur>
+	<Near_Threshold>255</Near_Threshold>
+	<Far_Threshold>0</Far_Threshold>
+	<Number_of_erosions>0</Number_of_erosions>
+	<Number_of_dilations>1</Number_of_dilations>
+	<___ROI_SETTINGS/>
+	<Region_Depth>115</Region_Depth>
+	<Wall_Level_Cutoff>264</Wall_Level_Cutoff>
+	<___CONTOUR_FINDING/>
+	<Min_Blob_Area>80</Min_Blob_Area>
+	<Max_Blob_Area>4900</Max_Blob_Area>
+	<Persistence>66</Persistence>
+	<Max_Distance>32</Max_Distance>
+<LeftCam/>
+	<___CAMERA_SETTINGS/>
+	<Cam_Near_Clip>881</Cam_Near_Clip>
+	<Cam_Far_Clip>2280</Cam_Far_Clip>
+	<Draw_Contours>1</Draw_Contours>
+	<Draw_Blob_info>1</Draw_Blob_info>
+</LeftCam>

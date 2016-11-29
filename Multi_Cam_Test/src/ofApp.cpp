@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    ofSetLogLevel(OF_LOG_VERBOSE);
+//    ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetFrameRate(200);
     ofSetVerticalSync(false);
     
@@ -11,10 +11,10 @@ void ofApp::setup(){
     
     //----------CAMERAS----------
     leftCam.setup("LeftCam", "device/sensor0");
-    rightCam.setup("RightCam", "device/sensor1");
-    centerCam.setup("CenterCam", "device/sensor2");
+//    rightCam.setup("RightCam", "device/sensor1");
+//    centerCam.setup("CenterCam", "device/sensor2");
     
-    numCams = 2;
+    numCams = 1;
     
 }
 
@@ -28,8 +28,8 @@ void ofApp::update(){
     
     //----------CAMERAS----------
     leftCam.update();
-    rightCam.update();
-    centerCam.update();
+//    rightCam.update();
+//    centerCam.update();
     
 }
 
@@ -47,7 +47,7 @@ void ofApp::draw(){
     
     
     //the image to be filled by the camera
-    ofImage rawImg, threshImg;
+
     ofSetColor(255);
     
     if(currentCam == 0) {
@@ -59,57 +59,59 @@ void ofApp::draw(){
         }
         
         leftCam.drawGui(guiPos.x, guiPos.y);
+        leftCam.drawRaw(frame2Pos.x, frame2Pos.y);
+        leftCam.drawThresh(frame2Pos.x, frame2Pos.y + leftCam.camHeight + 10, false);
         
-        rawImg.setFromPixels(leftCam.rawPix);
-        rawImg.draw(frame1Pos);
         
-        threshImg.setFromPixels(leftCam.threshPix);
-        threshImg.draw(frame2Pos);
+        //drawing on points overlapping on the space
+        vector<ofPoint> ps;
+        ps.resize(6);
+        ps[0] = ofPoint(273, 90);
+        ps[1] = ofPoint(854, 90);
+        ps[2] = ofPoint(853, 397);
+        ps[3] = ofPoint(851, 703);
+        ps[4] = ofPoint(273, 700);
+        ps[5] = ofPoint(273, 396);
+        
+        
+        ofPolyline pLine;
+        pLine.addVertices(ps);
+        pLine.close();
+        
+        ofSetColor(255, 200, 0);
+        ofSetLineWidth(1);
+        pLine.draw();
+        
+        //draw the points too
+        for(int i = 0; i < ps.size();i++){
+            ofFill();
+            ofDrawCircle(ps[i].x, ps[i].y, 7);
+        }
+        
+        
+        //draw touch data
+        for(int i = 0; i < leftCam.touches.size(); i++){
+         
+            ofVec2f p = leftCam.touches[i].pos;
+            float rad = ofMap(leftCam.touches[i].dist, 0, 40, 10, 100, true);
+            
+            ofSetColor(0, 128, 255);
+            ofSetLineWidth(3);
+            ofNoFill();
+            ofDrawCircle(p, rad);
+            
+        }
+        
+        
+        
         
         s += "Camera Framerate: " + ofToString(leftCam.camFrameRate) + "\n";
-        
-    } else if(currentCam ==1){
-        
-        if(rightCam.isThreadRunning()){
-            ofBackground(50);
-        } else {
-            ofBackground(200, 0, 0);
-        }
-        
-        
-        rightCam.drawGui(guiPos.x, guiPos.y);
-        
-        rawImg.setFromPixels(rightCam.rawPix);
-        rawImg.draw(frame1Pos);
-        
-        threshImg.setFromPixels(rightCam.threshPix);
-        threshImg.draw(frame2Pos);
-        
-        s += "Camera Framerate: " + ofToString(rightCam.camFrameRate) + "\n";
-        
-    } else if(currentCam == 2){
-        
-        if(centerCam.isThreadRunning()){
-            ofBackground(50);
-        } else {
-            ofBackground(200, 0, 0);
-        }
-        
-        centerCam.drawGui(guiPos.x, guiPos.y);
-        
-        rawImg.setFromPixels(centerCam.rawPix);
-        rawImg.draw(frame1Pos);
-        
-        threshImg.setFromPixels(centerCam.threshPix);
-        threshImg.draw(frame2Pos);
-        
-        s += "Camera Framerate: " + ofToString(centerCam.camFrameRate) + "\n";
         
     }
     
     
-    
-
+    ofSetColor(255);
+    ofDrawBitmapStringHighlight(ofToString(mouseX) + ", " + ofToString(mouseY), mouseX + 10, mouseY - 10);
     
     
     ofSetColor(255);

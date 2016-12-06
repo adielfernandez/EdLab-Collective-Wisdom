@@ -17,6 +17,7 @@
 #include "ofxAssimpModelLoader.h"
 #include "ofxEasing.h"
 #include "../Content/Contribution.hpp"
+#include "BookUIButton.hpp"
 
 #pragma once
 
@@ -29,10 +30,14 @@ public:
     
     void loadModel(int bType, int tType, int fType);
     void setup(ofTexture *_tex, ofTrueTypeFont *_font);
+    void setupUI();
     void update();
     void triggerDisplay();
     void formatTextForDisplay();
+    void drawContentToTexture();
     void draw();
+    
+    void goToAnimationPos(float a);
     
     //Support Methods
     bool bPrintDebug;
@@ -52,10 +57,17 @@ public:
     
     //Books stored in the shelves
     bool bIsActive;
+    bool bIsDisplayed;
+    bool bIsClosing;
+    double closingStartTime;
     
-    
-    bool bIsAnimating;
-    
+    //Book interface
+    void showButtons();
+    void hideButtons();
+    void checkButtonsForClicks(int x, int y);
+    BookUIButton nextButton;
+    BookUIButton prevButton;
+    BookUIButton exitButton;
     
     //Book Content and Page layouts
     vector<ofVec2f> pageTexCoords;
@@ -64,6 +76,7 @@ public:
     Contribution userContribution;
     
     vector<string> pageText;
+    int pageSpreadsAvailable;
     
 
 
@@ -88,12 +101,19 @@ public:
     
     double animStartTime;
     float animPos;
+    float targetAnimPos;
+    
+    
     //animation key frames (normalized)
     const float animationStart = 0.0;
     const float animFirstPages = 0.34;
     const float animSecondPages = 0.56;
     const float animThirdPages = 0.77;
     const float animationEnd = 0.94;
+    
+    //for user selection between pages
+    int currentOpenPage;
+    float pageLerpSpeed;
     
     //-----Dimensions-----
     

@@ -211,7 +211,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     
     bIsUnused = true;
     bIsActive = false;
-    bIsAnimating = false;
+    bIsDisplayed = false;
     
     //Rotation/translation variables to move book
     //from stored position to display position
@@ -227,7 +227,51 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     animStartTime = 0.0;
     animPos = 0.0;
     
+    
+    currentOpenPage = 0;
+    pageLerpSpeed = 0.05;
+    
+    //setup the buttons
+    //nevermind, this is called from the book controller
+//    setupUI();
+    
 }
+
+void Book::setupUI(){
+    
+    float shelfHeight = 140; //ish
+    
+    //draw the next button on top, then prev, then exit on bottom
+    nextButton.setup( 2, displayPos, -shelfHeight * 0.9 );
+    prevButton.setup( 1, displayPos, -shelfHeight * 0.50 );
+    exitButton.setup( 0, displayPos, -shelfHeight * 0.1 );
+    
+}
+
+void Book::showButtons(){
+
+    nextButton.show();
+    prevButton.show();
+    exitButton.show();
+    
+}
+
+void Book::hideButtons(){
+    
+    nextButton.hide();
+    prevButton.hide();
+    exitButton.hide();
+    
+}
+
+void Book::checkButtonsForClicks(int x, int y){
+    
+    nextButton.checkForClicks(x, y);
+    prevButton.checkForClicks(x, y);
+    exitButton.checkForClicks(x, y);
+    
+}
+
 
 void Book::formatTextForDisplay(){
     
@@ -334,16 +378,66 @@ void Book::formatTextForDisplay(){
 //        cout << "\n" << endl;
 //    }
     
-
+    //how many pages do we have open to us
+    if(pageText.size() < 2){
+        pageSpreadsAvailable = 1;
+    } else if( pageText.size() < 4){
+        pageSpreadsAvailable = 2;
+    } else {
+        pageSpreadsAvailable = 3;
+    }
+    
+    
+    
 
     
+}
+
+void Book::drawContentToTexture(){
+    
+    //-----DRAW TEXT ONTO TEXTURE-----
+    
+    textureFBO.begin();
+    
+    //clear the FBO from the last frame
+    ofClear(255, 255, 255, 255);
+    
+    //draw the base texture first
+    ofSetColor(255);
+    tex -> draw(0, 0);
+    
+    ofDisableDepthTest();
+    //go through all the pages and draw out the text
+    for(int i = 0; i < pageText.size(); i++){
+        
+        ofPushMatrix();
+        
+        //left pages draw closer to page edge
+        //right pages draw further to get past page curvature
+        float leftMargin = (i % 2 == 1 ? 10 : 5);
+        float topMargin = 18.5;
+        
+        ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + topMargin);
+        
+        ofSetColor(93, 50, 0);
+        //                    float lineHeight = font -> stringHeight("A");
+        font -> drawString(pageText[i], 0, 0); //-lineHeight);
+        
+        ofPopMatrix();
+        
+    }
+    ofEnableDepthTest();
+    
+    textureFBO.end();
+
 }
 
 
 void Book::triggerDisplay(){
     
     bIsActive = true;
-    bIsAnimating = true;
+    bIsDisplayed = false;
+    bIsClosing = false;
     
     animStartTime = ofGetElapsedTimef();
     
@@ -418,168 +512,233 @@ void Book::update(){
     
     
     if(bIsActive){
+        
+        //update buttons
+        nextButton.update();
+        prevButton.update();
+        exitButton.update();
+        
         model.update();
 
+        drawContentToTexture();
 
-        if(bIsAnimating){
+        if(!bIsDisplayed){
 
-            //----------------------------------------------------------//
-            //--------------------ANIMATION SEQUENCE--------------------//
-            //----------------------------------------------------------//
+            //ANIMATION TO PULL BOOK OUT
             double now = ofGetElapsedTimef();
-            
+
             //book is pulled out of shelf
             float pullOutTime = animStartTime + 0.7f;
-            
+
             //book is in flat display position
             float displayReadyTime = pullOutTime + 1.5f;
-            
+
             //Book is flipped to first open pages
             float firstPageTime = displayReadyTime + 2.0f;
-            
-            float bookWait = firstPageTime + 10.0f; //wait with book open
-            
-            //Book is flipped to second open pages
-            float secondPageTime = bookWait + 1.0f;
-            
-            //Book snaps closed
-            float closeBookTime = secondPageTime + 1.0f;
-            
-            //book goes back to pulled out position
-            float backToPulledOutTime = closeBookTime + 1.5f;
-            
-            //Book is inserted back into shelf
-            float putBackTime = backToPulledOutTime + 1.0f;
-            
+
             if(now < pullOutTime){
-                
+
                 //Z axis: "easeOut" starts fast and slows to finish
                 //PULL OUT of shelf
                 float pctZ = ofxeasing::map_clamp(now, animStartTime, pullOutTime, 0.0f, 1.0f, &ofxeasing::quad::easeOut);
-                
+
                 //X axis: "easeIn" starts slow and finishes fast
                 //move book to the LEFT
                 float pctX = ofxeasing::map_clamp(now, animStartTime, pullOutTime, 0.0f, 1.0f, &ofxeasing::linear::easeIn);
-                
+
                 pos.z = ofLerp(storedPos.z, pulledOutPos.z, pctZ);
                 pos.x = ofLerp(storedPos.x, pulledOutPos.x, pctX);
 
                 currentRotZ = ofLerp(storedRotZ, displayRotZ, pctX);
-                
+
             } else if(now < displayReadyTime){
-                
-                
+
+
                 float pct = ofxeasing::map_clamp(now, pullOutTime, displayReadyTime, 0, 1.0, &ofxeasing::cubic::easeOut);
-                
+
                 //ease position and angle
                 pos = pulledOutPos.getInterpolated(displayPos, pct);
-                
+
                 currentScale = ofLerp(modelScale, displayScale, pct);
                 
-            } else if(now < firstPageTime){
+
                 
+
+            } else if(now < firstPageTime){
+
                 //do a linear mapping of the animation and clamp it
                 animPos = ofMap(now, displayReadyTime, firstPageTime, animationStart, animFirstPages, true);
+
+                bIsDisplayed = true;
+                
+                //bring out the buttons
+                showButtons();
+                
+                
+                //prepare the NEXT state to pick up where this one leaves off
+                targetAnimPos = animPos;
+                currentOpenPage = 0;
+            }
+        
+        } else {
+
             
-            } else if(now < bookWait){
+            
+            //the book is now open and ready!
+            //i.e. bIsDisplayed is true
+            
+            //if we're not closing, check for user buttons
+            if(!bIsClosing){
                 
-//                animPos = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
+                bool exiting = false;
                 
-            } else if(now < secondPageTime){
+                //check to see if buttons are pressed
+                //check exit first, since this one overrides the others
+                if(exitButton.state){
+                    
+                    exiting = true;
+                    exitButton.state = false;
+                    
+                    prevButton.bIsUnavailable = true;
+                    nextButton.bIsUnavailable = true;
+                    
+                }
                 
-                //do a linear mapping of the animation and clamp it
-                animPos = ofMap(now, firstPageTime, secondPageTime, animFirstPages, animSecondPages, true);
+                if(!exiting){
+                    
+                    //make buttons available or unavailable
+                    if(currentOpenPage == 0){
+                        prevButton.bIsUnavailable = true;
+                    } else {
+                        prevButton.bIsUnavailable = false;
+                    }
+                    
+                    //if we're on the last available spread
+                    if(currentOpenPage == pageSpreadsAvailable - 1){
+                        nextButton.bIsUnavailable = true;
+                    } else {
+                        nextButton.bIsUnavailable = false;
+                    }
+                    
+                    
+                    
+                    //check buttons but make sure we don't go too far
+                    //so check how many pages are available
+                    //and handle button unavailable states
+                    if(nextButton.state && !nextButton.bIsUnavailable){
+                        
+                        //move forward
+                        currentOpenPage++;
+                        nextButton.state = false;
+                        
+                    } else if(prevButton.state && !prevButton.bIsUnavailable){
+                        
+                        //move back
+                        currentOpenPage--;
+                        prevButton.state = false;
+                    }
+                    
+                    //get the right animation position for the action
+                    if(currentOpenPage == 0){
+                        targetAnimPos = animFirstPages;
+                    } else if(currentOpenPage == 1){
+                        targetAnimPos = animSecondPages;
+                    } else if(currentOpenPage == 2){
+                        targetAnimPos = animThirdPages;
+                    }
+                    
+                } else {
+                    
+                    //close book by going backwards to the beginning
+                    targetAnimPos = animationStart;
+                    
+                    //if we're at the end (more or less)
+                    if(targetAnimPos < 0.001){
+                        
+                        targetAnimPos = 0;
+                        
+                        bIsClosing = true;
+                        closingStartTime = ofGetElapsedTimef();
+                        
+                    }
+                }
                 
-            } else if(now < closeBookTime){
-                
-                //do a linear mapping of the animation and clamp it
-                animPos = ofMap(now, secondPageTime, closeBookTime, animSecondPages, animationEnd, true);
-                
-            } else if(now < backToPulledOutTime){
-                
-                //book is now closed, animate back to pulled out pos and stored angles
-                animPos = animationStart;
-                
-                float pct = ofxeasing::map_clamp(now, closeBookTime, backToPulledOutTime, 0.0, 1.0, &ofxeasing::back::easeOut_s, 0.5);
-                
-                //ease position and angle
-                pos = displayPos.getInterpolated(pulledOutPos, pct);
-                
-                currentScale = ofLerp(displayScale, modelScale, pct);
-                
-            } else if(now < putBackTime + 0.1f){
-                //add in a tenth of a second to allow books to finish last
-                //bit of interpolation
-                
-                
-                //Z axis: "easeOut" starts fast and slows to finish
-                float pctZ = ofxeasing::map_clamp(now, backToPulledOutTime, putBackTime, 0.0f, 1.0f, &ofxeasing::linear::easeIn);
-                
-                //X axis: "easeIn" starts slow and finishes fast
-                float pctX = ofxeasing::map_clamp(now, backToPulledOutTime, putBackTime, 0.0f, 1.0f, &ofxeasing::linear::easeOut);
-                
-                pos.z = ofLerp(pulledOutPos.z, storedPos.z, pctZ);
-                pos.x = ofLerp(pulledOutPos.x, storedPos.x, pctX);
-                
-                currentRotZ = ofLerp(displayRotZ, storedRotZ, pctX);
-                
+                //then lerp to that position
+                animPos = ofLerp(animPos, targetAnimPos, pageLerpSpeed);
                 
             } else {
                 
-                //The book is now back stored back in the shelf
-                //mark as inactive
-                bIsAnimating = false;
-                bIsActive = false;
+                //we're closing, go through the animation of putting the book back
+                double now = ofGetElapsedTimef();
+                
+                
+                //Book snaps closed
+                float closeBookTime = closingStartTime + 1.0f;
+                
+                //book goes back to pulled out position
+                float backToPulledOutTime = closeBookTime + 1.5f;
+                
+                //Book is inserted back into shelf
+                float putBackTime = backToPulledOutTime + 1.0f;
+                
+                if(now < closeBookTime){
+                    
+                    //do a linear mapping of the animation and clamp it
+                    //start at wherever we are and close the book by moving to the start position
+                    animPos = ofMap(now, closingStartTime, closeBookTime, animPos, animationStart, true);
+                    
+                    //put away the buttons
+                    hideButtons();
+                    
+                } else if(now < backToPulledOutTime){
+                    
+                    //book is now closed, animate back to pulled out pos and stored angles
+                    float pct = ofxeasing::map_clamp(now, closeBookTime, backToPulledOutTime, 0.0, 1.0, &ofxeasing::back::easeOut_s, 0.5);
+                    
+                    //ease position and angle
+                    pos = displayPos.getInterpolated(pulledOutPos, pct);
+                    
+                    currentScale = ofLerp(displayScale, modelScale, pct);
+                    
+                } else if(now < putBackTime + 0.1f){
+                    //add in a tenth of a second to allow books to finish last
+                    //bit of interpolation
+                    
+                    
+                    //Z axis: "easeOut" starts fast and slows to finish
+                    float pctZ = ofxeasing::map_clamp(now, backToPulledOutTime, putBackTime, 0.0f, 1.0f, &ofxeasing::linear::easeIn);
+                    
+                    //X axis: "easeIn" starts slow and finishes fast
+                    float pctX = ofxeasing::map_clamp(now, backToPulledOutTime, putBackTime, 0.0f, 1.0f, &ofxeasing::linear::easeOut);
+                    
+                    pos.z = ofLerp(pulledOutPos.z, storedPos.z, pctZ);
+                    pos.x = ofLerp(pulledOutPos.x, storedPos.x, pctX);
+                    
+                    currentRotZ = ofLerp(displayRotZ, storedRotZ, pctX);
+                    
+                    
+                } else {
+                    
+                    //The book is now back stored back in the shelf
+                    //mark as inactive
+                    bIsDisplayed = false;
+                    bIsActive = false;
+                    
+                }
+                
+                
             }
             
-            
-//            animPos = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
-            model.setPositionForAllAnimations(animPos);
-            
-            
-            //-----DRAW TEXT ONTO TEXTURE
-            textureFBO.begin();
-            
-            //clear the FBO from the last frame
-            ofClear(255, 255, 255, 255);
-
-            //draw the base texture first
-            ofSetColor(255);
-            tex -> draw(0, 0);
-            
-            ofDisableDepthTest();
-            //go through all the pages and draw out the text
-            for(int i = 0; i < pageText.size(); i++){
-
-                ofPushMatrix();
-                
-                //left pages draw closer to page edge
-                //right pages draw further to get past page curvature
-                float leftMargin = (i % 2 == 1 ? 10 : 5);
-                float topMargin = 18.5;
-                
-                ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + topMargin);
-                
-                ofSetColor(93, 50, 0);
-                //                    float lineHeight = font -> stringHeight("A");
-                font -> drawString(pageText[i], 0, 0); //-lineHeight);
-                
-                ofPopMatrix();
-                
-            }
-            ofEnableDepthTest();
-            
-            textureFBO.end();
-            
-            
-            
+        }
         
-        } else {
-            
-            //if we're not displaying
-            
-            
-        } //close bIsAnimating else loop
+        
+        
+        
+        model.setPositionForAllAnimations(animPos);
+        
+        
+        
+
         
     } //close bIsActive loop
     
@@ -590,59 +749,23 @@ void Book::update(){
 
 void Book::draw(){
 
-    
-    ofPushMatrix();{
-        
-        
-        //translate the book to the position on the shelf
-        //with the bottom left corner of the spine at pos
-        ofTranslate(pos);
-        
-//        ofVec3f textPos(0, - height, -40);
-//        ofVec2f margins(10, 20);
-//        float lineHeight = font -> stringHeight("A");
-//        textPos += margins;
-//        
-//        //font is at size 100, scale down to desired size
-//        float fontScale = ofMap(ofGetMouseY(), 0, ofGetHeight(), 0.1, 1.0);
-//        cout << "Font Scale: " << fontScale << endl;
-//        
-//        
-//        ofPushMatrix();
-//        ofTranslate(-textPos.x, -textPos.y, textPos.z);
-//        
-//        ofScale(fontScale, fontScale);
-//        
-//        
-//        ofSetColor(0, 255, 0);
-//        font -> drawString(pageText[2], 0, -lineHeight * fontScale);
-//        
-//        ofPopMatrix();
 
-        
-        
-//        //draw axes and scale up so we can position things visually more precisely
-//        //See "model.setPosition(...)" in setup
-//        ofTranslate(0, 300, 0);
-//        ofSetLineWidth(1);
-//        ofDrawAxis(100);
-//        ofScale(3, 3, 3);
-//        
-//        
-//        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 17, 27);
-//        float y = ofMap(ofGetMouseY(), 0, ofGetHeight(), 100, 150);
-//        cout << x << ", " << y << endl;
-//        ofSetColor(255, 200, 0);
-//        ofDrawRectangle(0, 0, x, -y);
-        
 
         
         if(bIsActive){
+            
+            ofPushMatrix();
+                
+            //translate the book to the position on the shelf
+            //with the bottom left corner of the spine at pos
+            ofTranslate(pos);
+            
             
             //        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -90, 90);
             //        float z = ofMap(ofGetMouseY(), 0, ofGetHeight(), -90, 90);
             //        cout << "XZ: " << x << ", " << z << endl;
             
+
             //now rotate and translate book so that it has the lower left corner of the spine
             //as its origin and is oriented properly: book stored in shelf
             ofRotateX(currentRotX);
@@ -662,29 +785,40 @@ void Book::draw(){
             
             if(textureFBO.isAllocated()) textureFBO.getTexture().unbind();
 
+            ofPopMatrix();
 
+            //draw buttons
+            nextButton.draw();
+            prevButton.draw();
+            exitButton.draw();
             
-            
+
 
             
         } else {
             
             //draw inactive placeholder (an image of the spine
             
-            
+            ofPushMatrix();
+                
+            //translate the book to the position on the shelf
+            //with the bottom left corner of the spine at pos
+            ofTranslate(pos);
+                
             if(tex -> isAllocated()) tex -> bind();
             ofSetColor(255);
             spineMesh.draw();
             if(tex -> isAllocated()) tex -> unbind();
 
+            ofPopMatrix();
             
         }
         
         
-    }ofPopMatrix();
     
     
 }
+
 
 
 

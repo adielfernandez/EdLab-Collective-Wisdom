@@ -191,7 +191,7 @@ void Frame::draw(){
     portraitFbo.begin();
     ofSetColor(255);
     
-    currentPortrait = 0;
+
     portraits[currentPortrait].draw(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
     
 //    ofSetColor(0, 255, 0);

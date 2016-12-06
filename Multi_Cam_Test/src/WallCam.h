@@ -41,7 +41,7 @@ public:
     WallCam();
     ~WallCam();
     
-    void closeAllChannels();
+
     
     void setup(string _camName, const char* deviceName);
     void update();
@@ -73,7 +73,7 @@ public:
     vector<Touch> touches;
     vector<ofVec2f> lowPoints;
     
-    float thresholdHeight;
+    float thresholdPos;
     
     
     //GUI SETTINGS
@@ -98,7 +98,13 @@ public:
     ofxLabel roiLabel;
     ofxIntSlider roiDepthSlider;
     ofxIntSlider wallCutoffSlider;
+    ofxIntSlider wallHitDistSlider;
 
+    ofxLabel bgDiffLabel;
+    ofxIntSlider learningTimeSlider;
+    ofxButton resetBG;
+    ofxToggle useBgDiff;
+    
     ofxLabel contoursLabel;
     ofxToggle drawContoursToggle;
     ofxToggle drawBlobInfoToggle;
@@ -115,9 +121,14 @@ public:
 private:
     
     
-    long frameNum;
+    unsigned long long frameNum;
     
     ofxOrbbecAstra camera;
+
+    //thread management
+    void closeAllChannels();
+    void emptyAllChannels();
+    bool isThreadCrashed;
     
     //into thread
     ofThreadChannel<vector<int>> settingsIn;
@@ -128,7 +139,16 @@ private:
     ofThreadChannel<ofPixels> threshPixOut;
     ofThreadChannel<ofxCv::ContourFinder> contoursOut;
     
-
+    
+    ofxCv::RunningBackground background;
+    
+    //for restarting the background learning
+    bool needsAutoReset;
+    
+    //for restarting the thread
+    unsigned long long lastRestartTime;
+    bool firstAfterCrash;
+    bool firstStop;
     
     
     void threadedFunction();

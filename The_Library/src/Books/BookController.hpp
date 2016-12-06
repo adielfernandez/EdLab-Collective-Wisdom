@@ -35,7 +35,10 @@ public:
     void update();
     void draw();
     
+    void checkMouseEvents(int x, int y);
     void checkMouseBookTrigger(int x, int y);
+    void checkActiveBookButtons(int x, int y);
+    
     
     //Content for all the books
     vector<Contribution> *contributionList;

@@ -31,7 +31,7 @@ class ofApp : public ofBaseApp{
 //    WallCam rightCam;
 //    WallCam centerCam;
     
-
+    ofSoundPlayer sound;
     
     int currentCam, numCams;
     int threshold;

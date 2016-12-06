@@ -12,7 +12,7 @@ void ofApp::setup(){
     bAnimateMouse = false;
     animationPosition = 0;
     
-    model.loadModel("newlyMapped/bookTall.fbx", false);
+    model.loadModel("finalBook/bookMedium.fbx", false);
 //    model.loadModel("converted/bookMedium.fbx", false);
 //    model.loadModel("converted/bookShort.fbx", false);
 //    model.loadModel("ship/Ship N181113.3DS", false);
@@ -65,9 +65,9 @@ void ofApp::setup(){
     //get original texture
 //    origTex = model.getTextureForMesh(meshNum);
     
+    //set new texture here
     ofImage t;
-    t.load("newlyMapped/textures/01.png");
-    
+    t.load("finalBook/textures/03.png");
     origTex = t.getTexture();
     
     //copy it to an FBO we'll actually draw with
@@ -77,7 +77,8 @@ void ofApp::setup(){
     ofClear(255, 255, 255, 255);
     ofSetColor(255);
     
-    t.draw(0, 0);
+//    t.draw(0, 0);
+    origTex.draw(0, 0);
 //    model.getTextureForMesh(meshNum).draw(0, 0);
     
     newSkin.end();
@@ -241,6 +242,7 @@ void ofApp::setup(){
     cam.setNearClip(0);
     cam.setFarClip(1000000);
     
+    animationPosition = 0.55;
 }
 
 //--------------------------------------------------------------
@@ -253,7 +255,13 @@ void ofApp::update(){
         model.setPositionForAllAnimations(animationPosition);
     }
     
+    animationPosition += 0.001;
     
+    model.setPositionForAllAnimations(animationPosition);
+    
+    if(animationPosition > 0.75){
+        animationPosition = 0.55;
+    }
 
 //    modelScale = ofMap(ofGetMouseX(), 0, ofGetWidth(), 1300, 1400);
     

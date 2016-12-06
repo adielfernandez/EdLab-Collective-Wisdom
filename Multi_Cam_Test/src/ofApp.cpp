@@ -16,6 +16,8 @@ void ofApp::setup(){
     
     numCams = 1;
     
+    sound.load("pop.mp3");
+    
 }
 
 //--------------------------------------------------------------
@@ -93,9 +95,19 @@ void ofApp::draw(){
         for(int i = 0; i < leftCam.touches.size(); i++){
          
             ofVec2f p = leftCam.touches[i].pos;
-            float rad = ofMap(leftCam.touches[i].dist, 0, 40, 10, 100, true);
+            float rad = ofMap(leftCam.touches[i].dist, 0, 70, 7, 50, true);
             
-            ofSetColor(0, 128, 255);
+            if(leftCam.touches[i].bIsTouching){
+                ofSetColor(0, 255, 0);
+                
+                if(!sound.isPlaying()){
+                    sound.play();
+                }
+                
+            } else {
+                ofSetColor(0, 128, 255);
+            }
+            
             ofSetLineWidth(3);
             ofNoFill();
             ofDrawCircle(p, rad);
@@ -109,10 +121,10 @@ void ofApp::draw(){
         
     }
     
-    
-    ofSetColor(255);
-    ofDrawBitmapStringHighlight(ofToString(mouseX) + ", " + ofToString(mouseY), mouseX + 10, mouseY - 10);
-    
+    if(mouseX < frame2Pos.x){
+        ofSetColor(255);
+        ofDrawBitmapStringHighlight(ofToString(mouseX) + ", " + ofToString(mouseY), mouseX + 10, mouseY - 10);
+    }
     
     ofSetColor(255);
     ofDrawBitmapString(s, 10, 15);

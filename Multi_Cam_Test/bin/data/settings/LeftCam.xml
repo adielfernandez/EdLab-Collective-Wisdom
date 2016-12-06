@@ -2,15 +2,15 @@
 	<___IMAGE_PROCESSING/>
 	<Blur>6</Blur>
 	<Near_Threshold>255</Near_Threshold>
-	<Far_Threshold>0</Far_Threshold>
+	<Far_Threshold>15</Far_Threshold>
 	<Number_of_erosions>0</Number_of_erosions>
 	<Number_of_dilations>1</Number_of_dilations>
 	<___ROI_SETTINGS/>
 	<Region_Depth>115</Region_Depth>
-	<Wall_Level_Cutoff>264</Wall_Level_Cutoff>
+	<Wall_Level_Cutoff>307</Wall_Level_Cutoff>
 	<___CONTOUR_FINDING/>
-	<Min_Blob_Area>80</Min_Blob_Area>
-	<Max_Blob_Area>4900</Max_Blob_Area>
+	<Min_Blob_Area>305</Min_Blob_Area>
+	<Max_Blob_Area>9600</Max_Blob_Area>
 	<Persistence>66</Persistence>
 	<Max_Distance>32</Max_Distance>
 <LeftCam/>
@@ -19,4 +19,9 @@
 	<Cam_Far_Clip>2280</Cam_Far_Clip>
 	<Draw_Contours>1</Draw_Contours>
 	<Draw_Blob_info>1</Draw_Blob_info>
+<___BG_SUBTRACTION/>
+	<Use_BG_Diff>1</Use_BG_Diff>
+	<Frames_to_learn_BG>100</Frames_to_learn_BG>
+<Dist_from_wall_for_a_hit>10</Dist_from_wall_for_a_hit>
+<Dist_for_touch>10</Dist_for_touch>
 </LeftCam>

@@ -50,7 +50,6 @@
 		D72C74701DEBCB2C00D770C8 /* Wallpaper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74681DEBCB2C00D770C8 /* Wallpaper.cpp */; };
 		D72C74751DEBCD7A00D770C8 /* Contribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74731DEBCD7A00D770C8 /* Contribution.cpp */; };
 		D72C74781DEBCD8A00D770C8 /* ContentManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74761DEBCD8A00D770C8 /* ContentManager.cpp */; };
-		D72C74801DED43D400D770C8 /* BookUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C747E1DED43D400D770C8 /* BookUI.cpp */; };
 		D72C74831DED442B00D770C8 /* BookUIButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74811DED442B00D770C8 /* BookUIButton.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
@@ -412,8 +411,6 @@
 		D72C74741DEBCD7A00D770C8 /* Contribution.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Contribution.hpp; sourceTree = "<group>"; };
 		D72C74761DEBCD8A00D770C8 /* ContentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentManager.cpp; sourceTree = "<group>"; };
 		D72C74771DEBCD8A00D770C8 /* ContentManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ContentManager.hpp; sourceTree = "<group>"; };
-		D72C747E1DED43D400D770C8 /* BookUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookUI.cpp; sourceTree = "<group>"; };
-		D72C747F1DED43D400D770C8 /* BookUI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BookUI.hpp; sourceTree = "<group>"; };
 		D72C74811DED442B00D770C8 /* BookUIButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookUIButton.cpp; sourceTree = "<group>"; };
 		D72C74821DED442B00D770C8 /* BookUIButton.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BookUIButton.hpp; sourceTree = "<group>"; };
 		D76A59E7B3601E76351C9BDB /* cvaux.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvaux.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cvaux.h; sourceTree = SOURCE_ROOT; };
@@ -1424,8 +1421,6 @@
 				D72C745D1DEBCB2C00D770C8 /* BookController.cpp */,
 				D72C745C1DEBCB2C00D770C8 /* Book.hpp */,
 				D72C745B1DEBCB2C00D770C8 /* Book.cpp */,
-				D72C747F1DED43D400D770C8 /* BookUI.hpp */,
-				D72C747E1DED43D400D770C8 /* BookUI.cpp */,
 				D72C74821DED442B00D770C8 /* BookUIButton.hpp */,
 				D72C74811DED442B00D770C8 /* BookUIButton.cpp */,
 			);
@@ -1707,7 +1702,6 @@
 				7CDAD32BE4FA46701E3552C7 /* RunningBackground.cpp in Sources */,
 				10B69DE456AED1288FC9316B /* Tracker.cpp in Sources */,
 				A6668C5B1272D7FCD5B5A16F /* Utilities.cpp in Sources */,
-				D72C74801DED43D400D770C8 /* BookUI.cpp in Sources */,
 				DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */,
 				08C23182D394C53F6ECE6CCC /* easing_terms_of_use.html in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,

@@ -86,6 +86,9 @@ class ofApp : public ofBaseApp{
     //-----MESSAGE LOGGING AND RETRIEVAL-----
     ContentManager contentManager;
     
+    
+    unsigned long long lastChangeTime;
+    int waitTime;
 
 };
 

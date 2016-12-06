@@ -23,7 +23,9 @@ public:
     
     Touch();
     
-    void setTouchData(ofVec2f _p, float _d);
+    void setNewTouch(int _id, ofVec2f _p, float _d);
+    void renewTouch(ofVec2f p, float d);
+    void update();
     
     //position of object in wall space
     ofVec2f pos;
@@ -34,6 +36,16 @@ public:
     //blob ID
     //Maybe use for swipe gesture later
     int id;
+    
+    //we'll use this flag to remove
+    //touches that haven't been update
+    bool bUpdated;
+    
+    //anything less than this is considered
+    //a touch on wall
+    int distForTouch;
+    
+    bool bIsTouching;
     
     
 };

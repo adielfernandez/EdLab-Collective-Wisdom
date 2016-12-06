@@ -16,7 +16,7 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 5;
+    numBooksPerShelf = 10;
     numShelves = 6;
     
     int numBooks = numBooksPerShelf * numShelves;
@@ -249,18 +249,20 @@ void BookController::setup(vector<Contribution> *cList){
                 
             } else {
                 
-                books[i].bIsUnused = false;
+                books[i].bIsUnused = true;
                 
                 //-----REMOVE THIS WHEN DONE TESTING!!!-----
-                
-                //copy the contribution into the book
-                books[i].userContribution = (*contributionList)[0];
-                
-                //and format the text to be displayed
-                //print the book number too
-                books[i].formatTextForDisplay();
+//                
+//                //copy the contribution into the book
+//                books[i].userContribution = (*contributionList)[0];
+//                
+//                //and format the text to be displayed
+//                //print the book number too
+//                books[i].formatTextForDisplay();
                 
             }
+            
+            books[i].setupUI();
             
             //move on to next book
             bookCounter++;
@@ -274,23 +276,42 @@ void BookController::setup(vector<Contribution> *cList){
     
 }
 
-void BookController::checkMouseBookTrigger(int x, int y){
+void BookController::checkMouseEvents(int x, int y){
     
-    
+
     //Check all books for mouse presence
     for(int i = 0; i < books.size(); i++){
-        
-        //see if mouse is inside book
-        //remember: book pos is lower left corner
-        if(x > books[i].pos.x && x < books[i].pos.x + books[i].thickness
-           && y < books[i].pos.y && y > books[i].pos.y - books[i].height){
+     
+        //if we're not active, check for book triggers
+        if(!books[i].bIsActive){
             
-            books[i].triggerDisplay();
+            //see if mouse is inside book
+            //remember: book pos is lower left corner
+            if(x > books[i].pos.x && x < books[i].pos.x + books[i].thickness
+               && y < books[i].pos.y && y > books[i].pos.y - books[i].height){
+                
+                books[i].triggerDisplay();
+                
+            }
             
+        } else {
+            
+            //if we ARE active, check for buttons
+            books[i].checkButtonsForClicks(x, y);
             
         }
         
+        
     }
+    
+    
+    
+}
+
+void BookController::checkMouseBookTrigger(int x, int y){
+    
+    
+
     
 }
 

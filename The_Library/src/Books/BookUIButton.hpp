@@ -24,17 +24,53 @@ public:
     
     BookUIButton();
     
-    void setup();
+    void setup(int _type, ofVec3f startPos, float yPos);
     void update();
     void draw();
     
-    float radius;
+    void show();
+    void hide();
+
+    void hover();
+    void select();
     
-    float pos;
-    
-    bool bHover;
+    void checkForClicks(int x, int y);
     
     
+    //0 = exit, 1 = prev, 2 = next
+    int type;
+    
+    bool state;
+    
+    bool bIsDisplayed;
+    bool bIsUnavailable;
+    bool bIsHovering;
+    bool bIsHidden;
+    
+    //positioning
+    ofVec3f hiddenPos, displayedPos, currentPos;
+    
+    //formatting
+    float buttonRad, ringRad;
+    float ringWeight;
+    float buttonScale;
+    
+    //button colors
+    ofColor currentButtonCol;
+    ofColor unavailableButtonCol;
+    ofColor availableButtonCol;
+    
+    //ring colors
+    ofColor currentRingCol;
+    ofColor availableRingCol;
+    ofColor unavailableRingCol;
+    ofColor ringHoverCol;
+    ofColor ringSelectCol;
+    
+    float colorLerpSpeed;
+    
+    float symbolDim;
+    ofPolyline symbolLine;
     
     
 };

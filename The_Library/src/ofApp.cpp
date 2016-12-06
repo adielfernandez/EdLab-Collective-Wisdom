@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-    connectToServer = false;
+    connectToServer = true;
     
     if(connectToServer){
 //        client.connect("localhost", 8081);
@@ -85,6 +85,9 @@ void ofApp::setup(){
     bShowGUIs = false;
     bShowMouseCoords = false;
     
+    
+    lastChangeTime = 0;
+    waitTime = 10000;
 
 }
 
@@ -120,6 +123,30 @@ void ofApp::update(){
 //    cout << "XY: " << x << ", " << y << endl;
 //    camera.setOrientation(ofVec3f(x, y, 0));
 //    camera.setOrientation(ofVec3f(180, 0, 0));
+    
+    
+    if(ofGetElapsedTimeMillis() - lastChangeTime > waitTime){
+        
+        float rand = ofRandom(3);
+        
+        float x = ofRandom(ofGetWidth());
+        float y = ofRandom(ofGetHeight());
+        
+        if(rand < 1.0){
+            
+            leftBookcase.triggerWave(ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
+            rightBookcase.triggerWave(ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
+            
+        } else if(rand < 2.0){
+            frame.triggerWave(ofVec2f(x, y));
+
+        } else {
+            wallpaper.triggerWave(ofVec2f(x, y));
+        }
+        
+        waitTime = ofRandom(5000, 10000);
+        lastChangeTime = ofGetElapsedTimeMillis();
+    }
     
 }
 
@@ -301,7 +328,7 @@ void ofApp::mousePressed(int x, int y, int button){
     
     
     if(button == 0){
-        bookController.checkMouseBookTrigger(x, y);
+        bookController.checkMouseEvents(x, y);
     }
     
 }

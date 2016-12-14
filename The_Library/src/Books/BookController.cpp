@@ -16,8 +16,8 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 10;
-    numShelves = 6;
+    numBooksPerShelf = 0;
+    numShelves = 1;
     
     int numBooks = numBooksPerShelf * numShelves;
     
@@ -246,14 +246,15 @@ void BookController::setup(vector<Contribution> *cList){
                 //and format the text to be displayed
                 //print the book number too
                 books[i].formatTextForDisplay();
+                books[i].drawContentToTexture();
                 
             } else {
                 
                 books[i].bIsUnused = true;
                 
                 //-----REMOVE THIS WHEN DONE TESTING!!!-----
-//                
-//                //copy the contribution into the book
+                
+                //copy the contribution into the book
 //                books[i].userContribution = (*contributionList)[0];
 //                
 //                //and format the text to be displayed
@@ -332,6 +333,7 @@ void BookController::onNewContribution( Contribution& c ){
             //and format the text to be displayed
             //print the book number too
             books[i].formatTextForDisplay();
+            books[i].drawContentToTexture();
             
             //now break out of the for loop
             //so we only trigger one book

@@ -9,6 +9,7 @@
 #include "Books/BookController.hpp"
 #include "Content/Contribution.hpp"
 #include "Content/ContentManager.hpp"
+#include "Books/CenterBook.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -32,9 +33,9 @@ class ofApp : public ofBaseApp{
     /*
      -----View Control-----
      0 = Main interaction view
-     2 = Camera 1 debug
-     3 = Camera 2 debug
-     4 = Camera 3 debug
+     1 = Wallpaper and Frame debug
+     2 = Bookcases Debug
+     3 = CenterBook Debug
      
     */
     int currentView;
@@ -59,7 +60,7 @@ class ofApp : public ofBaseApp{
     
     BookController bookController;
     
-    ofxAssimpModelLoader model;
+    CenterBook centerBook;
     
     //show coordinates of mouse to
     //help place things on screen

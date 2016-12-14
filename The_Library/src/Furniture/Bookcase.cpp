@@ -190,8 +190,13 @@ void Bookcase::drawShelfOverlay(int shelfNum, int trans){
 
 void Bookcase::draw(){
     
+    //bring forward so it draws clear of the wallpaper tiles
+    ofPushMatrix();
+    ofTranslate(0, 0, -50);
+    
     TiledObject::draw();
     
+    ofPopMatrix();
 }
 
 void Bookcase::drawDebug(){
@@ -315,8 +320,8 @@ void Bookcase::setupGui(){
     
     mappingLabel.setBackgroundColor(ofColor(255));
     
-    float x = bLeftCase ? 10 : ofGetWidth() - 220;
-    gui.setPosition(x, 150);
+    float x = bLeftCase ? bookcaseCorners[1].x + 20 : bookcaseCorners[0].x - 240;
+    gui.setPosition(x, 50);
     
     
 }

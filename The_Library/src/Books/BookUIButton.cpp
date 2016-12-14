@@ -27,22 +27,29 @@ void BookUIButton::setup(int _type, ofVec3f startPos, float yPos){
     
     state = false;
     
-    buttonRad = 30;
-    ringRad = buttonRad * 0.8;
+    buttonRad = 22;
+    ringRad = buttonRad * 0.75;
+    
+    ringWeight = 3;
+    symbolWeight = 5;
     
     buttonScale = 1.0;
     
+    
+    colorLerpSpeed = 0.01;
+    
+    
     availableButtonCol.set(74);
     unavailableButtonCol.set(43);
-    currentButtonCol.set(availableButtonCol);
+    currentButtonCol.set(74);
     
     availableRingCol.set(255);
     unavailableRingCol.set(74);
-    currentRingCol.set(availableButtonCol);
+    currentRingCol.set(255);
 
     
     
-    symbolDim = 10;
+    symbolDim = 8;
     
     if(type == 0){
         ringHoverCol.set(255, 0, 0);
@@ -51,7 +58,7 @@ void BookUIButton::setup(int _type, ofVec3f startPos, float yPos){
         
         ringHoverCol.set(0, 255, 0);
         
-        
+        symbolLine.addVertex(ofVec3f(0, -symbolDim));
         if(type == 1){
             //left button
             symbolLine.addVertex(ofVec3f(-symbolDim, 0));
@@ -64,18 +71,17 @@ void BookUIButton::setup(int _type, ofVec3f startPos, float yPos){
         
     }
     
-    ringWeight = 4;
-    colorLerpSpeed = 0.01;
+
     
 
     //just for debug, color the backgrounds
-    if(type == 0 ) {
-        currentButtonCol.set(255, 0, 0);
-    } else if(type == 1){
-        currentButtonCol.set(0, 0, 255);
-    } else {
-        currentButtonCol.set(0, 255, 0);
-    }
+//    if(type == 0 ) {
+//        currentButtonCol.set(255, 0, 0);
+//    } else if(type == 1){
+//        currentButtonCol.set(0, 0, 255);
+//    } else {
+//        currentButtonCol.set(0, 255, 0);
+//    }
     
     
 }
@@ -85,11 +91,11 @@ void BookUIButton::checkForClicks(int x, int y){
     if(!bIsUnavailable && bIsDisplayed){
         
         //check for click
-        if(ofDist(x, y, currentPos.x, currentPos.y) < buttonRad){
+        if(ofDistSquared(x, y, currentPos.x, currentPos.y) < buttonRad * buttonRad){
             state = true;
         }
         
-        cout << "Button Pressed: " << type << endl;
+//        cout << "Button Pressed: " << type << endl;
         
     }
     
@@ -154,9 +160,11 @@ void BookUIButton::draw(){
         
         ofPushStyle();
         
+        ofSetCircleResolution(40);
+        
         //draw button
         ofSetColor(currentButtonCol);
-        ofDrawCircle(0, 0, buttonRad);
+        ofDrawCircle(0, 0, 2, buttonRad);
         
         //draw ring
         ofSetColor(currentRingCol);
@@ -164,22 +172,19 @@ void BookUIButton::draw(){
         ofSetLineWidth(ringWeight);
         ofDrawCircle(0, 0, ringRad);
         
+        
+        ofSetLineWidth(symbolWeight);
         if(type == 0){
             
-            ofSetLineWidth(5);
             //draw X for exit button
-            ofDrawLine(-symbolDim, -symbolDim, symbolDim, symbolDim);
-            ofDrawLine(symbolDim, -symbolDim, -symbolDim, symbolDim);
+            float xDim = symbolDim * 0.8;
+            ofDrawLine(-xDim, -xDim, xDim, xDim);
+            ofDrawLine(xDim, -xDim, -xDim, xDim);
             
         } else {
-//            ofSetColor(255);
+            //draw arrow symbol
             symbolLine.draw();
         }
-        
-        //draw a long line through the Z to debug
-//        ofSetColor(0, 255, 0);
-//        ofDrawLine(0, 0, -5000, 0, 0, 5000);
-        
         
         ofPopStyle();
         

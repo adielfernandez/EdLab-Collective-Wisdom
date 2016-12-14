@@ -66,6 +66,7 @@ public:
     ofColor unavailableRingCol;
     ofColor ringHoverCol;
     ofColor ringSelectCol;
+    float symbolWeight;
     
     float colorLerpSpeed;
     

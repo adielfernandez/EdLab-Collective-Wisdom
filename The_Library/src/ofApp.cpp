@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-    connectToServer = true;
+    connectToServer = false;
     
     if(connectToServer){
 //        client.connect("localhost", 8081);
@@ -24,8 +24,8 @@ void ofApp::setup(){
     
     //----------Scene Setup----------
     
-    currentView = 0;
-    numViews = 5;
+    currentView = 3;
+    numViews = 4;
     
     
     //set up objects without loading image data
@@ -38,6 +38,7 @@ void ofApp::setup(){
     
     //Book models need to be loaded before other objects load their media
     //because of a bug in ofxAssimpModelLoader, otherwise loading will crash
+    centerBook.loadModel();
     bookController.loadModels();
     
     //Now load their media
@@ -55,7 +56,7 @@ void ofApp::setup(){
     //and the bookcases have been setup, we can setup book textures
     //and place them on the shelves
     bookController.setup(&contentManager.contributionList);
-    
+    centerBook.setup();
     
     //add a listener in the Book controller for events
     //in the content manager when it gets new messages
@@ -77,8 +78,8 @@ void ofApp::setup(){
     camera.setTarget(ofVec3f(ofGetWidth()/2, ofGetHeight()/2, 0));
 //    camera.setFarClip(10000);
 //    camera.setNearClip(-100);
-    camera.setOrientation(ofVec3f(180, 0, 0));
     camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+    camera.setOrientation(ofVec3f(180, 0, 0));
     
     
     //----------Debug Tools----------
@@ -104,6 +105,12 @@ void ofApp::update(){
     
     bookController.update();
     
+    centerBook.update();
+    
+    
+    
+    
+    
     //Heartbeat to Server
     if(connectToServer && bSendHeartbeat){
         if(ofGetElapsedTimeMillis() - lastHeartbeatTime > heartbeatInterval){
@@ -112,41 +119,46 @@ void ofApp::update(){
         }
     }
     
+
+    //Uncomment to debug camera position and orientation
     
 //    float zPos = ofMap(mouseX, 0, ofGetWidth(), -2000, 2000);
 //    cout << "Dist: " << zPos << endl;
 //    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, zPos);
-//    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
 
 //    float x = ofMap(mouseX, 0, ofGetWidth(), -180, 180);
 //    float y = ofMap(mouseY, 0, ofGetHeight(), -180, 180);
 //    cout << "XY: " << x << ", " << y << endl;
 //    camera.setOrientation(ofVec3f(x, y, 0));
-//    camera.setOrientation(ofVec3f(180, 0, 0));
     
-    
-    if(ofGetElapsedTimeMillis() - lastChangeTime > waitTime){
-        
-        float rand = ofRandom(3);
-        
-        float x = ofRandom(ofGetWidth());
-        float y = ofRandom(ofGetHeight());
-        
-        if(rand < 1.0){
-            
-            leftBookcase.triggerWave(ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
-            rightBookcase.triggerWave(ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
-            
-        } else if(rand < 2.0){
-            frame.triggerWave(ofVec2f(x, y));
+    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+    camera.setOrientation(ofVec3f(180, 0, 0));
 
-        } else {
-            wallpaper.triggerWave(ofVec2f(x, y));
-        }
-        
-        waitTime = ofRandom(5000, 10000);
-        lastChangeTime = ofGetElapsedTimeMillis();
-    }
+    
+    
+    
+//    if(ofGetElapsedTimeMillis() - lastChangeTime > waitTime){
+//        
+//        float rand = ofRandom(3);
+//        
+//        float x = ofRandom(ofGetWidth());
+//        float y = ofRandom(ofGetHeight());
+//        
+//        if(rand < 1.0){
+//            
+//            leftBookcase.triggerWave(ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
+//            rightBookcase.triggerWave(ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
+//            
+//        } else if(rand < 2.0){
+//            frame.triggerWave(ofVec2f(x, y));
+//
+//        } else {
+//            wallpaper.triggerWave(ofVec2f(x, y));
+//        }
+//        
+//        waitTime = ofRandom(5000, 10000);
+//        lastChangeTime = ofGetElapsedTimeMillis();
+//    }
     
 }
 
@@ -155,76 +167,88 @@ void ofApp::draw(){
 
     
     
+    //draw the scene
+    ofBackground(0);
     
-    if(currentView == 0 || currentView == 1){
-        
-        ofBackground(0);
+    camera.begin();
+    
+    //draw objects on top of wall paper regardless of depth
+    ofDisableDepthTest();
+    
+    //push wallpaper back a tiny bit so it's always in the background
+    ofPushMatrix();
+    ofTranslate(0, 0, -1);
+    
+    wallpaper.draw();
+    ofPopMatrix();
+    
+    //draw object shadows before we enable depth testing again
+    leftBookcase.drawShadow();
+    rightBookcase.drawShadow();
+    frame.drawShadow();
+    
+    //now enable depth testing again so books and
+    //bookcases draw in their proper places
+    ofEnableDepthTest();
+    
+    frame.draw();
+    leftBookcase.draw();
+    rightBookcase.draw();
+    
+    bookController.draw();
+    
+    centerBook.draw();
+    
+    
+    bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
+    
+    
+    
 
-        camera.begin();
+    
+    
+    
+    
+    
+    
+    if(currentView == 1){
         
-        //draw objects on top of wall paper regardless of depth
+        //wallpaper and frame debug
+        
+        
         ofDisableDepthTest();
         
-        //push wallpaper back a tiny bit so it's always in the background
-        ofPushMatrix();
-        ofTranslate(0, 0, -1);
-
-        wallpaper.draw();
-        ofPopMatrix();
+        frame.drawDebug();
+        frame.drawGui();
         
-        //draw object shadows before we enable depth testing again
-        leftBookcase.drawShadow();
-        rightBookcase.drawShadow();
-        frame.drawShadow();
-        
-        //now enable depth testing again so books and
-        //bookcases draw in their proper places
-        ofEnableDepthTest();
-
-        frame.draw();        
-        leftBookcase.draw();
-        rightBookcase.draw();
-        
-        bookController.draw();
-
-        bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
-        
-        
-        camera.end();
-        
-        
-        if(bShowGUIs){
-            ofDisableDepthTest();
-            frame.drawDebug();
-            frame.drawGui();
-            
-            wallpaper.drawGui();
-            
-            leftBookcase.drawDebug();
-            leftBookcase.drawGui();
-
-            rightBookcase.drawDebug();
-            rightBookcase.drawGui();
-            
-            
-        }
-        
-        
-
-        
-    } else if(currentView == 1){
+        wallpaper.drawGui();
         
         
     } else if(currentView == 2){
+    
+        ofDisableDepthTest();
+        
+        //Bookcases debug
+        leftBookcase.drawDebug();
+        leftBookcase.drawGui();
+        
+        rightBookcase.drawDebug();
+        rightBookcase.drawGui();
         
         
     } else if(currentView == 3){
         
+        ofDisableDepthTest();
         
-    } else if(currentView == 4){
-        
+        //Center Book debug
+        centerBook.drawDebug();
+        centerBook.drawGui();
         
     }
+    
+    
+    camera.end();
+    
     
     
     if(bShowMouseCoords){
@@ -265,9 +289,16 @@ void ofApp::keyPressed(int key){
         bShowMouseCoords = true;
     }
     
-    if(key == ' '){
-        bShowGUIs = !bShowGUIs;
+    if(key == '0'){
+        currentView = 0;
+    } else if(key == '1'){
+        currentView = 1;
+    } else if(key == '2'){
+        currentView = 2;
+    } else if(key == '3'){
+        currentView = 3;
     }
+    
     
     if(key == 'h'){
         bSendHeartbeat = !bSendHeartbeat;

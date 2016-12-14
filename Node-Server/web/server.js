@@ -23,8 +23,8 @@ var io = require('socket.io').listen(server);
 server.listen(SOCKET_IO_PORT);
 
 // Figure out what to send to the browser and serve it.
-app.use(directory(WWW_ROOT));
 app.use(express.static(WWW_ROOT));
+app.use(directory(WWW_ROOT));
 
 console.log('Server has started on port ' + SOCKET_IO_PORT);
 

@@ -201,6 +201,10 @@ void Frame::draw(){
     ofTexture tex;
     tex = portraitFbo.getTexture();
     
+    //bring forward so it draws clear of the wallpaper tiles
+    ofPushMatrix();
+    ofTranslate(0, 0, -50);
+    
     tex.bind();
     ofSetColor(255);
     portraitMesh.draw();
@@ -209,7 +213,7 @@ void Frame::draw(){
     
     TiledObject::draw();
     
-
+    ofPopMatrix();
     
 }
 
@@ -304,7 +308,7 @@ void Frame::setupGui(){
     mappingLabel.setBackgroundColor(ofColor(255));
     
     
-    gui.setPosition(ofGetWidth()/2 - 200 , 10);
+    gui.setPosition(frameCorners[0].x - 240 , frameCorners[0].y - 80 );
     
     //if we're drawing the gui, then it's active so
     //we'll update all the values in update()

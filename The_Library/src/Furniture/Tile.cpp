@@ -46,7 +46,7 @@ void Tile::setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords){
     darkBacking.clearColors();
 
     for(int i = 0; i < darkBacking.getNumVertices(); i++){
-        darkBacking.addColor(ofFloatColor(0));
+        darkBacking.addColor(ofFloatColor(0.0, 1.0, 0.0));
     }
 
     bRotating = false;
@@ -55,7 +55,7 @@ void Tile::setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords){
     bFlipHoriz = false;
     bFlipVert = false;
     bFlipInOut = false;
-    bDrawDarkBacking = true;
+    bDrawDarkBacking = false;
     bIsBackward = true;
     flipSpeed = 0.02;
 
@@ -199,10 +199,13 @@ void Tile::update(){
         
         double now = ofGetElapsedTimef();
         
-        //back ease the angle
         currentAngle = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, startAngle, endAngle, &ofxeasing::back::easeOut_s, backEasing);
         
+        //back ease the angle
+//        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), startAngle, endAngle);
+//        currentAngle = x;
         
+
         if(now > effectStartTime + effectDuration){
         
             if(bFlipHoriz){
@@ -259,87 +262,92 @@ void Tile::update(){
 }
 
 void Tile::draw(){
-
-    ofPushMatrix();
     
-    //Mesh is positioned around it's origin so
-    //translate to the center of the tile position
-    ofTranslate(positionOnWall);
-    
-    ofRotate(currentAngle, rotAxis.x, rotAxis.y, rotAxis.z);
-    
-    images -> at(activeTexNum).bind();
-    
-    ofSetColor(255);
-    mesh.draw();
-    
-    images -> at(activeTexNum).unbind();
-    
-    //debug draw points and lines
-    //draw corners
-//    for(int i = 0; i < 4; i++){
-//        
-//        ofSetColor(255, 200, 0);
-//        ofDrawCircle(mesh.getVertex(i), 10);
-//        ofDrawBitmapStringHighlight(ofToString(i), mesh.getVertex(i).x + 10, mesh.getVertex(i).y - 10);
-//        
-//    }
-//    
-//    ofPolyline corners;
-//    corners.addVertex(mesh.getVertex(0));
-//    corners.addVertex(mesh.getVertex(1));
-//    corners.addVertex(mesh.getVertex(2));
-//    corners.addVertex(mesh.getVertex(3));
-//    corners.close();
-//    corners.draw();
-    
-    
-    
-    
-    
-    //draw an opaque black square on the flip side of it
-    if(bDrawDarkBacking){
-        
-//        ofPushMatrix();
-//        ofTranslate(0, 0, -0.1);
-//
-//        darkBacking.draw();
-//        
-//        ofPopMatrix();
-        
-    }
-    
-    //draw secondary texture on the flip side of it during transitions
-    //we need to rotate it into place so that it is properly oriented
-    //when it faces front
-    if(bFlipHoriz || bFlipVert || bFlipAxis){
+    ofEnableDepthTest();{
         
         ofPushMatrix();
         
-        if(bFlipHoriz){
-            ofRotateY(180);
-        }
+        //Mesh is positioned around it's origin so
+        //translate to the center of the tile position
+        ofTranslate(positionOnWall);
         
-        if(bFlipVert){
-            ofRotateX(180);
-        }
+        ofRotate(currentAngle, rotAxis.x, rotAxis.y, rotAxis.z);
         
-        //push it forward (i.e. behind since it's been turned) a bit so
-        //it draws slightly off the front mesh
-        ofTranslate(0, 0, 0.1);
-        
-        images -> at(nextTexNum).bind();
+        images -> at(activeTexNum).bind();
         
         ofSetColor(255);
         mesh.draw();
         
-        images -> at(nextTexNum).unbind();
+        images -> at(activeTexNum).unbind();
         
+        //debug draw points and lines
+        //draw corners
+        //    for(int i = 0; i < 4; i++){
+        //
+        //        ofSetColor(255, 200, 0);
+        //        ofDrawCircle(mesh.getVertex(i), 10);
+        //        ofDrawBitmapStringHighlight(ofToString(i), mesh.getVertex(i).x + 10, mesh.getVertex(i).y - 10);
+        //
+        //    }
+        //
+        //    ofPolyline corners;
+        //    corners.addVertex(mesh.getVertex(0));
+        //    corners.addVertex(mesh.getVertex(1));
+        //    corners.addVertex(mesh.getVertex(2));
+        //    corners.addVertex(mesh.getVertex(3));
+        //    corners.close();
+        //    corners.draw();
+        
+        
+        
+        
+        
+        //draw an opaque black square on the flip side of it
+        //    if(bDrawDarkBacking){
+        //
+        //        ofPushMatrix();
+        //        ofTranslate(0, 0, -0.1);
+        //
+        //        darkBacking.draw();
+        //
+        //        ofPopMatrix();
+        //
+        //    }
+        
+        //draw secondary texture on the flip side of it during transitions
+        //we need to rotate it into place so that it is properly oriented
+        //when it faces front
+        
+        if(bFlipHoriz || bFlipVert || bFlipAxis){
+            
+            
+            ofPushMatrix();
+            
+            if(bFlipHoriz){
+                ofRotateY(180);
+            }
+            
+            if(bFlipVert){
+                ofRotateX(180);
+            }
+            
+            //push it forward (i.e. behind since it's been turned) a bit so
+            //it draws slightly off the front mesh
+            ofTranslate(0, 0, -0.1);
+            
+            images -> at(nextTexNum).bind();
+            
+            ofSetColor(255);
+            mesh.draw();
+            
+            images -> at(nextTexNum).unbind();
+            
+            ofPopMatrix();
+            
+        }
         ofPopMatrix();
-
-    }
-    
-    ofPopMatrix();
+        
+    }ofDisableDepthTest();
     
 }
 

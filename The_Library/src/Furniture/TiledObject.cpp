@@ -47,7 +47,7 @@ void TiledObject::setupCommonGui(){
     
     gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
     gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 10.0f));
-    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
+    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 10.0f));
     gui.add(backEasingSlider.setup("Easing Bounce Amt", 1.0, 0.0, 4.0));
     
     gui.setHeaderBackgroundColor(ofColor(255));
@@ -181,24 +181,25 @@ void TiledObject::applyEffectToAll(Tile::Effect e){
 
 void TiledObject::update(){
     
-    
     //Handle wave effect
     if(bWave){
+        
+        
         
         //wave is based on actual speed: fps vs how far away from epicenter
         float timeBetweenFrames = 1000.0/ofGetFrameRate();
         
         
         
-        //go through all the tiles from the point we left off and
-        //trigger the ones that need to be triggered in between frames
+        //go through all the tiles from the point we left off
         for(int i = waveTileIndex; i < tiles.size(); i++){
             
-            
+            //trigger the ones that need to be triggered in between frames
             if(ofGetElapsedTimeMillis() > waveStartTime + tiles[waveTileIndex].timeUntilWave + timeBetweenFrames){
                 
-                //                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_AXIS, 0.0, waveEpicenter );
+//                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_AXIS, 0.0, waveEpicenter );
                 tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_RAND, 0.0, waveEpicenter );
+//                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_HORIZ, 0.0, waveEpicenter );
                 
                 waveTileIndex++;
                 
@@ -250,6 +251,8 @@ void TiledObject::draw(){
 }
 
 
+//HELPER METHOD:
+//used by all the child objects to map the mesh to the control points
 ofVec2f TiledObject::getIntersectionPoint(ofVec2f line1Start, ofVec2f line1End, ofVec2f line2Start, ofVec2f line2End){
     
     ofVec2f intersectionPt;

@@ -69,6 +69,15 @@ public:
     BookUIButton prevButton;
     BookUIButton exitButton;
     
+    
+    //visuals and texturing
+    ofxAssimpModelLoader model;
+    ofFbo textureFBO;
+    ofMaterial material;
+    ofTexture *tex;
+    ofTrueTypeFont *font;
+    ofVboMesh spineMesh;
+
     //Book Content and Page layouts
     vector<ofVec2f> pageTexCoords;
     float pageWidth, pageHeight;
@@ -77,16 +86,9 @@ public:
     
     vector<string> pageText;
     int pageSpreadsAvailable;
+    float widthScale;
+    float flatScale, flattenAmt;
     
-
-
-    //visuals and texturing
-    ofxAssimpModelLoader model;
-    ofFbo textureFBO;
-    ofMaterial material;
-    ofTexture *tex;
-    ofTrueTypeFont *font;
-    ofVboMesh spineMesh;
     
     //positioning and animation
     ofVec3f pos;

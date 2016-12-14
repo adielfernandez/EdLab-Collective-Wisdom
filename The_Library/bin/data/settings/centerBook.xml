@@ -1,0 +1,16 @@
+<centerBook>
+	<__POSITIONING/>
+	<Book_Pos>121.735, 170</Book_Pos>
+	<Bulk_Scale>1.29</Bulk_Scale>
+	<Depth_Scale>1</Depth_Scale>
+	<Height_Scale>1</Height_Scale>
+	<Width_Scale>1</Width_Scale>
+	<__MAPPING/>
+	<Show_UnWarped>1</Show_UnWarped>
+	<Draw_Wireframe>0</Draw_Wireframe>
+	<Mesh_Pt_0>825, 700</Mesh_Pt_0>
+	<Mesh_Pt_1>1095, 700</Mesh_Pt_1>
+	<Mesh_Pt_2>1095, 880</Mesh_Pt_2>
+	<Mesh_Pt_3>825, 880</Mesh_Pt_3>
+<centerBook/>
+</centerBook>

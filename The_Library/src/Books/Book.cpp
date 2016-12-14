@@ -185,7 +185,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     //--------------------Book Text and Page Layouts--------------------
     
     //Texture coordinages and dimensions of the page regions
-    //within the book texture (tex = 1000px x 1000px)
+    //within the book texture (tex = 512px x 512px)
     
     pageTexCoords.resize(6);
     
@@ -231,6 +231,12 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     currentOpenPage = 0;
     pageLerpSpeed = 0.05;
     
+    //Stretch the book width a little to add more readable surface area
+    //this will also inversely scale the text to return to normal
+    widthScale = 1.0;
+    flatScale = 0.5;
+    flattenAmt = flatScale;
+    
     //setup the buttons
     //nevermind, this is called from the book controller
 //    setupUI();
@@ -241,10 +247,11 @@ void Book::setupUI(){
     
     float shelfHeight = 140; //ish
     
+    //Buttons are drawn relative to the book's position on the shelf (lower left corner)
     //draw the next button on top, then prev, then exit on bottom
-    nextButton.setup( 2, displayPos, -shelfHeight * 0.9 );
+    nextButton.setup( 2, displayPos, -shelfHeight * 0.8 );
     prevButton.setup( 1, displayPos, -shelfHeight * 0.50 );
-    exitButton.setup( 0, displayPos, -shelfHeight * 0.1 );
+    exitButton.setup( 0, displayPos, -shelfHeight * 0.2 );
     
 }
 
@@ -418,7 +425,7 @@ void Book::drawContentToTexture(){
         float topMargin = 18.5;
         
         ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + topMargin);
-        
+        ofScale( 1.0/widthScale , 1.0);
         ofSetColor(93, 50, 0);
         //                    float lineHeight = font -> stringHeight("A");
         font -> drawString(pageText[i], 0, 0); //-lineHeight);
@@ -445,69 +452,7 @@ void Book::triggerDisplay(){
 
 void Book::update(){
     
-//    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0, 1.0);
-//    float y = ofMap(ofGetMouseY(), 0, ofGetHeight(), 0, 30);
-//
-//
-//    
-//    pos.set(displayPos.x, displayPos.y + 200);
-//    currentRotX = displayRotX;
-//    currentRotZ = displayRotZ;
-//    model.update();
-//    model.setPositionForAllAnimations(x);
-//    currentScale = displayScale;
-//    
-////    font -> setLineHeight(y);
-//
-//    
-//    //-----DRAW TEXT ONTO TEXTURE
-//    textureFBO.begin();
-//    ofClear(255, 255, 255, 255);
-//    ofSetColor(255);
-//    tex -> draw(0, 0);
-//    
-//    ofDisableDepthTest();
-//    for(int i = 0; i < pageText.size(); i++){
-//    
-//        ofPushMatrix();
-//        ofTranslate(pageTexCoords[i]);
-//        
-//        //circle and cross hairs at page origin
-//        ofSetColor(0, 180, 0);
-//        ofDrawCircle(0, 0, 5);
-//        
-//        ofSetColor(0);
-//        ofSetLineWidth(1);
-//        ofDrawLine(-10, 0, 10, 0);
-//        ofDrawLine(0, -10, 0, 10);
-//
-//        //left pages draw closer to page edge
-//        //right pages draw further to get past page curvature
-//        float leftMargin = (i % 2 == 1 ? 10 : 5);
-//        float topMargin = 18.5;
-//        
-//        ofTranslate(leftMargin, topMargin);
-//        
-//        //red dot at text center
-//        ofSetColor(255, 0, 0);
-//        ofDrawCircle(0, 0, 3);
-//        
-//        ofSetColor(93, 50, 0);
-//        float lineHeight = font -> stringHeight("A");
-//        font -> drawString(pageText[i], 0, 0); //-lineHeight);
-//        
-//        ofPopMatrix();
-//    
-//    
-//    }
-//    
-//    ofEnableDepthTest();
-//    
-//    textureFBO.end();
-//    
-//
-//    if(ofGetMousePressed())
-//        cout << x << ", " << y << endl;
+
     
     
     
@@ -520,7 +465,7 @@ void Book::update(){
         
         model.update();
 
-        drawContentToTexture();
+//        drawContentToTexture();
 
         if(!bIsDisplayed){
 
@@ -569,6 +514,11 @@ void Book::update(){
                 //do a linear mapping of the animation and clamp it
                 animPos = ofMap(now, displayReadyTime, firstPageTime, animationStart, animFirstPages, true);
 
+                //also ease into the flattened scale to make the text
+                //close to the spine easier to read
+                flattenAmt = ofMap(now, displayReadyTime, firstPageTime, 1.0, flatScale);
+                
+                
                 bIsDisplayed = true;
                 
                 //bring out the buttons
@@ -686,6 +636,7 @@ void Book::update(){
                     //do a linear mapping of the animation and clamp it
                     //start at wherever we are and close the book by moving to the start position
                     animPos = ofMap(now, closingStartTime, closeBookTime, animPos, animationStart, true);
+                    flattenAmt = ofMap(now, closingStartTime, closeBookTime, flatScale, 1.0f);
                     
                     //put away the buttons
                     hideButtons();
@@ -773,8 +724,10 @@ void Book::draw(){
             
             
             
-            //scale the model up
-            ofScale(currentScale, currentScale, currentScale);
+            //scale the model up (with a little extra in the X to add more viewable reading area.
+            //Also, squash the book down to minimize the curvature
+            //making text close to the spine easier to read
+            ofScale(currentScale * widthScale, currentScale * flattenAmt, currentScale);
             
             //disable the model textures so we can use our own
             model.disableTextures();

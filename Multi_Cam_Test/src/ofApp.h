@@ -5,8 +5,9 @@
 #include "ofxGui.h"
 #include "ofxOrbbecAstra.h"
 #include "WallCam.h"
-#include "Touch.hpp"
-
+#include "DeskCam.hpp"
+#include "WallTouch.hpp"
+#include "DeskTouch.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -27,11 +28,10 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-    WallCam leftCam;
+//    WallCam leftCam;
 //    WallCam rightCam;
-//    WallCam centerCam;
+    DeskCam centerCam;
     
-    ofSoundPlayer sound;
     
     int currentCam, numCams;
     int threshold;

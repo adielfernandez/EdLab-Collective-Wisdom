@@ -40,17 +40,56 @@ void Wallpaper::loadMedia(){
 
 void Wallpaper::setup(){
     
-    
 
     
     //scene variables
     sceneDim.set(1920, 1200);
 
+
+    
+
+    bWave = false;
+    waveSpeed = 1.0;   //in pixels per ms
+    waveTileIndex = 0;
+
+    guiName = "wallpaper";
+    
+    tileResSliderName = "Tile Res: ";
+    
+    
+    setupGui();
+    
+    waveSpeedSlider = 1.0;
+    effectDurationSlider = 1.8;
+    
+    //not needed after first XML population
+//    saveSettings();
+    
+    loadSettings();
+    
+    
+    tileRes = getResFromSlider(tileResSlider);
+    tileResSlider.setName(tileResSliderName + ofToString(tileRes));
+    mapMesh(tileRes);
+    
+    needsReMap = false;
+    
+    //Setup the parent class TiledObject with all th info set above
+    TiledObject::setupTiledObject(false);   //NOT a bookcase
+    
+    
+    
+}
+
+void Wallpaper::mapMesh(int res){
+    
+    tiles.clear();
+    
     //-----Construct the mesh-----
     
     //Common factors of 1920x1200 for square grid sizing:
     //20, 24, 30, 40, 48, 60, 80, 120, 240
-    gridSpacing = 80;
+    gridSpacing = res;
     
     for(int x = 0; x < sceneDim.x; x += gridSpacing){
         for(int y = 0; y < sceneDim.y; y += gridSpacing){
@@ -59,9 +98,9 @@ void Wallpaper::setup(){
              Tiles vertex arrangement
              
              0 _____ 1
-              |     |
-              |     |
-              |____ |
+             |     |
+             |     |
+             |____ |
              3       2
              
              */
@@ -89,32 +128,77 @@ void Wallpaper::setup(){
             t.setActiveTexture( currentImg );
             
             tiles.push_back(t);
-        
+            
         }
     }
-    
-    //Setup the parent class TiledObject with all th info set above
-    TiledObject::setupTiledObject(false);   //NOT a bookcase
-    
 
-    bWave = false;
-    waveSpeed = 1.0;   //in pixels per ms
-    waveTileIndex = 0;
-
-    guiName = "wallpaper";
-    setupGui();
     
-    waveSpeedSlider = 1.0;
-    effectDurationSlider = 1.8;
-    
-    //not needed after first XML population
-//    saveSettings();
-    
-    loadSettings();
     
 }
 
+int Wallpaper::getResFromSlider(int sliderVal){
+    
+    //get the value of the resolution slider and cast it to certain limited sizes
+    //Sizes for square tiles (common factors of 1920x1200): 20, 24, 30, 40, 48, 60, 80, 120, 240
+    int res = 0;
+    
+    switch (sliderVal) {
+        case 1:
+            res = 20;
+            break;
+        case 2:
+            res = 24;
+            break;
+        case 3:
+            res = 30;
+            break;
+        case 4:
+            res = 40;
+            break;
+        case 5:
+            res = 48;
+            break;
+        case 6:
+            res = 60;
+            break;
+        case 7:
+            res = 80;
+            break;
+        case 8:
+            res = 120;
+            break;
+        case 9:
+            res = 240;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return res;
+    
+}
+
+
 void Wallpaper::update(){
+    
+    
+
+    
+    tileRes = getResFromSlider(tileResSlider);
+    tileResSlider.setName(tileResSliderName + ofToString(tileRes));
+    
+    //flag that a re-map is needed
+    if(reMapMeshButton){
+        needsReMap = true;
+    }
+    
+    //Remap if needed, but wait for there to
+    //be no active wave happening
+    if(needsReMap && !bWave){
+        mapMesh(tileRes);
+        needsReMap = false;
+    }
     
     
     TiledObject::updateCommonGui();
@@ -142,8 +226,19 @@ void Wallpaper::setupGui(){
     
     TiledObject::setupCommonGui();
     
+    gui.add(mappingLabel.setup("  Mapping Points", ""));
+    gui.add(tileResSlider.setup("Tile Resolution: ", 7, 1, 9));
+    gui.add(reMapMeshButton.setup("Re-Map Mesh"));
+    
+    //color applies to gui title only
+    gui.setTextColor(ofColor(0));
+    
+    mappingLabel.setBackgroundColor(ofColor(255));
+    
     gui.setPosition(10, 10);
     
+    
+
 }
 
 void Wallpaper::loadSettings(){

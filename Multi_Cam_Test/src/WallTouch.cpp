@@ -1,21 +1,21 @@
 //
-//  Touch.cpp
+//  WallTouch.cpp
 //  Multi_Cam_Test
 //
 //  Created by Adiel Fernandez on 11/29/16.
 //
 //
 
-#include "Touch.hpp"
+#include "WallTouch.hpp"
 
 
-Touch::Touch(){
+WallTouch::WallTouch(){
     
 }
 
 
 
-void Touch::setNewTouch(int _id, ofVec2f _p, float _d){
+void WallTouch::setNewTouch(int _id, ofVec2f _p, float _d){
     
     id = _id;
     pos = _p;
@@ -31,7 +31,7 @@ void Touch::setNewTouch(int _id, ofVec2f _p, float _d){
     
 }
 
-void Touch::renewTouch(ofVec2f p, float d){
+void WallTouch::renewTouch(ofVec2f p, float d){
     
     //add the new position to the last one and average to smooth the data a little
     pos = (pos + p) / 2.0f;
@@ -44,7 +44,7 @@ void Touch::renewTouch(ofVec2f p, float d){
 }
 
 
-void Touch::update(){
+void WallTouch::update(){
     
     if(dist < distForTouch)
         bIsTouching = true;

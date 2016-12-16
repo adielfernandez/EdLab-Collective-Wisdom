@@ -29,8 +29,11 @@ public:
     
     void setup();
     void loadMedia();
+    void mapMesh(int res);
     void update();
     void draw();
+    
+    int getResFromSlider(int sliderVal);
     
     void setupGui();
     void drawGui();
@@ -41,8 +44,13 @@ public:
     int gridSpacing;
     ofVec2f sceneDim;
     
-    
+    ofxLabel mappingLabel;
+    ofxIntSlider tileResSlider;
+    ofxButton reMapMeshButton;
 
+    int tileRes;
+    string tileResSliderName;
+    bool needsReMap;
     
 
 };

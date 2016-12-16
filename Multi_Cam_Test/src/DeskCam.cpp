@@ -1,20 +1,22 @@
 //
-//  WallCam.cpp
+//  DeskCam.cpp
 //  Multi_Cam_Test
 //
-//  Created by Adiel Fernandez on 10/17/16.
+//  Created by Adiel Fernandez on 12/15/16.
 //
 //
 
-#include "WallCam.h"
+#include "DeskCam.hpp"
+
+
 
 using namespace ofxCv;
 
-WallCam::WallCam(){
+DeskCam::DeskCam(){
     
 }
 
-WallCam::~WallCam(){
+DeskCam::~DeskCam(){
     
     closeAllChannels();
     
@@ -22,7 +24,7 @@ WallCam::~WallCam(){
     
 }
 
-void WallCam::closeAllChannels(){
+void DeskCam::closeAllChannels(){
     
     settingsIn.close();
     rawShortPixIn.close();
@@ -33,7 +35,7 @@ void WallCam::closeAllChannels(){
 }
 
 
-void WallCam::emptyAllChannels(){
+void DeskCam::emptyAllChannels(){
     
     //close thread channels
     settingsIn.empty();
@@ -44,18 +46,29 @@ void WallCam::emptyAllChannels(){
     
 }
 
-void WallCam::setup(string _camName, const char* deviceName){
+void DeskCam::setup(string _camName, const char* deviceName){
     
     filePath = "settings/";
     camName = _camName;
-
+    
+    
+    
     setupGui();
     loadSettings();
-    
+
     camera.setup(deviceName);
     camera.enableRegistration(false);
     camera.initDepthStream();
     camera.enableDepthImage(false);
+    
+    
+    maskPoints.resize(4);
+    maskPoints[0] = maskPt0;
+    maskPoints[1] = maskPt1;
+    maskPoints[2] = maskPt2;
+    maskPoints[3] = maskPt3;
+    
+    
     
     
     rawPix.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
@@ -73,16 +86,16 @@ void WallCam::setup(string _camName, const char* deviceName){
     firstStop = true;
     
     lastRestartTime = 0;
-
     
-
+    
+    
     startThread();
     
 }
 
 
 
-void WallCam::update(){
+void DeskCam::update(){
     
     //attempt to receive data from thread
     ofPixels p;
@@ -103,14 +116,14 @@ void WallCam::update(){
         
         //
         lastFrameTime = ofGetElapsedTimeMillis();
-
+        
     }
     
     ofxCv::ContourFinder c;
     if(contoursOut.tryReceive(c)){
         contours = c;
     }
-
+    
     
     //---------------------------------------------------------------
     //---------------THREAD MANAGEMENT AND RESTARTING----------------
@@ -165,178 +178,22 @@ void WallCam::update(){
         firstStop = false;
         
     }
-
+    
+    
+    
     
     
     
 
     
-    //---------------------------------------------------------------
-    //--------------------MAP DEPTH TO WALL SPACE--------------------
-    //---------------------------------------------------------------
-    thresholdPos = wallCutoffSlider - roiDepthSlider;
-    
-    //Go through previous touch data and set all touches to not updated
-    for(int i = 0; i < touches.size(); i++){
-        touches[i].bUpdated = false;
-        touches[i].distForTouch = wallHitDistSlider;
-    }
-    
-    lowPoints.clear();
-    
-    if(contours.size() > 0){
-        
-        //go through all the contours
-        for(int i = 0; i < contours.size(); i++){
-            
-            //get all the points in the blob so we can find the lowest point
-            //i.e. the closest point to the wall
-            vector<ofPoint> points = contours.getPolyline(i).getVertices();
-            
-            //go through all the vertices and find the point with the lowest y value
-            int yVal = 0;
-            int index = 0;
-            for(int j = 0; j < points.size(); j++){
-                //if we find a point lower than yVal, store it
-                if(points[j].y > yVal){
-                    yVal = points[j].y;
-   
-                    //also store this index;
-                    index = j;
-                }
-            }
-            
-            ofVec2f lowestPoint(points[index].x, points[index].y);
-            
-            //we now have the lowest point, we don't really need to store it except when
-            //calibrating the space and drawing it on the thresholded image.
-            //Can comment out later.
-            lowPoints.push_back( ofVec2f(lowestPoint.x, lowestPoint.y) );
-            
-            //since the depth at the edge pixel might not always be the true depth, look around the area
-            //just above the lowest point and pick the highest (closest) depth value as the depth reading
-            float camDepth = -1;
-            
-            //search pixels above and to the sides, wider area gives more stable touch data
-            int pixelArea = 20;
-            for(int x = lowestPoint.x - pixelArea; x < lowestPoint.x + pixelArea; x++){
-                for(int y = lowestPoint.y - pixelArea; y < lowestPoint.y; y++){
-                    
-                    //make sure the pixel is in bounds
-                    if(x > 0 && x < camWidth && y > 0 && y < roiDepthSlider){
-                        int thisIndex = rawPix.getPixelIndex(x, y + thresholdPos);
-                        if(rawPix[thisIndex] > camDepth) camDepth = rawPix[thisIndex];
-                    }
-                    
-                }
-            }
-            
-            //we have a position from left to right and a depth.
-            //Now we need to map them to wall space
-            
-            //these are the pixel brightness values at the close, middle and far end of the
-            //region of interest, i.e. the top, middle and bottom of bookshelf
-            int nearDepthVal = 246;
-            int middleDepthVal = 157;
-            int farDepthVal = 68;
-            
-            //these will eventually be defined by the bookcase dimensions (top of 1st shelf, bottom of 3rd shelf)
-            int nearScreenYval = 702;
-            int farScreenYval = 90;
-            
-            //Y is easy, as pixel brightness maps linearly to distance
-            float mappedY = ofMap(camDepth, nearDepthVal, farDepthVal, nearScreenYval, farScreenYval);
-            
-            //X is more difficult since travel perpendicular to the camera FOV changes with distance
-            //Basically we will map the X differently from left to right using control points
-            //at different depths. Control point: The x component of the left and right screen
-            //pixels that correspond to a touch at each control point
-            
-            //These will be defined by the camera's x value when touching 6 points around
-            //the far edges of the bookcase interaction area: top, middle and bottom
-            //of the left and right sides
-            
-            //TO DO: Diagram this out and place in documentation
-            
-            int nearLeft = 5;
-            int nearRight = 550;
-            int middleLeft = 105;
-            int middleRight = 473;
-            int farLeft = 158;
-            int farRight = 433;
-            
-            //map left and right distance from the centerline on each side
-            //depending on distance
-            float xLeftEdge, xRightEdge;
-            
-            //we're in the closer half to the camera
-            if(camDepth > middleDepthVal){
-                //closer to cam
-                xLeftEdge = ofMap(camDepth, nearDepthVal, middleDepthVal, nearLeft, middleLeft);
-                xRightEdge = ofMap(camDepth, nearDepthVal, middleDepthVal, nearRight, middleRight);
-            } else {
-                //farther from cam
-                xLeftEdge = ofMap(camDepth, middleDepthVal, farDepthVal, middleLeft, farLeft);
-                xRightEdge = ofMap(camDepth, middleDepthVal, farDepthVal, middleRight, farRight);
-            }
-            
-            //now we know the left and right bounds at any depth: xLeft and xRight
-            //so let's finally map them to the screen coordinates (eventually the bookcase width)
-
-            float interactionAreaLeft = 273;
-            float interactionAreaRight = 853;
-            
-            float mappedX = ofMap(lowestPoint.x, xLeftEdge, xRightEdge, interactionAreaRight, interactionAreaLeft);
-            
-            float distFromWall = threshPix.getHeight() - lowestPoint.y;
-            
-            //check if a touch exists with the ID, if it does, update it, if not add it.
-            bool touchExists = false;
-            int existingIndex;
-            
-            for(int i = 0; i < touches.size(); i++){
-                if(touches[i].id == contours.getLabel(i)){
-                    touchExists = true;
-                    existingIndex = i;
-                    break;
-                }
-            }
-            
-            if(touchExists){
-                //update the touch
-                touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), distFromWall);
-                
-            } else {
-                //add the new touch
-                WallTouch t;
-                t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), distFromWall);
-                touches.push_back(t);
-                
-            }
-
-            
-        }
-
-    }
-    
-    //remove all the touches that haven't been update recently
-    //starting from the end of the vector and moving to the front
-    for(int i = touches.size() - 1; i >= 0; i--){
-        
-        if(!touches[i].bUpdated){
-            touches.erase( touches.begin() + i );
-        }
-        
-    }
     
     
-
     
     
     //send settings into thread
-
+    
     camera.update();
-//    if(camera.isFrameNew()){
+    //    if(camera.isFrameNew()){
     
     //hack to not flood thread with duplicate images until
     //we get isFrameNew() working
@@ -346,8 +203,8 @@ void WallCam::update(){
         
         //get settings from gui
         vector<int> settings;
-        settings.resize(16);
-
+        settings.resize(22);
+        
         settings[0] = nearClipSlider;
         settings[1] = farClipSlider;
         settings[2] = nearThreshSlider;
@@ -355,18 +212,24 @@ void WallCam::update(){
         settings[4] = blurAmountSlider;
         settings[5] = numErosionsSlider;
         settings[6] = numDilationsSlider;
-
-        settings[7] = roiDepthSlider;
-        settings[8] = wallCutoffSlider;
         
-        settings[9] = learningTimeSlider;
-        settings[10] = useBgDiff;    //bool casted as int into vector
-        settings[11] = resetBG;    //bool casted as int into vector
+        settings[7] = learningTimeSlider;
+        settings[8] = useBgDiff;    //bool casted as int into vector
+        settings[9] = resetBG;    //bool casted as int into vector
         
-        settings[12] = minBlobAreaSlider;
-        settings[13] = maxBlobAreaSlider;
-        settings[14] = persistenceSlider;
-        settings[15] = maxDistanceSlider;
+        settings[10] = minBlobAreaSlider;
+        settings[11] = maxBlobAreaSlider;
+        settings[12] = persistenceSlider;
+        settings[13] = maxDistanceSlider;
+        
+        settings[14] = maskPt0 -> x;
+        settings[15] = maskPt0 -> y;
+        settings[16] = maskPt1 -> x;
+        settings[17] = maskPt1 -> y;
+        settings[18] = maskPt2 -> x;
+        settings[19] = maskPt2 -> y;
+        settings[20] = maskPt3 -> x;
+        settings[21] = maskPt3 -> y;
         
         settingsIn.send(settings);
         
@@ -377,11 +240,16 @@ void WallCam::update(){
     
     camera.setDepthClipping(nearClipSlider, farClipSlider);
     
-    
+    maskPoints.clear();
+    maskPoints.resize(4);
+    maskPoints[0] = maskPt0;
+    maskPoints[1] = maskPt1;
+    maskPoints[2] = maskPt2;
+    maskPoints[3] = maskPt3;
     
 }
 
-void WallCam::drawRaw(int x, int y){
+void DeskCam::drawRaw(int x, int y){
     
     ofImage rawImg;
     rawImg.setFromPixels(rawPix);
@@ -391,34 +259,60 @@ void WallCam::drawRaw(int x, int y){
     float w = rawPix.getWidth();
     float h = rawPix.getHeight();
     
-    
+
     
     ofPushStyle();
-
+    
     ofNoFill();
     ofSetLineWidth(1);
     ofSetColor(255, 100);
     ofDrawRectangle(x, y, w, h);
     
-    //draw crosshairs for calibration
     ofPushMatrix();
     ofTranslate(x, y);
+
+    //draw where the mask is in green
+    ofPath mask;
+    mask.rectangle(0, 0, camWidth, camHeight);
+    mask.close();
+    mask.moveTo((ofPoint)maskPoints[0]);
+    mask.lineTo((ofPoint)maskPoints[1]);
+    mask.lineTo((ofPoint)maskPoints[2]);
+    mask.lineTo((ofPoint)maskPoints[3]);
+    mask.lineTo((ofPoint)maskPoints[0]);
+    mask.setColor(ofColor(0, 255, 0, 40));
     
+    mask.draw();
+    
+    //draw each of the Mask Points
+    for(int i = 0; i < maskPoints.size(); i++){
+        
+        ofSetColor(0, 255, 0);
+        ofDrawCircle(maskPoints[i], 10);
+        ofDrawBitmapStringHighlight(ofToString(i), maskPoints[i].x + 10, maskPoints[i].y - 10);
+        
+    }
+
+    //draw a line around the boundary
+    ofPolyline p;
+    p.addVertex(maskPoints[0]);
+    p.addVertex(maskPoints[1]);
+    p.addVertex(maskPoints[2]);
+    p.addVertex(maskPoints[3]);
+    p.close();
+    p.draw();
+    
+    
+    //draw crosshairs for calibration
+    ofSetColor(255, 100);
     ofDrawLine(w/2, 0, w/2, h);
     ofDrawLine(0, h/2, w, h/2);
-    
-    //draw green line at wall hit boundary
-    ofSetColor(0, 255, 0);
-    ofDrawLine(0, wallCutoffSlider - wallHitDistSlider, w, wallCutoffSlider - wallHitDistSlider);
 
+    
     ofPopMatrix();
     
     
-    float threshY = wallCutoffSlider - roiDepthSlider;
-    //draw a red outline of where the ROI is
-    ofSetLineWidth(1);
-    ofSetColor(255, 0, 0);
-    ofDrawRectangle(x, y + threshY, w, roiDepthSlider);
+
     
     ofPopStyle();
     
@@ -428,7 +322,7 @@ void WallCam::drawRaw(int x, int y){
         
         float depth = rawPix[rawPix.getPixelIndex(ofGetMouseX() - x, ofGetMouseY() - y)];
         ofDrawBitmapStringHighlight("D: " + ofToString(depth), ofGetMouseX() - 20, ofGetMouseY() - 20);
-
+        
     }
     
     
@@ -436,28 +330,21 @@ void WallCam::drawRaw(int x, int y){
 
 //bDrawShifted = false draws at X and Y
 //true draws as if it were overlaying on top of the raw image
-void WallCam::drawThresh(int x, int y, bool bDrawShifted){
- 
+void DeskCam::drawThresh(int x, int y){
+    
     ofImage threshImg;
     threshImg.setFromPixels(threshPix);
+
+    threshImg.draw(x, y);
     
-    if(bDrawShifted){
-        threshImg.draw(x, y + thresholdPos);
-    } else {
-        threshImg.draw(x, y);
-    }
     
     float w = threshPix.getWidth();
     float h = threshPix.getHeight();
     
     ofPushStyle();
     ofPushMatrix();
-
-    if(bDrawShifted){
-        ofTranslate(x, y + thresholdPos);
-    } else {
-        ofTranslate(x, y);
-    }
+    ofTranslate(x, y);
+    
     
     //draw a light frame
     ofNoFill();
@@ -465,16 +352,13 @@ void WallCam::drawThresh(int x, int y, bool bDrawShifted){
     ofSetColor(255, 0, 0);
     ofDrawRectangle(0, 0, w, h);
     
-    //draw green line at wall hit boundary
-    ofSetColor(0, 255, 0);
-    ofDrawLine(0, h - wallHitDistSlider, w, h - wallHitDistSlider);
     
     //draw crosshairs for calibration
     ofSetColor(255, 100);
     ofDrawLine(w/2, 0, w/2, h);
     ofDrawLine(0, h/2, w, h/2);
-
-
+    
+    
     
     if(drawContoursToggle){
         
@@ -496,7 +380,7 @@ void WallCam::drawThresh(int x, int y, bool bDrawShifted){
                 ofFill();
                 ofSetColor(0, 255, 0);
                 ofDrawCircle(c.x, c.y, 5, 5);
-    
+                
                 string msg = ofToString(label) + " : " + ofToString(c.x) + ", " + ofToString(c.y);
                 ofDrawBitmapString(msg, c.x + 5, c.y);
                 
@@ -508,7 +392,7 @@ void WallCam::drawThresh(int x, int y, bool bDrawShifted){
                 }
                 
             }
-        
+            
         }
         
     }
@@ -520,7 +404,7 @@ void WallCam::drawThresh(int x, int y, bool bDrawShifted){
     if(ofGetMouseX() > x && ofGetMouseX() < x + w && ofGetMouseY() > y && ofGetMouseY() < y + h){
         ofSetColor(255);
         
-        float depth = rawPix[rawPix.getPixelIndex(ofGetMouseX() - x, ofGetMouseY() - y + roiDepthSlider)];
+        float depth = rawPix[rawPix.getPixelIndex(ofGetMouseX() - x, ofGetMouseY() - y)];
         ofDrawBitmapStringHighlight("Raw Depth: " + ofToString(depth), ofGetMouseX() - 20, ofGetMouseY() - 20);
         
     }
@@ -529,7 +413,7 @@ void WallCam::drawThresh(int x, int y, bool bDrawShifted){
 
 
 
-void WallCam::drawGui(int x, int y){
+void DeskCam::drawGui(int x, int y){
     
     gui.setPosition(x, y);
     gui.draw();
@@ -537,12 +421,12 @@ void WallCam::drawGui(int x, int y){
     
 }
 
-void WallCam::setupGui(){
+void DeskCam::setupGui(){
     
     
     
     gui.setup(camName, filePath + camName + ".xml", 0, 0);
-
+    
     gui.add(cameraLabel.setup("   CAMERA SETTINGS", ""));
     gui.add(nearClipSlider.setup("Cam Near Clip", 500, 0, 8000));
     gui.add(farClipSlider.setup("Cam Far Clip", 3000, 0, 8000));
@@ -554,11 +438,17 @@ void WallCam::setupGui(){
     gui.add(numErosionsSlider.setup("Number of erosions", 0, 0, 10));
     gui.add(numDilationsSlider.setup("Number of dilations", 0, 0, 10));
     
-    gui.add(roiLabel.setup("   ROI SETTINGS", ""));
-    gui.add(roiDepthSlider.setup("Region Depth", 20, 0, camHeight));
-    gui.add(wallCutoffSlider.setup("Wall Level Cutoff", 400, 0, camHeight));
-    gui.add(wallHitDistSlider.setup("Dist for touch", 10, 0, 50));
+    ofVec2f min(0, 0);
+    ofVec2f max(camWidth, camHeight);
 
+    
+    gui.add(maskingLabel.setup("   MASK SETTINGS", ""));
+    //the current values will be overwritten quickly by the gui's loaded values
+    gui.add(maskPt0.setup("Mask Pt 0", ofVec2f(0,0), min, max));
+    gui.add(maskPt1.setup("Mask Pt 1", ofVec2f(0,0), min, max));
+    gui.add(maskPt2.setup("Mask Pt 2", ofVec2f(0,0), min, max));
+    gui.add(maskPt3.setup("Mask Pt 3", ofVec2f(0,0), min, max));
+    
     gui.add(bgDiffLabel.setup("   BG SUBTRACTION", ""));
     gui.add(useBgDiff.setup("Use BG Diff", false));
     gui.add(learningTimeSlider.setup("Frames to learn BG", 100, 0, 2000));
@@ -580,8 +470,8 @@ void WallCam::setupGui(){
     
     cameraLabel.setBackgroundColor(ofColor(255));
     cvLabel.setBackgroundColor(ofColor(255));
+    maskingLabel.setBackgroundColor(ofColor(255));
     contoursLabel.setBackgroundColor(ofColor(255));
-    roiLabel.setBackgroundColor(ofColor(255));
     bgDiffLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels for some reason
@@ -589,39 +479,38 @@ void WallCam::setupGui(){
     
 }
 
-void WallCam::loadSettings(){
+void DeskCam::loadSettings(){
     
     gui.loadFromFile( filePath + camName + ".xml");
     
     
 }
 
-void WallCam::saveSettings(){
+void DeskCam::saveSettings(){
     
     gui.saveToFile(filePath + camName + ".xml");
     
 }
 
-void WallCam::threadedFunction(){
+void DeskCam::threadedFunction(){
     
     while(isThreadRunning()){
         
-//        camera.update();
+        //        camera.update();
         
         vector<int> settings_thread;
         ofShortPixels rawShortPix_thread; //short pix coming in
         
         if(rawShortPixIn.receive(rawShortPix_thread) && settingsIn.receive(settings_thread)){
-        
-            //Local data inside thread
-//            ofShortPixels rawShortPix_thread = camera.getRawDepth(); //short pix coming in
-            ofPixels rawPix_thread;      //regular pix going out
             
+            //Local data inside thread
+            ofPixels rawPix_thread;      
             ofPixels threshPix_thread, blurredPix_thread;
+            ofPixels mappedBlurredPix_thread;
             ofxCv::ContourFinder contours_thread;
-
+            
             //get all the values from the settings vector
-
+            
             int nearClip = settings_thread[0];
             int farClip = settings_thread[1];
             int nearThresh = settings_thread[2];
@@ -630,32 +519,28 @@ void WallCam::threadedFunction(){
             int blurAmount = settings_thread[4];
             int numErosions = settings_thread[5];
             int numDilations = settings_thread[6];
-
-            int roiDepth = settings_thread[7];
-            int wallCutoff = settings_thread[8];
             
-            int learningTime = settings_thread[9];
-            bool useBgDiff = settings_thread[10];
-            bool resetBG = settings_thread[11];
+            int learningTime = settings_thread[7];
+            bool useBgDiff = settings_thread[8];
+            bool resetBG = settings_thread[9];
             
-            int minBlobArea = settings_thread[12];
-            int maxBlobArea = settings_thread[13];
-            int persistence = settings_thread[14];
-            int maxBlobDist = settings_thread[15];
+            int minBlobArea = settings_thread[10];
+            int maxBlobArea = settings_thread[11];
+            int persistence = settings_thread[12];
+            int maxBlobDist = settings_thread[13];
             
+            vector<ofVec2f> meshPts;
+            meshPts.resize(4);
+            meshPts[0] = ofVec2f(settings_thread[14], settings_thread[15]);
+            meshPts[1] = ofVec2f(settings_thread[16], settings_thread[17]);
+            meshPts[2] = ofVec2f(settings_thread[18], settings_thread[19]);
+            meshPts[3] = ofVec2f(settings_thread[20], settings_thread[21]);
             
-//            cout << "Frame Num: " << frameNum << ", ROI Depth" << roiDepth << ", Wall Cutoff" << wallCutoff << endl;
             
             rawPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
+            mappedBlurredPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
             blurredPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
-            threshPix_thread.allocate(camWidth, roiDepth, OF_IMAGE_GRAYSCALE);
-            
-            //check if the roi depth is the same as last time,
-            //if not we'll need to reset the background or the thread will crash
-            if(lastRoiDepth != roiDepth){
-                needsAutoReset = true;
-                lastRoiDepth = roiDepth;
-            }
+            threshPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
             
             
             //Convert from ofShortPixels to ofPixels and put into rawPix_thread
@@ -669,15 +554,16 @@ void WallCam::threadedFunction(){
                 
             }
             
+
             //blur the new raw image
             ofxCv::GaussianBlur(rawPix_thread, blurredPix_thread, blurAmount);
 
             
-            //get the thresholded image (or use BG Diff): a horizontal slice of the raw image
-            //bound at the bottom by the wallCutoff with a height of roiDepth
-            int startingRow = wallCutoff - roiDepth;
-            int startPixel = startingRow * camWidth;
-            int endPixel = startPixel + (roiDepth * camWidth);
+            
+            //take the rawPixels and get the bi-linear mapped subset from it
+            getQuadSubPixels(blurredPix_thread, mappedBlurredPix_thread, meshPts);
+
+            
             
             
             //either use BG differencing or just straight up threshold it
@@ -697,30 +583,26 @@ void WallCam::threadedFunction(){
                 background.setLearningTime(learningTime);
                 background.setThresholdValue(farThresh);
                 
-                //first we need to chop down blurredPix to the right size
-                ofPixels blurredROIPix;
-                blurredPix_thread.cropTo(blurredROIPix, 0, startingRow, camWidth, roiDepth);
-                
-                background.update(blurredROIPix, threshPix_thread);
+                background.update(mappedBlurredPix_thread, threshPix_thread);
                 
                 
             } else {
                 
                 //threshold the blurred image if we want it
-                for(int i = startPixel; i < endPixel; i++){
+                for(int i = 0; i < camWidth * camHeight; i++){
                     
-                    if(blurredPix_thread[i] > farThresh && blurredPix_thread[i] < nearThresh){
+                    if(mappedBlurredPix_thread[i] > farThresh && mappedBlurredPix_thread[i] < nearThresh){
                         
                         //put this pixel in the threshold but in the right place
                         //since threshPix is a narrow horizontal slice
-                        threshPix_thread[i - startPixel] = 255;
+                        threshPix_thread[i] = 255;
                         
                     } else {
-                        threshPix_thread[i - startPixel] = 0;
+                        threshPix_thread[i] = 0;
                     }
                     
                 }
-
+                
                 
                 //signal for an auto reset if we're decide to use BG diff again
                 needsAutoReset = true;
@@ -729,8 +611,8 @@ void WallCam::threadedFunction(){
             
             
             
-
-
+            
+            
             
             //ERODE it
             for(int e = 0; e < numErosions; e++){
@@ -773,6 +655,59 @@ void WallCam::threadedFunction(){
     }
     
 }
+
+
+//This method is an altered version of code borrowed from the
+//OpenTSPS project created by Brett Renfer and the Lab @ Rockwell
+//https://github.com/labatrockwell/openTSPS/blob/master/addons/ofxTSPS/libs/ofxTSPS/include/ofxTSPS/utils/Utils.h#L13
+
+//Converts gets a subset of an ofPixels instance by doing a bi-linear mapping
+//of the pixels between 4 control vertices
+void DeskCam::getQuadSubPixels(ofPixels& inPix, ofPixels& outPix, vector <ofVec2f>& quad) {
+    if ( quad.size() < 4 ){
+        ofLog( OF_LOG_ERROR, "You must pass a vector of four points to this function");
+        return;
+    } // weird thing that could happen...
+    
+    int inW, inH, outW, outH;
+    inW = inPix.getWidth();
+    inH = inPix.getHeight();
+    outW = outPix.getWidth();
+    outH = outPix.getHeight();
+    
+
+    int xinput =0;
+    int yinput = 0;
+    int inIndex = 0;
+    int outIndex = 0;
+    
+    float xlrp = 0.0;
+    float ylrp = 0.0;
+    
+    ofPoint p1, p2, p3, p4;
+    p1 = quad[0];
+    p2 = quad[1];
+    p3 = quad[2];
+    p4 = quad[3];
+    
+    for(int x = 0; x < outW; x++) {
+        for(int y = 0; y < outH; y++) {
+            xlrp = x/(float)outW;
+            ylrp = y/(float)outH;
+            xinput = (p1.x * (1-xlrp) + p2.x * xlrp) * (1-ylrp) + (p4.x * (1-xlrp) + p3.x * xlrp) * ylrp;
+            yinput = ((p1.y * (1-ylrp)) + (p4.y * ylrp)) * (1-xlrp) + (p2.y * (1-ylrp) + p3.y * ylrp) * xlrp;
+            inIndex = xinput + (yinput * inW);
+            outIndex = x + y * outW;
+            
+            outPix[outIndex] = inPix[inIndex];
+            
+//            memcpy((outPix + outIndex), (inPix + inIndex), sizeof(unsigned char) );
+            
+        }
+    }
+
+}
+
 
 
 

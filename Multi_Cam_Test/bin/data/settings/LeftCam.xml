@@ -7,7 +7,7 @@
 	<Number_of_dilations>1</Number_of_dilations>
 	<___ROI_SETTINGS/>
 	<Region_Depth>115</Region_Depth>
-	<Wall_Level_Cutoff>307</Wall_Level_Cutoff>
+	<Wall_Level_Cutoff>247</Wall_Level_Cutoff>
 	<___CONTOUR_FINDING/>
 	<Min_Blob_Area>305</Min_Blob_Area>
 	<Max_Blob_Area>9600</Max_Blob_Area>

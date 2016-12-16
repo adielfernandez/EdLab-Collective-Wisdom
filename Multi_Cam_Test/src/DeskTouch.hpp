@@ -1,27 +1,29 @@
 //
-//  Touch.hpp
+//  DeskTouch.hpp
 //  Multi_Cam_Test
 //
-//  Created by Adiel Fernandez on 11/29/16.
+//  Created by Adiel Fernandez on 12/15/16.
 //
 //
 
-#ifndef Touch_hpp
-#define Touch_hpp
+#ifndef DeskTouch_hpp
+#define DeskTouch_hpp
 
 #include <stdio.h>
 
-#endif /* Touch_hpp */
+#endif /* DeskTouch_hpp */
+
+
 
 #include "ofMain.h"
 
 #pragma once
 
-class Touch{
+class DeskTouch{
     
 public:
     
-    Touch();
+    DeskTouch();
     
     void setNewTouch(int _id, ofVec2f _p, float _d);
     void renewTouch(ofVec2f p, float d);

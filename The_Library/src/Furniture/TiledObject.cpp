@@ -46,8 +46,8 @@ void TiledObject::setupCommonGui(){
     gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
     
     gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
-    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 10.0f));
-    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 10.0f));
+    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 6.0f));
+    gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
     gui.add(backEasingSlider.setup("Easing Bounce Amt", 1.0, 0.0, 4.0));
     
     gui.setHeaderBackgroundColor(ofColor(255));

@@ -1,29 +1,30 @@
 //
-//  WallCam.hpp
+//  DeskCam.hpp
 //  Multi_Cam_Test
 //
-//  Created by Adiel Fernandez on 10/17/16.
+//  Created by Adiel Fernandez on 12/15/16.
 //
 //
 
-#ifndef WallCam_h
-#define WallCam_h
+#ifndef DeskCam_hpp
+#define DeskCam_hpp
 
 #include <stdio.h>
 
-#endif /* WallCam_h */
+#endif /* DeskCam_hpp */
+
 
 #include "ofMain.h"
 #include "ofxCv.h"
 #include "ofxOrbbecAstra.h"
 #include "ofxGui.h"
-#include "WallTouch.hpp"
+#include "DeskTouch.hpp"
 
 #pragma once
 
 /*
  *  Thread Channels:
- *  
+ *
  *  INPUT:
  *      -CV variables:
  *          -Blur amt, threshold, etc.
@@ -34,22 +35,22 @@
  *      -Contours
  */
 
-class WallCam: public ofThread{
+class DeskCam: public ofThread{
     
 public:
     
-    WallCam();
-    ~WallCam();
+    DeskCam();
+    ~DeskCam();
     
-
+    
     
     void setup(string _camName, const char* deviceName);
     void update();
     void setupGui();
     
     void drawRaw(int x, int y);
-    void drawThresh(int x, int y, bool bDrawShifted);
-
+    void drawThresh(int x, int y);
+    
     
     void drawGui(int x, int y);
     
@@ -61,7 +62,10 @@ public:
     
     unsigned long long lastFrameTime;
     float lastFrameRate; //for smoothing
-
+    
+    //Masking
+    vector<ofVec2f> maskPoints;
+    ofPath mask;
     
     //members safe to access
     //from GL thread
@@ -70,7 +74,7 @@ public:
     ofxCv::ContourFinder contours;
     
     //touch data we'll send elsewhere
-    vector<WallTouch> touches;
+    vector<DeskTouch> touches;
     vector<ofVec2f> lowPoints;
     
     float thresholdPos;
@@ -94,12 +98,13 @@ public:
     ofxIntSlider blurAmountSlider;
     ofxIntSlider numErosionsSlider;
     ofxIntSlider numDilationsSlider;
-
-    ofxLabel roiLabel;
-    ofxIntSlider roiDepthSlider;
-    ofxIntSlider wallCutoffSlider;
-    ofxIntSlider wallHitDistSlider;
-
+    
+    ofxLabel maskingLabel;
+    ofxVec2Slider maskPt0;
+    ofxVec2Slider maskPt1;
+    ofxVec2Slider maskPt2;
+    ofxVec2Slider maskPt3;
+    
     ofxLabel bgDiffLabel;
     ofxIntSlider learningTimeSlider;
     ofxButton resetBG;
@@ -124,7 +129,9 @@ private:
     unsigned long long frameNum;
     
     ofxOrbbecAstra camera;
-
+    
+    static void getQuadSubPixels(ofPixels& inPix, ofPixels& outPix, vector <ofVec2f>& quad);
+    
     //thread management
     void closeAllChannels();
     void emptyAllChannels();

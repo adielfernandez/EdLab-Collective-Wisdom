@@ -3,35 +3,32 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-//    ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetFrameRate(200);
     ofSetVerticalSync(false);
     
     ofSetBackgroundColor(50);
     
     //----------CAMERAS----------
-    leftCam.setup("LeftCam", "device/sensor0");
+//    leftCam.setup("LeftCam", "device/sensor0");
 //    rightCam.setup("RightCam", "device/sensor1");
-//    centerCam.setup("CenterCam", "device/sensor2");
+    centerCam.setup("CenterCam", "device/sensor0");
     
-    numCams = 1;
+    numCams = 3;
+    currentCam = 2;
     
-    sound.load("pop.mp3");
+
     
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
-    threshold = (int)ofMap(mouseX, 0, ofGetWidth(), 0, 255, true);
-    
-    vector<int> settings;
-    settings.push_back(threshold);
     
     //----------CAMERAS----------
-    leftCam.update();
+//    leftCam.update();
 //    rightCam.update();
-//    centerCam.update();
+    centerCam.update();
     
 }
 
@@ -51,18 +48,22 @@ void ofApp::draw(){
     //the image to be filled by the camera
 
     ofSetColor(255);
+
     
-    if(currentCam == 0) {
+    
+    if(currentCam == 0 || currentCam == 1) {
         
-        if(leftCam.isThreadRunning()){
+        WallCam *thisCam; //= currentCam == 0 ? &leftCam : &rightCam;
+        
+        if(thisCam -> isThreadRunning()){
             ofBackground(50);
         } else {
             ofBackground(200, 0, 0);
         }
         
-        leftCam.drawGui(guiPos.x, guiPos.y);
-        leftCam.drawRaw(frame2Pos.x, frame2Pos.y);
-        leftCam.drawThresh(frame2Pos.x, frame2Pos.y + leftCam.camHeight + 10, false);
+        thisCam -> drawGui(guiPos.x, guiPos.y);
+        thisCam -> drawRaw(frame2Pos.x, frame2Pos.y);
+        thisCam -> drawThresh(frame2Pos.x, frame2Pos.y + thisCam -> camHeight + 10, false);
         
         
         //drawing on points overlapping on the space
@@ -91,18 +92,22 @@ void ofApp::draw(){
         }
         
         
+        
+        
+        
+        
+        s += "Camera Framerate: " + ofToString(thisCam -> camFrameRate) + "\n";
+        
+        
+        
         //draw touch data
-        for(int i = 0; i < leftCam.touches.size(); i++){
-         
-            ofVec2f p = leftCam.touches[i].pos;
-            float rad = ofMap(leftCam.touches[i].dist, 0, 70, 7, 50, true);
+        for(int i = 0; i < thisCam -> touches.size(); i++){
             
-            if(leftCam.touches[i].bIsTouching){
+            ofVec2f p = thisCam -> touches[i].pos;
+            float rad = ofMap(thisCam -> touches[i].dist, 0, 70, 7, 50, true);
+            
+            if(thisCam -> touches[i].bIsTouching){
                 ofSetColor(0, 255, 0);
-                
-                if(!sound.isPlaying()){
-                    sound.play();
-                }
                 
             } else {
                 ofSetColor(0, 128, 255);
@@ -113,18 +118,67 @@ void ofApp::draw(){
             ofDrawCircle(p, rad);
             
         }
+
+        
+        
+        
+    } else if(currentCam == 2) {
+    
+        
+        if(centerCam.isThreadRunning()){
+            ofBackground(50);
+        } else {
+            ofBackground(200, 0, 0);
+        }
+        
+        centerCam.drawGui(guiPos.x, guiPos.y);
+        centerCam.drawRaw(frame1Pos.x, frame1Pos.y);
+        centerCam.drawThresh(frame2Pos.x, frame2Pos.y);
+
+        
+        
+        s += "Camera Framerate: " + ofToString(centerCam.camFrameRate) + "\n";
+        
+        
+        
+        //draw touch data
+        for(int i = 0; i < centerCam.touches.size(); i++){
+            
+            ofVec2f p = centerCam.touches[i].pos;
+            float rad = ofMap(centerCam.touches[i].dist, 0, 70, 7, 50, true);
+            
+            if(centerCam.touches[i].bIsTouching){
+                ofSetColor(0, 255, 0);
+                
+            } else {
+                ofSetColor(0, 128, 255);
+            }
+            
+            ofSetLineWidth(3);
+            ofNoFill();
+            ofDrawCircle(p, rad);
+            
+        }
+
         
         
         
         
-        s += "Camera Framerate: " + ofToString(leftCam.camFrameRate) + "\n";
+        
+        
         
     }
     
-    if(mouseX < frame2Pos.x){
-        ofSetColor(255);
-        ofDrawBitmapStringHighlight(ofToString(mouseX) + ", " + ofToString(mouseY), mouseX + 10, mouseY - 10);
-    }
+        
+    
+    
+    
+    
+    
+//    if(mouseX < frame2Pos.x){
+//        ofSetColor(255);
+//        ofDrawBitmapStringHighlight(ofToString(mouseX) + ", " + ofToString(mouseY), mouseX + 10, mouseY - 10);
+//    }
     
     ofSetColor(255);
     ofDrawBitmapString(s, 10, 15);
@@ -138,7 +192,7 @@ void ofApp::keyPressed(int key){
     if(key == OF_KEY_RIGHT){
         currentCam++;
         
-        if(currentCam > numCams) currentCam = 0;
+        if(currentCam == numCams) currentCam = 0;
     }
     
     if(key == OF_KEY_LEFT){

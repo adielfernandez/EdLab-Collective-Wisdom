@@ -68,8 +68,10 @@ void DeskCam::setup(string _camName, const char* deviceName){
     maskPoints[2] = maskPt2;
     maskPoints[3] = maskPt3;
     
-    
-    
+    maskPointMouseLock.assign(4, false);
+    maskPointRad = 8;
+    //give this instance the ability to use mouse events
+    ofRegisterMouseEvents(this);
     
     rawPix.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
@@ -247,6 +249,34 @@ void DeskCam::update(){
     maskPoints[2] = maskPt2;
     maskPoints[3] = maskPt3;
     
+    //check for mouse handling of the mapping points
+    //and update the gui too
+    for(int i = 0; i < maskPoints.size(); i++){
+        if(maskPointMouseLock[i]){
+          
+            maskPoints[i] = adjustedMouse;
+            
+            switch (i) {
+                case 0:
+                    maskPt0 = maskPoints[i];
+                    break;
+                case 1:
+                    maskPt1 = maskPoints[i];
+                    break;
+                case 2:
+                    maskPt2 = maskPoints[i];
+                    break;
+                case 3:
+                    maskPt3 = maskPoints[i];
+                    break;
+                default:
+                    break;
+            }
+            
+            break;
+        }
+    }
+    
 }
 
 void DeskCam::drawRaw(int x, int y){
@@ -259,7 +289,10 @@ void DeskCam::drawRaw(int x, int y){
     float w = rawPix.getWidth();
     float h = rawPix.getHeight();
     
-
+    
+    //store the position of the adjusted mouse so we can see
+    //if the mouse is clicking the mapping points
+    adjustedMouse.set(ofGetMouseX() - x, ofGetMouseY() - y);
     
     ofPushStyle();
     
@@ -270,6 +303,7 @@ void DeskCam::drawRaw(int x, int y){
     
     ofPushMatrix();
     ofTranslate(x, y);
+    
 
     //draw where the mask is in green
     ofPath mask;
@@ -287,13 +321,18 @@ void DeskCam::drawRaw(int x, int y){
     //draw each of the Mask Points
     for(int i = 0; i < maskPoints.size(); i++){
         
-        ofSetColor(0, 255, 0);
-        ofDrawCircle(maskPoints[i], 10);
-        ofDrawBitmapStringHighlight(ofToString(i), maskPoints[i].x + 10, maskPoints[i].y - 10);
+        
+        ofColor c = maskPointMouseLock[i] ? ofColor(255, 0, 0) : ofColor(0, 255, 0);
+        ofSetColor(c);
+        ofDrawCircle(maskPoints[i], maskPointRad);
+        
+        float xShift = (i == 0 || i == 3) ? -15 : 15;
+        ofDrawBitmapStringHighlight(ofToString(i), maskPoints[i].x + xShift, maskPoints[i].y - 10);
         
     }
 
     //draw a line around the boundary
+    ofSetColor(0, 255, 0);
     ofPolyline p;
     p.addVertex(maskPoints[0]);
     p.addVertex(maskPoints[1]);
@@ -321,7 +360,7 @@ void DeskCam::drawRaw(int x, int y){
         ofSetColor(255);
         
         float depth = rawPix[rawPix.getPixelIndex(ofGetMouseX() - x, ofGetMouseY() - y)];
-        ofDrawBitmapStringHighlight("D: " + ofToString(depth), ofGetMouseX() - 20, ofGetMouseY() - 20);
+        ofDrawBitmapStringHighlight("D: " + ofToString(depth), ofGetMouseX() + 30, ofGetMouseY());
         
     }
     
@@ -371,6 +410,8 @@ void DeskCam::drawThresh(int x, int y){
         
         if(drawBlobInfoToggle){
             
+            string contourData = "";
+            
             //go through and draw blob data too
             for(int i = 0; i < contours.size(); i++) {
                 
@@ -380,19 +421,15 @@ void DeskCam::drawThresh(int x, int y){
                 ofFill();
                 ofSetColor(0, 255, 0);
                 ofDrawCircle(c.x, c.y, 5, 5);
+                ofDrawBitmapString(ofToString(label), c.x + 10, c.y);
                 
-                string msg = ofToString(label) + " : " + ofToString(c.x) + ", " + ofToString(c.y);
-                ofDrawBitmapString(msg, c.x + 5, c.y);
-                
-                //draw the low points
-                ofSetColor(255, 0, 255);
-                for(int j = 0; j < lowPoints.size(); j++){
-                    ofDrawCircle(lowPoints[j], 5);
-                    ofDrawBitmapString(ofToString(lowPoints[j]), lowPoints[j].x + 5, lowPoints[j].y);
-                }
+                contourData += ofToString(label) + " : " + ofToString(c.x) + ", " + ofToString(c.y) + "\n";
                 
             }
             
+            ofSetColor(255);
+            ofDrawBitmapString(contourData, 0, h + 20);
+
         }
         
     }
@@ -457,7 +494,7 @@ void DeskCam::setupGui(){
     gui.add(contoursLabel.setup("   CONTOUR FINDING", ""));
     gui.add(drawContoursToggle.setup("Draw Contours", true));
     gui.add(drawBlobInfoToggle.setup("Draw Blob info", true));
-    gui.add(minBlobAreaSlider.setup("Min Blob Area", 0, 0, 1000));
+    gui.add(minBlobAreaSlider.setup("Min Blob Area", 0, 0, 5000));
     gui.add(maxBlobAreaSlider.setup("Max Blob Area", 1000, 0, 20000));
     gui.add(persistenceSlider.setup("Persistence", 15, 0, 100));
     gui.add(maxDistanceSlider.setup("Max Distance", 32, 0, 100));
@@ -709,5 +746,44 @@ void DeskCam::getQuadSubPixels(ofPixels& inPix, ofPixels& outPix, vector <ofVec2
 }
 
 
+void DeskCam::mousePressed(ofMouseEventArgs &args){
+    
+    //handle mouse interaction with Map points
+    for(int i = 0; i < maskPointMouseLock.size(); i++){
+        
+        //need to adjust mouse position since we're
+        //translating the raw camera view from the origin with pushmatrix
+        float distSq = ofDistSquared(adjustedMouse.x, adjustedMouse.y, maskPoints[i].x, maskPoints[i].y);
+        
+        if(distSq < maskPointRad * maskPointRad){
+            maskPointMouseLock[i] = true;
+            
+            //exit the for loop, prevents us from
+            //grabbing multiple handles at once
+            break;
+            
+        } else {
+            maskPointMouseLock[i] = false;
+        }
+        
+        
+    }
+    
+}
 
+void DeskCam::mouseReleased(ofMouseEventArgs &args){
+    
+    for(int i = 0; i < maskPointMouseLock.size(); i++){
+        maskPointMouseLock[i] = false;
+    }
+    
+
+    
+}
+
+void DeskCam::mouseMoved(ofMouseEventArgs &args){}
+void DeskCam::mouseDragged(ofMouseEventArgs & args){}
+void DeskCam::mouseScrolled(ofMouseEventArgs & args){}
+void DeskCam::mouseEntered(ofMouseEventArgs & args){}
+void DeskCam::mouseExited(ofMouseEventArgs & args){}
 

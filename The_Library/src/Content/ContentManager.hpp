@@ -28,7 +28,7 @@ public:
     void loadContent();
     void saveContributionToFile(Contribution _c);
     
-    void logNewContribution(string n, string msg);
+    void logNewContribution(string n, string tag, string msg);
     
     vector<Contribution> contributionList;
     

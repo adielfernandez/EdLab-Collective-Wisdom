@@ -27,6 +27,7 @@ void ContentManager::loadContent(){
         ofBuffer buff = ofBufferFromFile(messageDir.getPath(i));
         
         string name = "";
+        string tag = "";
         string message = "";
 
         
@@ -43,6 +44,8 @@ void ContentManager::loadContent(){
                 //all others are the message
                 if(lineNum == 0){
                     name = line;
+                } else if(lineNum == 1){
+                    tag = line;
                 } else {
                     message += line;
                 }
@@ -51,7 +54,7 @@ void ContentManager::loadContent(){
             }
 
             Contribution c;
-            c.setMessage(name, message);
+            c.setMessage(name, tag, message);
             
             contributionList.push_back(c);
 
@@ -71,11 +74,11 @@ void ContentManager::loadContent(){
     
 }
 
-void ContentManager::logNewContribution(string n, string msg){
+void ContentManager::logNewContribution(string n, string tag, string msg){
     
     //create a message
     Contribution c;
-    c.setMessage(n, msg);
+    c.setMessage(n, tag, msg);
     
     //push it to the list
     contributionList.push_back(c);
@@ -95,6 +98,8 @@ void ContentManager::saveContributionToFile(Contribution _c){
     
     ofBuffer buffer;
     buffer.append(_c.name);
+    buffer.append("\n");
+    buffer.append(_c.tag);
     buffer.append("\n");
     buffer.append(_c.message);
     

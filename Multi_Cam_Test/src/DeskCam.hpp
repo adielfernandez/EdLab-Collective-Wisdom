@@ -43,6 +43,14 @@ public:
     ~DeskCam();
     
     
+    void mouseMoved(ofMouseEventArgs & args);
+    void mouseDragged(ofMouseEventArgs & args);
+    void mousePressed(ofMouseEventArgs & args);
+    void mouseReleased(ofMouseEventArgs & args);
+    void mouseScrolled(ofMouseEventArgs & args);
+    void mouseEntered(ofMouseEventArgs & args);
+    void mouseExited(ofMouseEventArgs & args);
+    
     
     void setup(string _camName, const char* deviceName);
     void update();
@@ -65,6 +73,9 @@ public:
     
     //Masking
     vector<ofVec2f> maskPoints;
+    vector<bool> maskPointMouseLock;
+    float maskPointRad;
+    ofVec2f adjustedMouse;
     ofPath mask;
     
     //members safe to access
@@ -75,7 +86,6 @@ public:
     
     //touch data we'll send elsewhere
     vector<DeskTouch> touches;
-    vector<ofVec2f> lowPoints;
     
     float thresholdPos;
     

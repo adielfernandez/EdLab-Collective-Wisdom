@@ -44,7 +44,7 @@ io.sockets.on('connection', function (socket) {
 
     // Also send a message to openFrameworks with our data.
     if (OF) {
-      OF.send('userMessage***' + data.name + "***" + data.message);
+      OF.send('userMessage***' + data.name + "***" + data.tag + "***" + data.message);
     }
   });
 

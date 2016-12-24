@@ -11,6 +11,7 @@
 
     this.$inputContribution = $('[data-ref="input-contribution"]');
     this.$inputName = $('[data-ref="input-name"]');
+    this.$inputTag = $('[data-ref="input-tag"]');
 
     this.addEvents();
 
@@ -130,11 +131,12 @@
   CollectiveWisdom.prototype.sendData = function() {
     var contribution = this.$inputContribution.val();
     var userName = this.$inputName.val();
+    var userTag = this.$inputTag.val();;
 
-    socket.emit('new-message', { name: userName, message: contribution });
+    socket.emit('new-message', { name: userName, tag: userTag, message: contribution });
 
     // Send data here.
-    console.log(contribution, name);
+    console.log(userName + ", " + userTag + ", " + contribution);
   }
 
   return new CollectiveWisdom();

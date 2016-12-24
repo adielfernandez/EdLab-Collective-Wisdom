@@ -24,11 +24,11 @@ public:
     
     Contribution();
     
-    void setMessage(string _name, string _msg);
+    void setMessage(string _name, string _tag, string _msg);
     
     string name;
+    string tag;
     string message;
-    
     
 //    void operator= (const Contribution &C){
 //        

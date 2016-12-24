@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-    connectToServer = false;
+    connectToServer = true;
     
     if(connectToServer){
 //        client.connect("localhost", 8081);
@@ -313,7 +313,7 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == 'm'){
-        contentManager.logNewContribution("Name", "Message. Message. Message. Message.");
+        contentManager.logNewContribution("Name", "Tag" , "Message. Message. Message. Message.");
     }
     
 }
@@ -426,11 +426,12 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
     if(parts.size() > 1){
         string messageTag = parts[0];
         string name = parts[1];
-        string message = parts[2];
+        string tag = parts[2];
+        string message = parts[3];
         
-        cout << "From: " << name << "\nMessage: " << message << endl;
+        cout << "From: " << name << "\nTag: " << tag << "\nMessage: " << message << "\n" << endl;
         
-        contentManager.logNewContribution(name, message);
+        contentManager.logNewContribution(name, tag, message);
         
     }
     

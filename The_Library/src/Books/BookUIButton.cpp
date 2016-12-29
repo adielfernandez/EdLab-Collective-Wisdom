@@ -14,90 +14,161 @@ BookUIButton::BookUIButton(){
     
 }
 
-void BookUIButton::setup(int _type, ofVec3f startPos, float yPos){
+void BookUIButton::setup(int _type, ofVec3f bookPos, vector<ofVec3f> shelf, int _shelfNum, int _bookNum ){
     
     type = _type;
+    bookNum = _bookNum;
+    shelfNum = _shelfNum;
     
     //buttons draw relative to book pos (bottom right corner of spine)
+    //shelf corners are ordered counter clockwise from bottom left corner
+    shelfCorners = shelf;
     
-    hiddenPos.set(startPos.x, startPos.y + yPos, -20);
-    displayedPos.set(startPos.x + 150, startPos.y + yPos, -20);
-    currentPos = hiddenPos;
+    bookDisplayPos = bookPos;
     
+    buttonState = false;
     
-    state = false;
+    bIsDisplayed = false;
+    bIsUnavailable = true;
+    bIsHidden = true;
     
-    buttonRad = 22;
-    ringRad = buttonRad * 0.75;
-    
-    ringWeight = 3;
-    symbolWeight = 5;
-    
-    buttonScale = 1.0;
+    bIsHovering = false;
     
     
-    colorLerpSpeed = 0.01;
     
-    
-    availableButtonCol.set(74);
-    unavailableButtonCol.set(43);
-    currentButtonCol.set(74);
-    
-    availableRingCol.set(255);
-    unavailableRingCol.set(74);
-    currentRingCol.set(255);
-
-    
-    
-    symbolDim = 8;
-    
-    if(type == 0){
-        ringHoverCol.set(255, 0, 0);
-        
-    } else {
-        
-        ringHoverCol.set(0, 255, 0);
-        
-        symbolLine.addVertex(ofVec3f(0, -symbolDim));
-        if(type == 1){
-            //left button
-            symbolLine.addVertex(ofVec3f(-symbolDim, 0));
-        } else {
-            //right button
-            symbolLine.addVertex(ofVec3f(symbolDim, 0));
-        }
-        symbolLine.addVertex(ofVec3f(0, symbolDim));
-        
-        
-    }
-    
-
-    
-
-    //just for debug, color the backgrounds
-//    if(type == 0 ) {
-//        currentButtonCol.set(255, 0, 0);
-//    } else if(type == 1){
-//        currentButtonCol.set(0, 0, 255);
-//    } else {
-//        currentButtonCol.set(0, 255, 0);
-//    }
+    buttonScale = 0.55;
     
     
 }
+
+void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
+    
+    buttonIcon = icon;
+    hoverIcon = hover;
+    
+    buttonWidth = buttonIcon -> getWidth() * buttonScale;
+    buttonHeight = buttonIcon -> getHeight() * buttonScale;
+    
+    //set the button margins and spacing based on the self and icon dimensions
+    shelfHeight = (shelfCorners[1] - shelfCorners[2]).length();
+    
+    float spacing = (shelfHeight - buttonHeight * 3)/4.0f;
+    
+    //how far the button is above the book pos
+    //i.e. the bottom of the shelf
+    float yButtonHeight;
+    
+    
+    //remember, images are inverted because of ofCamera
+    if(type == 0){
+        //top button
+        yButtonHeight = -shelfHeight + spacing + buttonHeight;
+    } else if(type == 1){
+        //previous button is on the bottom
+        yButtonHeight = -shelfHeight + spacing * 3 + buttonHeight * 3;
+        
+    } else {
+        //middle button
+        yButtonHeight = -shelfHeight + spacing * 2 + buttonHeight * 2;
+    }
+    
+    //button x position
+    float xButtonPos = shelfCorners[1].x - spacing - buttonWidth;
+    
+    hiddenPos.set(bookDisplayPos.x + 30, bookDisplayPos.y + yButtonHeight, -70);
+    displayedPos.set(xButtonPos, bookDisplayPos.y + yButtonHeight, -70);
+    currentPos = hiddenPos;
+    
+}
+
+void BookUIButton::setTag(string t, int _tagNum, ofColor c){
+    
+    buttonWidth = 100;
+    buttonHeight = 40;
+    
+    tagCol = c;
+    
+    tagOutlineCol.setHsb(tagCol.getHue(), tagCol.getSaturation(), 180);
+    
+    tag = t;
+    tagNum = _tagNum;
+    
+    //split the tag up if it has an & symbol
+    vector<string> parts = ofSplitString(t, "&");
+    
+    if(parts.size() > 1){
+        
+        linesInTag = 2;
+        
+        //If the first word is shorter, add the "&" back into it.
+        //Else, add it to the beginning of the second line
+        if(parts[1].length() > parts[0].length()){
+            
+            tagLine1 = parts[0] + " &";
+            tagLine2 = parts[1];
+            
+        } else {
+         
+            tagLine1 = parts[0];
+            tagLine2 = "& " + parts[1];
+            
+        }
+        
+            
+        
+        
+    } else {
+        
+        //tag only has one word
+        tagLine1 = tag;
+        tagLine2 = "";
+        linesInTag = 1;
+    }
+    
+    cout << "---" <<tagLine1 << "," << tagLine2 << "---" << endl;
+    
+    
+    float spacing = 8;
+    
+    hiddenPos.set(bookDisplayPos.x + 30, shelfCorners[3].y + spacing, -70);
+    displayedPos.set(shelfCorners[3].x + spacing, shelfCorners[3].y + spacing, -70);
+    currentPos = hiddenPos;
+    
+}
+
 
 void BookUIButton::checkForClicks(int x, int y){
 
     if(!bIsUnavailable && bIsDisplayed){
         
         //check for click
-        if(ofDistSquared(x, y, currentPos.x, currentPos.y) < buttonRad * buttonRad){
-            state = true;
+        if(x > currentPos.x &&
+           x < currentPos.x + buttonWidth &&
+           y > currentPos.y - buttonHeight &&
+           y < currentPos.y ){
+            
+            buttonState = true;
+            
+            
+            ButtonEvent e;
+            e.type = type;
+            e.tag = tag;
+            e.tagNum = tagNum;
+            e.bookNum = bookNum;
+            e.shelfNum = shelfNum;
+            
+            ofNotifyEvent(newButtonClickEvt, e, this);
+            
         }
         
-//        cout << "Button Pressed: " << type << endl;
-        
     }
+    
+
+    
+    
+
+    
+
     
 }
 
@@ -118,32 +189,17 @@ void BookUIButton::hide(){
 
 void BookUIButton::update(){
     
-//    if(bIsUnavailable){
-//        currentRingCol.lerp(unavailableRingCol, colorLerpSpeed);
-//        currentButtonCol.lerp(unavailableButtonCol, colorLerpSpeed);
-//    } else {
-//        currentRingCol.lerp(availableRingCol, colorLerpSpeed);
-//        currentButtonCol.lerp(availableButtonCol, colorLerpSpeed);
-//    }
-//    
-//    if(bIsHovering){
-//        currentRingCol.lerp(ringHoverCol, colorLerpSpeed);
-//    } else {
-//        currentRingCol.lerp(availableRingCol, colorLerpSpeed);
-//    }
-    
     if(!bIsDisplayed){
-        currentPos.interpolate(hiddenPos, 0.01);
+        currentPos.interpolate(hiddenPos, 0.07);
         
         //if we're really close to the hidden pos, hide the button
         ofVec3f between = currentPos - hiddenPos;
-        if(between.lengthSquared() < 0.01){
+        if(between.lengthSquared() < 1){
             bIsHidden = true;
         }
         
     } else {
-        currentPos.interpolate(displayedPos, 0.05);
-        
+        currentPos.interpolate(displayedPos, 0.09);
         bIsHidden = false;
     }
     
@@ -153,44 +209,39 @@ void BookUIButton::draw(){
     
     if(!bIsHidden){
         
-//        cout << "We are drawing at: " << currentPos << endl;
-        
-        ofPushMatrix();
-        ofTranslate(currentPos);
-        
-        ofPushStyle();
-        
-        ofSetCircleResolution(40);
-        
         //draw button
-        ofSetColor(currentButtonCol);
-        ofDrawCircle(0, 0, 2, buttonRad);
-        
-        //draw ring
-        ofSetColor(currentRingCol);
-        ofNoFill();
-        ofSetLineWidth(ringWeight);
-        ofDrawCircle(0, 0, ringRad);
-        
-        
-        ofSetLineWidth(symbolWeight);
-        if(type == 0){
-            
-            //draw X for exit button
-            float xDim = symbolDim * 0.8;
-            ofDrawLine(-xDim, -xDim, xDim, xDim);
-            ofDrawLine(xDim, -xDim, -xDim, xDim);
-            
+        //flip the height because ofCamera inverts the Y axis for images
+        if(bIsUnavailable){
+            ofSetColor(255, 100);
         } else {
-            //draw arrow symbol
-            symbolLine.draw();
+            ofSetColor(255);
         }
         
-        ofPopStyle();
+        //types 0-2 are small arrow icons
+        if(type < 3){
         
-        ofPopMatrix();
+            buttonIcon -> draw(currentPos.x, currentPos.y, -70, buttonWidth, -buttonHeight);
+            
+        } else {
+            //type 3 is the tag button
+            ofPushStyle();
+            
+            ofFill();
+            ofSetColor(tagCol);
+            ofDrawRectangle(currentPos.x, currentPos.y, -70, buttonWidth, buttonHeight);
+
+            ofNoFill();
+            ofSetColor(tagOutlineCol);
+            ofSetLineWidth(4);
+            ofDrawRectangle(currentPos.x, currentPos.y, -70, buttonWidth, buttonHeight);
+            
+            ofPopStyle();
+        }
+        
         
     }
+
+    
     
 }
 

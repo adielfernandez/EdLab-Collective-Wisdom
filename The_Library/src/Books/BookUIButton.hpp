@@ -18,13 +18,25 @@
 
 #pragma once
 
+struct ButtonEvent{
+    
+    int type;
+    int bookNum;
+    int shelfNum;
+    string tag;
+    int tagNum;
+    
+};
+
 class BookUIButton{
     
 public:
     
     BookUIButton();
     
-    void setup(int _type, ofVec3f startPos, float yPos);
+    void setup(int _type, ofVec3f bookPos, vector<ofVec3f> shelf, int _shelfNum, int _bookNum);
+    void setIcons(ofImage *icon, ofImage *hover);
+    void setTag(string t, int _tagNum, ofColor c);
     void update();
     void draw();
     
@@ -38,9 +50,19 @@ public:
     
     
     //0 = exit, 1 = prev, 2 = next
+    //3 = tag button
     int type;
+    int bookNum;
+    int shelfNum;
     
-    bool state;
+    ofColor tagCol, tagOutlineCol;
+    
+    string tag, tagLine1, tagLine2;
+    int tagNum;
+    
+    int linesInTag;
+    
+    bool buttonState;
     
     bool bIsDisplayed;
     bool bIsUnavailable;
@@ -50,28 +72,27 @@ public:
     //positioning
     ofVec3f hiddenPos, displayedPos, currentPos;
     
+    //corners of the shelf the buttons are in
+    vector<ofVec3f> shelfCorners;
+    ofVec3f bookDisplayPos;
+    float shelfHeight;
+    
     //formatting
-    float buttonRad, ringRad;
-    float ringWeight;
     float buttonScale;
+    float buttonWidth;
+    float buttonHeight;
     
-    //button colors
-    ofColor currentButtonCol;
-    ofColor unavailableButtonCol;
-    ofColor availableButtonCol;
+    ofImage *buttonIcon;
+    ofImage *hoverIcon;
     
-    //ring colors
-    ofColor currentRingCol;
-    ofColor availableRingCol;
-    ofColor unavailableRingCol;
-    ofColor ringHoverCol;
-    ofColor ringSelectCol;
-    float symbolWeight;
     
-    float colorLerpSpeed;
     
-    float symbolDim;
-    ofPolyline symbolLine;
+    //event listening between book
+    //controller and buttons
+    ofEvent<ButtonEvent> newButtonClickEvt;
     
     
 };
+
+
+

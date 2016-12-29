@@ -32,6 +32,7 @@ public:
     void draw();
     void drawDebug();
     void drawContentToTexture();
+    void resetCamera();
 
     void mapMesh();
     
@@ -53,14 +54,18 @@ public:
     ofFbo bookTexFBO;
     
     ofFbo deskFBO;
-    float deskWidth, deskHeight;
+    const float deskWidth = 400;
+    const float deskHeight = 175;
+    
+    ofVec2f rawDeskPos;
     
     //Book Content and UI
     ofTrueTypeFont font;
     vector<string> pageText;
     vector<ofVec2f> pageTexCoords;
     float pageWidth, pageHeight;
-    unsigned long lastPageFlip;
+    float page1LeftMargin, page2LeftMargin;
+    float pageTopMargin;
     
     
     ofVboMesh deskMesh;
@@ -69,9 +74,9 @@ public:
     //animation key frames (normalized)
     float animationPos;
     const float animationStart = 0.0;
-    const float animFirstPages = 0.34;
-    const float animSecondPages = 0.56;
-    const float animThirdPages = 0.77;
+    const float animationSpread1 = 0.34;
+    const float animationSpread2 = 0.56;
+    const float animationSpread3 = 0.77;
     const float animationEnd = 0.94;
     
     const float displayRotX = -90;
@@ -83,6 +88,7 @@ public:
     void drawGui(int x, int y);
     void saveSettings();
     void loadSettings();
+    void setVariablesFromGui();
     
     ofxPanel gui;
     string guiName;
@@ -96,15 +102,33 @@ public:
     ofxFloatSlider widthScaleSlider;
     
     ofxLabel mappingLabel;
+    ofxToggle showRawDeskToggle;
     ofxButton reMapMeshButton;
     ofxToggle drawWireframeToggle;
-    ofxToggle showUnwarpedToggle;
+    
+    ofxLabel contentTextureLabel;
+    ofxFloatSlider page1LeftMarginSlider;
+    ofxFloatSlider page2LeftMarginSlider;
+    ofxFloatSlider pageTopMarginSlider;
+    ofxToggle drawBookTexToggle;
+    
+    
     
     //desk positions
     ofxVec2Slider meshPt0;
     ofxVec2Slider meshPt1;
     ofxVec2Slider meshPt2;
     ofxVec2Slider meshPt3;
+    
+    
+    struct MouseTouch{
+        
+        ofVec2f pos;
+        bool bIsTouching;
+        
+    };
+    
+    vector<MouseTouch> mouseTouches;
     
 };
 

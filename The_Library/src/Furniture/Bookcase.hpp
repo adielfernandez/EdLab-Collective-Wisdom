@@ -37,7 +37,6 @@ public:
     void drawDebug();
     
     void drawShadow();
-    void drawShelfOverlay(int shelfNum, int trans);
     ofVboMesh shadow;
         
     void setupGui();
@@ -66,10 +65,7 @@ public:
     vector<ofVec2f> bookcaseCorners;
     vector<ofVec2f> texCoordControlPts;
     vector<ofVec2f> texCoordCorners;
-    
-    //transparent shelf overlay underneat
-    //open book UI
-    vector<ofVboMesh> shelfOverlays;
+
     
     
     //mesh prepping variables

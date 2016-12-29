@@ -263,8 +263,8 @@ void Tile::update(){
 
 void Tile::draw(){
     
-    ofEnableDepthTest();{
-        
+//    ofEnableDepthTest();{
+    
         ofPushMatrix();
         
         //Mesh is positioned around it's origin so
@@ -272,7 +272,7 @@ void Tile::draw(){
         ofTranslate(positionOnWall);
         
         ofRotate(currentAngle, rotAxis.x, rotAxis.y, rotAxis.z);
-        
+
         images -> at(activeTexNum).bind();
         
         ofSetColor(255);
@@ -347,7 +347,7 @@ void Tile::draw(){
         }
         ofPopMatrix();
         
-    }ofDisableDepthTest();
+//    }ofDisableDepthTest();
     
 }
 

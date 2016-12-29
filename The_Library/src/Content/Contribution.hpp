@@ -29,10 +29,7 @@ public:
     string name;
     string tag;
     string message;
-    
-//    void operator= (const Contribution &C){
-//        
-//    }
+
     
     
 };

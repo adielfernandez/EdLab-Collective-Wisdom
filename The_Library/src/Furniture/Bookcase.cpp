@@ -162,30 +162,17 @@ void Bookcase::update(){
     
 }
 
-//shadow is the black background behind the bookcase that
+//shadow is the background behind the bookcase that
 //prevents the wallpaper from being visible on the physicall
 //raised wooden frames. Called from ofApp between
 //enable/disable depth test calls
 void Bookcase::drawShadow(){
     
-    ofSetColor(ofColor(255));
-    images[currentImg].getTexture().bind();
+    ofSetColor(ofColor(0));
     shadow.draw();
-    images[currentImg].getTexture().unbind();
     
 }
 
-
-//NOT WORKING: Mesh draws but alpha blending does not
-//work so objects behind are not visible
-void Bookcase::drawShelfOverlay(int shelfNum, int trans){
-    
-//    shelfOverlays[shelfNum].setColor(ofColor(0, 255, 0, trans));
-    ofSetColor(0, 255, 0, trans);
-    shelfOverlays[shelfNum].draw();
-    
-    
-}
 
 
 void Bookcase::draw(){
@@ -1093,6 +1080,127 @@ void Bookcase::mapMesh(){
     }
     
     
+    //----------INNER SHELF TILES----------
+    //          ASSEMBLED LEFT TO RIGHT
+    //THREE SETS OF THREE ROWS of 8 tiles between controlPoints 0 and 1 (left to right)
+    
+    for(int k = 0; k < 3; k++){
+        
+        //use width and height now since we're going across AND down
+        startPct = 0.0f;
+        endPct = 0.0f;
+        tileWidthPct = 0.0f;
+        
+        //set the region bounds depending on which shelf we're in 0, 1 or 2
+        if(k == 0){
+            
+            //TOP SHELF
+            regionTopLeft = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[15], controlPoints[2]);
+            regionTopRight = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[15], controlPoints[2]);
+            regionBottomRight = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[14], controlPoints[3]);
+            regionBottomLeft = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[14], controlPoints[3]);
+            
+            regionTexTopLeft = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[9], texCoordControlPts[15], texCoordControlPts[2]);
+            regionTexTopRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[8], texCoordControlPts[15], texCoordControlPts[2]);
+            regionTexBottomRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[8], texCoordControlPts[14], texCoordControlPts[3]);
+            regionTexBottomLeft =  getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[9], texCoordControlPts[14], texCoordControlPts[3]);
+            
+        } else if(k == 1){
+            
+            //MIDDLE SHELF
+            regionTopLeft = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[13], controlPoints[4]);
+            regionTopRight = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[13], controlPoints[4]);
+            regionBottomRight = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[12], controlPoints[5]);
+            regionBottomLeft = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[12], controlPoints[5]);
+            
+            regionTexTopLeft = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[9], texCoordControlPts[13], texCoordControlPts[4]);
+            regionTexTopRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[8], texCoordControlPts[13], texCoordControlPts[4]);
+            regionTexBottomRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[8], texCoordControlPts[12], texCoordControlPts[5]);
+            regionTexBottomLeft =  getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[9], texCoordControlPts[12], texCoordControlPts[5]);
+            
+        } else {
+            
+            //BOTTOM SHELF
+            regionTopLeft = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[11], controlPoints[6]);
+            regionTopRight = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[11], controlPoints[6]);
+            regionBottomRight = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[10], controlPoints[7]);
+            regionBottomLeft = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[10], controlPoints[7]);
+            
+            regionTexTopLeft = getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[9], texCoordControlPts[11], texCoordControlPts[6]);
+            regionTexTopRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[8], texCoordControlPts[11], texCoordControlPts[6]);
+            regionTexBottomRight = getIntersectionPoint(texCoordControlPts[1], texCoordControlPts[8], texCoordControlPts[10], texCoordControlPts[7]);
+            regionTexBottomLeft =  getIntersectionPoint(texCoordControlPts[0], texCoordControlPts[9], texCoordControlPts[10], texCoordControlPts[7]);
+            
+            
+        }
+        
+        
+        
+        
+        
+        
+        //3 outer for loops, one for each row
+        for(int j = 0; j < 3; j++){
+            
+            tileHeightPct = 1.0f/3.0f;
+            tileWidthPct = 1.0f/8.0f;
+            
+            //the bounds of the individual row we're in will be
+            //interpolated between the bounds of the entire region
+            rowTopLeft = regionTopLeft.getInterpolated(regionBottomLeft, tileHeightPct * j);
+            rowTopRight = regionTopRight.getInterpolated(regionBottomRight, tileHeightPct * j);
+            rowBottomRight = regionTopRight.getInterpolated(regionBottomRight, tileHeightPct * (j + 1));
+            rowBottomLeft = regionTopLeft.getInterpolated(regionBottomLeft, tileHeightPct * (j + 1));
+            
+            rowTexTopLeft = regionTexTopLeft.getInterpolated(regionTexBottomLeft, tileHeightPct * j);
+            rowTexTopRight = regionTexTopRight.getInterpolated(regionTexBottomRight, tileHeightPct * j);
+            rowTexBottomRight = regionTexTopRight.getInterpolated(regionTexBottomRight, tileHeightPct * (j + 1));
+            rowTexBottomLeft = regionTexTopLeft.getInterpolated(regionTexBottomLeft, tileHeightPct * (j + 1));
+            
+            
+            //make tiles across then move down to next row with j == 1
+            for(int i = 0; i < 8; i++){
+                
+                endPct = startPct + tileWidthPct;
+                
+                verts[0] = rowTopLeft.getInterpolated(rowTopRight, startPct);
+                verts[1] = rowTopLeft.getInterpolated(rowTopRight, endPct);
+                verts[2] = rowBottomLeft.getInterpolated(rowBottomRight, endPct);
+                verts[3] = rowBottomLeft.getInterpolated(rowBottomRight, startPct);
+                
+                //texCoords have similar construction but they use the default "borderWidthPct" and
+                //"borderHeightPct" values from the image template instead of the control
+                //points that will be moved with the GUI
+                texCoords[0] = rowTexTopLeft.getInterpolated(rowTexTopRight, startPct);
+                texCoords[1] = rowTexTopLeft.getInterpolated(rowTexTopRight, endPct);
+                texCoords[2] = rowTexBottomLeft.getInterpolated(rowTexBottomRight, endPct);
+                texCoords[3] = rowTexBottomLeft.getInterpolated(rowTexBottomRight, startPct);
+                
+                
+                //start the next tile where this one ends
+                startPct = endPct;
+                
+                Tile t;
+                t.setup(verts, texCoords);
+                t.setTextures( &images );
+                t.setActiveTexture( currentImg );
+                
+                tiles.push_back(t);
+                
+            }
+            
+            //start next row from the left again
+            startPct = 0.0;
+        }
+        
+    }
+
+    
+    
+    
+    
+    
+    
     //reset the shadow with the new corners
     shadow.clear();
     shadow.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
@@ -1100,12 +1208,10 @@ void Bookcase::mapMesh(){
     shadow.addVertex(bookcaseCorners[1]);
     shadow.addVertex(bookcaseCorners[2]);
     shadow.addVertex(bookcaseCorners[3]);
-    shadow.addTexCoord(texCoordCorners[0]);
-    shadow.addTexCoord(texCoordCorners[1]);
-    shadow.addTexCoord(texCoordCorners[2]);
-    shadow.addTexCoord(texCoordCorners[3]);
+
     
     //get location of the shelf corners
+    //0-3 : counter clockwise from bottom left shelf corner
     shelfCorners.clear();
     shelfCorners.resize(3);
     
@@ -1128,21 +1234,7 @@ void Bookcase::mapMesh(){
     shelfCorners[2][3] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[11], controlPoints[6]);
     
 
-    //setup the transparent overlay underneath the book UI
-    
-    shelfOverlays.clear();
-    shelfOverlays.resize(3);
-    //3 shelves
-    for(int i = 0; i < shelfOverlays.size(); i++){
 
-        shelfOverlays[i].clear();
-        shelfOverlays[i].setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-        shelfOverlays[i].addVertex(shelfCorners[i][0]);
-        shelfOverlays[i].addVertex(shelfCorners[i][1]);
-        shelfOverlays[i].addVertex(shelfCorners[i][2]);
-        shelfOverlays[i].addVertex(shelfCorners[i][3]);
-                
-    }
     
     
     

@@ -1,7 +1,7 @@
 <leftBookcase>
 	<__GENERAL_SETTINGS/>
-	<Wave_Speed>1</Wave_Speed>
-	<Effect_Duration>1.8</Effect_Duration>
+	<Wave_Speed>0.6015</Wave_Speed>
+	<Effect_Duration>2.4275</Effect_Duration>
 	<Easing_Bounce_Amt>1</Easing_Bounce_Amt>
 	<__Mapping_Points/>
 	<Corner_0>186.061, 120.429</Corner_0>
@@ -10,7 +10,7 @@
 	<Corner_3>183, 1170.92</Corner_3>
 	<Control_Pt_0>0.0991</Control_Pt_0>
 	<Control_Pt_1>0.92</Control_Pt_1>
-	<Control_Pt_2>0.078</Control_Pt_2>
+	<Control_Pt_2>0.09</Control_Pt_2>
 	<Control_Pt_3>0.2259</Control_Pt_3>
 	<Control_Pt_4>0.2402</Control_Pt_4>
 	<Control_Pt_5>0.3749</Control_Pt_5>
@@ -23,6 +23,6 @@
 	<Control_Pt_12>0.3749</Control_Pt_12>
 	<Control_Pt_13>0.2402</Control_Pt_13>
 	<Control_Pt_14>0.2259</Control_Pt_14>
-	<Control_Pt_15>0.08</Control_Pt_15>
+	<Control_Pt_15>0.09</Control_Pt_15>
 <leftBookcase/>
 </leftBookcase>

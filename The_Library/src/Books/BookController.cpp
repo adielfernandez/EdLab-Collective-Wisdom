@@ -16,26 +16,26 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 0;
+    numBooksPerShelf = 8;
     numShelves = 1;
     
     int numBooks = numBooksPerShelf * numShelves;
     
     
-    ofDirectory texDir;
-    texDir.listDir("books/textures");
-    
-    ofDirectory fontDir;
-    fontDir.listDir("fonts");
+//    ofDirectory texDir;
+//    texDir.listDir("books/textures");
+//    
+//    ofDirectory fontDir;
+//    fontDir.listDir("fonts");
     
     //GROUPING ALGORITHM
     //Populates shelves with small groupings of different book types and colors
     //3 styles of book, short, medium, tall
     //Various fonts and textures
     //Each group has a consistent model, texture and font
-    int numBookTypes = 3;
-    int numTexTypes = texDir.size();
-    int numFontTypes = fontDir.size();
+    int numBookTypes = 2;
+    int numTexTypes = 7; //texDir.size();
+    int numFontTypes = 3; //fontDir.size();
     
     int placeInThisGroup = 0;
     int numInThisGroup = round(ofRandom(2,3));
@@ -153,6 +153,18 @@ void BookController::setup(vector<Contribution> *cList){
         
     }
     
+    buttonIcons.resize(6);
+    buttonIcons[0].load("images/interface/buttons/exit.png");
+    buttonIcons[1].load("images/interface/buttons/exitHover.png");
+    buttonIcons[2].load("images/interface/buttons/left.png");
+    buttonIcons[3].load("images/interface/buttons/leftHover.png");
+    buttonIcons[4].load("images/interface/buttons/right.png");
+    buttonIcons[5].load("images/interface/buttons/rightHover.png");
+    
+    //set the buttons to draw from the middle
+//    for(int i = 0; i < buttonIcons.size(); i++){
+//        buttonIcons[i].setAnchorPercent(0.5f, 0.5f);
+//    }
     
     
     ofVec3f shelfStart, shelfEnd;
@@ -180,10 +192,29 @@ void BookController::setup(vector<Contribution> *cList){
         dirToShelfEnd = (leftOrRight -> shelfCorners[shelfNum][1]) - (leftOrRight -> shelfCorners[shelfNum][0]);
         shelfEnd = leftOrRight -> shelfCorners[shelfNum][1];
         
+        //half way from bottom left corner to bottom right corner
         midShelfBottom = (leftOrRight -> shelfCorners[shelfNum][0] + leftOrRight -> shelfCorners[shelfNum][1])/2.0f;
+        
+        //half way from top left corner to top right corner
         midShelfTop = (leftOrRight -> shelfCorners[shelfNum][2] + leftOrRight -> shelfCorners[shelfNum][3])/2.0f;
 
+        //while we're going through each shelf, set the shelf overlays
         
+        ShelfOverlay so;
+        
+        //top left corner
+        so.pos = leftOrRight -> shelfCorners[shelfNum][3];
+        
+        //center of shelf
+        //so.pos = midShelfTop + (midShelfBottom - midShelfTop)/2.0;
+        
+        ofVec2f w = shelfEnd - shelfStart;
+        so.width = w.length();
+        ofVec2f h = midShelfBottom - midShelfTop;
+        so.height = h.length();
+        
+        shelfOverlays.push_back(so);
+
         
         //get the direction vector from the left side of the shelf to the right
         //then place the books on the shelf along that line, just in case the mapping
@@ -209,6 +240,10 @@ void BookController::setup(vector<Contribution> *cList){
             //after setup (once book has found its own dimensions),
             //set its position in the bookcase
             books[i].pos = currentShelfPos;
+            
+            //move book out away from wall to clear the wallpaper tiles
+            books[i].pos.z -= 50;
+            
             //add the book thickness to the shelf to place the next book
             currentShelfPos += dirToShelfEnd * (books[i].thickness + bookSpacing);
             
@@ -216,8 +251,8 @@ void BookController::setup(vector<Contribution> *cList){
             //of the current shelf, raised so book is centered
             books[i].displayPos = (shelfStart + shelfEnd)/2.0f;
 
-            //shift the book out (z) towards the viewer
-            books[i].displayPos += ofVec3f(0, 0, -20);
+            //shift the book out (z) towards the viewer and shifted to the right
+            books[i].displayPos += ofVec3f(52, 0, books[i].pos.z - 20);
             
             //shift the book up (y) a bit to center it and out (z) towards the viewer
 //            books[i].displayPos += ofVec3f(0, books[i].h  eight/2.0, -20);
@@ -231,7 +266,10 @@ void BookController::setup(vector<Contribution> *cList){
             books[i].pulledOutPos = books[i].pos + ofVec3f(sideShift, 0, -(books[i].depth));
 
             books[i].shelfNum = j;
-
+            books[i].bookID = i;
+            
+            //give the book buttons the icon images and the position of the shelf corners
+            books[i].setupUI(&buttonIcons, leftOrRight -> shelfCorners[shelfNum]);
             
             //Add the contributions from the list to the book
             //if we don't have enough contributions, mark extra books as bIsUnused
@@ -240,13 +278,8 @@ void BookController::setup(vector<Contribution> *cList){
                 //mark book as used
                 books[i].bIsUnused = false;
                 
-                //copy the contribution into the book
-                books[i].userContribution = (*contributionList)[i];
-                
-                //and format the text to be displayed
-                //print the book number too
-                books[i].formatTextForDisplay();
-                books[i].drawContentToTexture();
+                //set up the content
+                books[i].setupContent((*contributionList)[i]);
                 
             } else {
                 
@@ -263,12 +296,23 @@ void BookController::setup(vector<Contribution> *cList){
                 
             }
             
-            books[i].setupUI();
+            
+            //add event listeners to each of the buttons so the book controller
+            //can do stuff when buttons are pressed
+            ofAddListener(books[i].prevButton.newButtonClickEvt, this, &BookController::onButtonClickEvt);
+            ofAddListener(books[i].nextButton.newButtonClickEvt, this, &BookController::onButtonClickEvt);
+            ofAddListener(books[i].exitButton.newButtonClickEvt, this, &BookController::onButtonClickEvt);
+            ofAddListener(books[i].tagButton.newButtonClickEvt, this, &BookController::onButtonClickEvt);
+            
             
             //move on to next book
             bookCounter++;
         }
+        
+
+        
     }
+
 
     
     
@@ -283,24 +327,37 @@ void BookController::checkMouseEvents(int x, int y){
     //Check all books for mouse presence
     for(int i = 0; i < books.size(); i++){
      
+        
         //if we're not active, check for book triggers
         if(!books[i].bIsActive){
             
-            //see if mouse is inside book
-            //remember: book pos is lower left corner
-            if(x > books[i].pos.x && x < books[i].pos.x + books[i].thickness
-               && y < books[i].pos.y && y > books[i].pos.y - books[i].height){
+            //only check books that are not on active shelves
+            if(shelfOverlays[books[i].shelfNum].bIsActive == false){
                 
-                books[i].triggerDisplay();
-                
+                //see if mouse is inside book
+                //remember: book pos is lower left corner
+                if(x > books[i].pos.x && x < books[i].pos.x + books[i].thickness
+                   && y < books[i].pos.y && y > books[i].pos.y - books[i].height){
+                    
+                    //book is triggered
+                    books[i].triggerDisplay();
+                    
+                    //mark this shelf as active and trigger the shelf overlay
+                    shelfOverlays[books[i].shelfNum].activate();
+
+                    
+                }
+
             }
             
         } else {
             
             //if we ARE active, check for buttons
             books[i].checkButtonsForClicks(x, y);
-            
+
+                        
         }
+        
         
         
     }
@@ -309,10 +366,30 @@ void BookController::checkMouseEvents(int x, int y){
     
 }
 
-void BookController::checkMouseBookTrigger(int x, int y){
+void BookController::onButtonClickEvt(ButtonEvent &b){
+    
+    cout << "Button Pressed: " << b.type << endl;
+    
+    //if it's an exit button event, close that book and deactivate that shelfOverlay
+    if(b.type == 0){
+        shelfOverlays[b.shelfNum].deactivate();
+        cout << "Closing shelf number:  " << b.shelfNum << endl;
+    } else if(b.type == 3){
+        
+        //go through all the books and activate the tags
+
+        
+        
+        cout << "Tag reveal activated for tag number:  " << b.tagNum << endl;
+        
+    }
+    
+    //now check for tag activations!
+    
     
     
 
+    
     
 }
 
@@ -327,13 +404,8 @@ void BookController::onNewContribution( Contribution& c ){
             //mark book as used
             books[i].bIsUnused = false;
             
-            //copy the contribution into the book
-            books[i].userContribution = c;
-            
-            //and format the text to be displayed
-            //print the book number too
-            books[i].formatTextForDisplay();
-            books[i].drawContentToTexture();
+            //set up the content
+            books[i].setupContent((*contributionList)[i]);
             
             //now break out of the for loop
             //so we only trigger one book
@@ -355,23 +427,35 @@ void BookController::update(){
         }
     }
     
+    
+    //update the shelf overlays
+    for(int i = 0; i < shelfOverlays.size(); i++){
+        shelfOverlays[i].update();
+    }
+    
+    
+    
 }
 
 void BookController::draw(){
     
 
     
-//    ofDisableArbTex();
-
-
+    ofEnableDepthTest();
+    
+    
     for(int i = 0; i < books.size(); i++){
         if(books[i].bIsUnused == false){
             books[i].draw();
         }
     }
     
+    for(int i = 0; i < shelfOverlays.size(); i++){
+        shelfOverlays[i].draw();
+    }
+
+    ofDisableDepthTest();
     
-//    ofEnableArbTex();
     
     
     

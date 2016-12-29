@@ -414,6 +414,7 @@
 		D72C74771DEBCD8A00D770C8 /* ContentManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ContentManager.hpp; sourceTree = "<group>"; };
 		D72C74811DED442B00D770C8 /* BookUIButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookUIButton.cpp; sourceTree = "<group>"; };
 		D72C74821DED442B00D770C8 /* BookUIButton.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BookUIButton.hpp; sourceTree = "<group>"; };
+		D75B5B9E1E1476360027C98E /* ShelfOverlay.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ShelfOverlay.hpp; sourceTree = "<group>"; };
 		D76A59E7B3601E76351C9BDB /* cvaux.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvaux.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cvaux.h; sourceTree = SOURCE_ROOT; };
 		D7E190BB1DFDFBFA00D52145 /* CenterBook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CenterBook.cpp; sourceTree = "<group>"; };
 		D7E190BC1DFDFBFA00D52145 /* CenterBook.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CenterBook.hpp; sourceTree = "<group>"; };
@@ -1422,6 +1423,7 @@
 			children = (
 				D72C745E1DEBCB2C00D770C8 /* BookController.hpp */,
 				D72C745D1DEBCB2C00D770C8 /* BookController.cpp */,
+				D75B5B9E1E1476360027C98E /* ShelfOverlay.hpp */,
 				D72C745C1DEBCB2C00D770C8 /* Book.hpp */,
 				D72C745B1DEBCB2C00D770C8 /* Book.cpp */,
 				D7E190BC1DFDFBFA00D52145 /* CenterBook.hpp */,

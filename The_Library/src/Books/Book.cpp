@@ -190,16 +190,32 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     pageTexCoords.resize(6);
     
     
-    pageTexCoords[0].set(261.299, 21.838);
-    pageTexCoords[1].set(385.824, 21.838);
-    pageTexCoords[2].set(  14.281, 216.057);
-    pageTexCoords[3].set( 140.605, 215.922);
+    pageTexCoords[0].set(261.299,  21.838);
+    pageTexCoords[1].set(385.824,  21.838);
+    pageTexCoords[2].set( 14.281, 216.057);
+    pageTexCoords[3].set(140.605, 215.922);
     pageTexCoords[4].set(263.491, 215.922);
-    pageTexCoords[5].set(386.88, 215.419);
+    pageTexCoords[5].set(386.88 , 215.419);
     
     pageWidth = 114.16;
     pageHeight = 186.273;
 
+    
+    //book tag list and coloring
+    tagList.resize(9);
+    tagList[0] = "Arts&Humanities";
+    tagList[1] = "Health&Behavior";
+    tagList[2] = "Psychology&Cognition";
+    tagList[3] = "STEM";
+    tagList[4] = "Literacy&Language";
+    tagList[5] = "Curriculum";
+    tagList[6] = "Assessment";
+    tagList[7] = "Administration&Policy";
+    tagList[8] = "Culture";
+    
+    bShowTaglet = false;
+    bFadeOutTaglet = true;
+    tagTrans = 0;
 
     
     //--------------------ANIMATION--------------------
@@ -243,15 +259,27 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
     
 }
 
-void Book::setupUI(){
+void Book::setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelfPts){
+    
+    icons = _icons;
     
     float shelfHeight = 140; //ish
     
     //Buttons are drawn relative to the book's position on the shelf (lower left corner)
     //draw the next button on top, then prev, then exit on bottom
-    nextButton.setup( 2, displayPos, -shelfHeight * 0.8 );
-    prevButton.setup( 1, displayPos, -shelfHeight * 0.50 );
-    exitButton.setup( 0, displayPos, -shelfHeight * 0.2 );
+    exitButton.setup( 0, displayPos, shelfPts, shelfNum, bookID );
+    prevButton.setup( 1, displayPos, shelfPts, shelfNum, bookID );
+    nextButton.setup( 2, displayPos, shelfPts, shelfNum, bookID );
+    
+    //set button icons
+    exitButton.setIcons( &(*icons)[0], &(*icons)[1] );
+    prevButton.setIcons( &(*icons)[2], &(*icons)[3] );
+    nextButton.setIcons( &(*icons)[4], &(*icons)[5] );
+    
+    
+    //tagButton does not use the third parameter
+    //tag button will finish setting up in the setupContent() method
+    tagButton.setup(3, displayPos, shelfPts, shelfNum, bookID );
     
 }
 
@@ -260,6 +288,7 @@ void Book::showButtons(){
     nextButton.show();
     prevButton.show();
     exitButton.show();
+    tagButton.show();
     
 }
 
@@ -268,10 +297,11 @@ void Book::hideButtons(){
     nextButton.hide();
     prevButton.hide();
     exitButton.hide();
+    tagButton.hide();
     
 }
 
-void Book::checkButtonsForClicks(int x, int y){
+bool Book::checkButtonsForClicks(int x, int y){
     
     nextButton.checkForClicks(x, y);
     prevButton.checkForClicks(x, y);
@@ -279,6 +309,34 @@ void Book::checkButtonsForClicks(int x, int y){
     
 }
 
+
+void Book::setupContent(Contribution c){
+    
+    userContribution = c;
+
+    
+    //find out which tag we have
+    for(int i = 0; i < tagList.size(); i++){
+        if(userContribution.tag.compare(tagList[i]) == 0){
+            tagNum = i;
+        }
+    }
+    
+    //set the color of this tag
+    //split up the HSB spectrum based on how many tags we have
+    int hueDiff = 255 / tagList.size();
+    tagCol.setHsb( tagNum * hueDiff, 165, 255);
+    
+//    cout << "Book[" << bookID <<"] Tag #" << tagNum << ", Color: " << tagCol << endl;
+    
+    //setup the tag button
+    tagButton.setTag(userContribution.tag, tagNum, tagCol);
+    
+    
+    formatTextForDisplay();
+    drawContentToTexture();
+    
+}
 
 void Book::formatTextForDisplay(){
     
@@ -293,6 +351,8 @@ void Book::formatTextForDisplay(){
     //the *** will make a page break in the text wrapping code below
     string total;
     total = "Contribution Authored by: " + userContribution.name + " *** " + userContribution.message;
+    
+    
     
     //split the whole string into a vector of words
     vector<string> words = ofSplitString(total, " ");
@@ -386,16 +446,15 @@ void Book::formatTextForDisplay(){
 //    }
     
     //how many pages do we have open to us
-    if(pageText.size() < 2){
+    if(pageText.size() <= 2){
         pageSpreadsAvailable = 1;
-    } else if( pageText.size() < 4){
+    } else if( pageText.size() <= 4){
         pageSpreadsAvailable = 2;
     } else {
         pageSpreadsAvailable = 3;
     }
     
-    
-    
+
 
     
 }
@@ -413,7 +472,7 @@ void Book::drawContentToTexture(){
     ofSetColor(255);
     tex -> draw(0, 0);
     
-    ofDisableDepthTest();
+//    ofDisableDepthTest();
     //go through all the pages and draw out the text
     for(int i = 0; i < pageText.size(); i++){
         
@@ -433,7 +492,7 @@ void Book::drawContentToTexture(){
         ofPopMatrix();
         
     }
-    ofEnableDepthTest();
+//    ofEnableDepthTest();
     
     textureFBO.end();
 
@@ -462,6 +521,7 @@ void Book::update(){
         nextButton.update();
         prevButton.update();
         exitButton.update();
+        tagButton.update();
         
         model.update();
 
@@ -512,25 +572,28 @@ void Book::update(){
             } else if(now < firstPageTime){
 
                 //do a linear mapping of the animation and clamp it
-                animPos = ofMap(now, displayReadyTime, firstPageTime, animationStart, animFirstPages, true);
+                animPos = ofMap(now, displayReadyTime, firstPageTime, animationStart, animationSpread1, true);
 
                 //also ease into the flattened scale to make the text
                 //close to the spine easier to read
                 flattenAmt = ofMap(now, displayReadyTime, firstPageTime, 1.0, flatScale);
                 
+                //no more timers/animations to set, just do these last things before
+                //going to the book displayed state
                 
                 bIsDisplayed = true;
                 
                 //bring out the buttons
                 showButtons();
                 
-                
                 //prepare the NEXT state to pick up where this one leaves off
                 targetAnimPos = animPos;
                 currentOpenPage = 0;
+                
             }
         
         } else {
+
 
             
             
@@ -540,14 +603,16 @@ void Book::update(){
             //if we're not closing, check for user buttons
             if(!bIsClosing){
                 
+
+                
                 bool exiting = false;
                 
                 //check to see if buttons are pressed
                 //check exit first, since this one overrides the others
-                if(exitButton.state){
+                if(exitButton.buttonState){
                     
                     exiting = true;
-                    exitButton.state = false;
+                    exitButton.buttonState = false;
                     
                     prevButton.bIsUnavailable = true;
                     nextButton.bIsUnavailable = true;
@@ -575,26 +640,26 @@ void Book::update(){
                     //check buttons but make sure we don't go too far
                     //so check how many pages are available
                     //and handle button unavailable states
-                    if(nextButton.state && !nextButton.bIsUnavailable){
+                    if(nextButton.buttonState && !nextButton.bIsUnavailable){
                         
                         //move forward
                         currentOpenPage++;
-                        nextButton.state = false;
+                        nextButton.buttonState = false;
                         
-                    } else if(prevButton.state && !prevButton.bIsUnavailable){
+                    } else if(prevButton.buttonState && !prevButton.bIsUnavailable){
                         
                         //move back
                         currentOpenPage--;
-                        prevButton.state = false;
+                        prevButton.buttonState = false;
                     }
                     
                     //get the right animation position for the action
                     if(currentOpenPage == 0){
-                        targetAnimPos = animFirstPages;
+                        targetAnimPos = animationSpread1;
                     } else if(currentOpenPage == 1){
-                        targetAnimPos = animSecondPages;
+                        targetAnimPos = animationSpread2;
                     } else if(currentOpenPage == 2){
-                        targetAnimPos = animThirdPages;
+                        targetAnimPos = animationSpread3;
                     }
                     
                 } else {
@@ -611,6 +676,10 @@ void Book::update(){
                         closingStartTime = ofGetElapsedTimef();
                         
                     }
+                    
+                    //put away the buttons
+                    hideButtons();
+                    
                 }
                 
                 //then lerp to that position
@@ -623,7 +692,7 @@ void Book::update(){
                 
                 
                 //Book snaps closed
-                float closeBookTime = closingStartTime + 1.0f;
+                float closeBookTime = closingStartTime + 1.7f;
                 
                 //book goes back to pulled out position
                 float backToPulledOutTime = closeBookTime + 1.5f;
@@ -638,8 +707,7 @@ void Book::update(){
                     animPos = ofMap(now, closingStartTime, closeBookTime, animPos, animationStart, true);
                     flattenAmt = ofMap(now, closingStartTime, closeBookTime, flatScale, 1.0f);
                     
-                    //put away the buttons
-                    hideButtons();
+
                     
                 } else if(now < backToPulledOutTime){
                     
@@ -691,7 +759,41 @@ void Book::update(){
         
 
         
-    } //close bIsActive loop
+    } else {
+        //bIsActive = false:
+        
+        //if we're showing the taglet, fade it in
+        //if we're not, fade it out
+        if(bShowTaglet){
+
+            //fade the color in if we're showing the tag
+            tagTrans = ofLerp(tagTrans, 255, 0.075);
+            
+            //and prepare to fade it out when it becomes hidden again
+            bFadeOutTaglet = true;
+            
+        } else {
+            
+            //if we're not showing but still fading out...
+            if(bFadeOutTaglet){
+                
+                //lerp till it's transparent
+                tagTrans = ofLerp(tagTrans, -1, 0.1);
+                
+                //if we're done fading, turn it off to save a few cpu cycles
+                if(tagTrans < 0){
+                    bFadeOutTaglet = false;
+                }
+                
+            }
+            
+        }
+        //cout << "bShowTaglet = " << bShowTaglet << ", bFadeInTaglet = " << bFadeInTaglet << ", tagCol.a: " << tagTrans << endl;
+        
+    }
+    
+    
+    
     
     
     
@@ -702,13 +804,14 @@ void Book::draw(){
 
 
 
-        
+    
         if(bIsActive){
             
             ofPushMatrix();
                 
             //translate the book to the position on the shelf
             //with the bottom left corner of the spine at pos
+            //also push it forward so it clears the rotating wallpaper tiles
             ofTranslate(pos);
             
             
@@ -731,6 +834,7 @@ void Book::draw(){
             
             //disable the model textures so we can use our own
             model.disableTextures();
+            ofDisableArbTex();
             if(textureFBO.isAllocated()) textureFBO.getTexture().bind();
             
             ofSetColor(255);
@@ -744,8 +848,8 @@ void Book::draw(){
             nextButton.draw();
             prevButton.draw();
             exitButton.draw();
+            tagButton.draw();
             
-
 
             
         } else {
@@ -762,7 +866,22 @@ void Book::draw(){
             ofSetColor(255);
             spineMesh.draw();
             if(tex -> isAllocated()) tex -> unbind();
+            
 
+
+            
+            //only draw if we're showing if intentionally
+            //or it is being faded out
+            if(bShowTaglet || bFadeOutTaglet){
+                float amp = 5;
+                float shelfHeight = 140;
+                float yHeight = -shelfHeight + amp * sin( ofGetElapsedTimef() * 3.2 );
+                float triHeight = 15;
+                ofSetColor(tagCol, tagTrans);
+                int z = -5;
+                ofDrawTriangle(0, yHeight, z, thickness, yHeight, z, thickness/2.0, yHeight + triHeight, z);
+            }
+            
             ofPopMatrix();
             
         }

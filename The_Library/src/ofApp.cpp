@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-    connectToServer = true;
+    connectToServer = false;
     
     if(connectToServer){
 //        client.connect("localhost", 8081);
@@ -183,23 +183,21 @@ void ofApp::draw(){
     ofPopMatrix();
     
     //draw object shadows before we enable depth testing again
+    frame.drawShadow();
+    frame.draw();
+    
+    
     leftBookcase.drawShadow();
     rightBookcase.drawShadow();
-    frame.drawShadow();
-    
-    //now enable depth testing again so books and
-    //bookcases draw in their proper places
-    ofEnableDepthTest();
-    
-    frame.draw();
     leftBookcase.draw();
     rightBookcase.draw();
     
-    bookController.draw();
-    
     centerBook.draw();
     
+    bookController.draw();
     
+    
+    //camera inverts textures so draw the edge mask upside down
     bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
     
     
@@ -310,10 +308,14 @@ void ofApp::keyPressed(int key){
         camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
         camera.setOrientation(ofVec3f(180, 0, 0));
         
+        centerBook.resetCamera();
+        
+        
+        
     }
     
     if(key == 'm'){
-        contentManager.logNewContribution("Name", "Tag" , "Message. Message. Message. Message.");
+        contentManager.logNewContribution("Name", "Culture" , "Message. Message. Message. Message.");
     }
     
 }
@@ -396,18 +398,18 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 //--------------------------------------------------------------
 void ofApp::onConnect( ofxLibwebsockets::Event& args ){
-    cout<<"on connected"<<endl;
+    cout<<"[Web socket] on connected"<<endl;
 }
 
 //--------------------------------------------------------------
 void ofApp::onOpen( ofxLibwebsockets::Event& args ){
-    cout<<"on open"<<endl;
+    cout<<"[Web socket] on open"<<endl;
     client.send("init-of");
 }
 
 //--------------------------------------------------------------
 void ofApp::onClose( ofxLibwebsockets::Event& args ){
-    cout<<"on close"<<endl;
+    cout<<"[Web socket] on close"<<endl;
     client.connect("localhost", 8081);
 }
 
@@ -439,7 +441,7 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 
 //--------------------------------------------------------------
 void ofApp::onBroadcast( ofxLibwebsockets::Event& args ){
-    cout<<"got broadcast "<<args.message<<endl;
+    cout<<"[Web socket] got broadcast "<<args.message<<endl;
 }
 
 

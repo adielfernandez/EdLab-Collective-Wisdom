@@ -16,9 +16,9 @@ CenterBook::CenterBook(){
 
 void CenterBook::loadModel(){
     
-    cout << "Loading center book model" << endl;
+//    cout << "Loading center book model" << endl;
     
-    model.loadModel("books/bookMedium.fbx", false);
+    model.loadModel("images/centralBook/bookMedium.fbx", false);
     
     
     
@@ -75,7 +75,7 @@ void CenterBook::setup(){
     
     //load Book and desk textures
     ofImage b;
-    b.load("images/centralBook/darkPages.png");
+    b.load("images/centralBook/test.png");
     bookTex = b.getTexture();
     
     bookTexFBO.allocate(bookTex.getWidth(), bookTex.getHeight());
@@ -92,10 +92,6 @@ void CenterBook::setup(){
 
     //size of the FBO. Just needs to be rough since
     //it will be stretched into position over a mesh.
-    //make a multiple of 10 for mapMesh() to work correctly!
-    deskWidth = 270;
-    deskHeight = 180;
-
     deskFBO.allocate(deskWidth, deskHeight);
     
     deskFBO.begin();
@@ -106,8 +102,6 @@ void CenterBook::setup(){
     //desk Mesh setup
     float deskHeightFromTop = 700;  //just a starting point, adjusted by gui later
     
-    
-    
     meshPoints.resize(4);
     meshPoints[0] = ofVec2f( ofGetWidth()/2 - deskWidth/2 , deskHeightFromTop );
     meshPoints[1] = ofVec2f( ofGetWidth()/2 + deskWidth/2 , deskHeightFromTop );
@@ -116,7 +110,7 @@ void CenterBook::setup(){
     
 
     
-    mapMesh();
+
     
     
     bookPos.set(deskWidth/2, deskHeight - 10);
@@ -127,7 +121,7 @@ void CenterBook::setup(){
 //    camera.disableMouseInput();
     camera.setTarget(ofVec3f(deskWidth/2, deskHeight/2, 0));
     camera.setOrientation(ofVec3f(0, 0, 180));
-    camera.setPosition(deskWidth/2, deskHeight/2, -1000);
+    camera.setPosition(deskWidth/2, deskHeight/2, 1000);
     
     
     //Book content and UI stuff
@@ -145,32 +139,58 @@ void CenterBook::setup(){
     //width and height of each page from the texture
     pageWidth = 114.16;
     pageHeight = 186.273;
+
+    //Dimensions and texcoords above are based on a 512x512 texture
+    //scale up by 2 for a 1024x1024
+    pageTexCoords[0] *= 2.0;
+    pageTexCoords[1] *= 2.0;
+    pageTexCoords[2] *= 2.0;
+    pageTexCoords[3] *= 2.0;
+    pageTexCoords[4] *= 2.0;
+    pageTexCoords[5] *= 2.0;
+    
+    pageWidth *= 2.0;
+    pageHeight *= 2.0;
     
     pageText.clear();
-    pageText.resize(4);
+//    pageText.resize(4);
     
     
     //Pages can roughly fit 15-16 characters per line and 8 lines per page
     string p1 = "";
     
-    p1 += "John Dewey\n";
-    p1 += "Jean Piaget\n";
-    p1 += "Maria Montessori\n";
-    p1 += "Lev Vygotsky\n";
-    p1 += "Benjamin Bloom\n";
-    p1 += "Howard Gardner\n";
-    p1 += "Jerome Bruner\n";
-    p1 += "Albert Bandura\n";
+    p1 += "John\n";
+    p1 += "Dewey\n";
+    p1 += "Jean\n";
+    p1 += "Piaget\n";
+    p1 += "Maria\n";
+    p1 += "Montessori\n";
+    p1 += "Lev\n";
+    p1 += "Vygotsky\n";
+    p1 += "Gloria\n";
+    p1 += "Ladson-Billings";
     
-    pageText[0] = p1;
-    pageText[1] = p1;
-    pageText[2] = p1;
-    pageText[3] = p1;
+    string p2 = "";
+    
+    p2 += "Benjamin\n";
+    p2 += "Bloom\n";
+    p2 += "Howard\n";
+    p2 += "Gardner\n";
+    p2 += "Jerome\n";
+    p2 += "Bruner\n";
+    p2 += "Albert\n";
+    p2 += "Bandura\n";
+    p2 += "Lisa\n";
+    p2 += "Delpit";
     
     
-    font.load("fonts/Arcon-Rounded-Regular.otf", 12);
+//    pageText[0] = p1;
+//    pageText[1] = p2;
+//    pageText[2] = p1;
+//    pageText[3] = p2;
     
-    animationPos = animFirstPages;
+    
+    font.load("fonts/Arcon-Rounded-Regular.otf", 22);
     
     
     
@@ -185,6 +205,15 @@ void CenterBook::setup(){
     //saveSettings();
     
     loadSettings();
+    setVariablesFromGui();
+    
+    mapMesh();
+    
+    drawContentToTexture();
+    
+    //The position the raw desk will draw when debugging
+    rawDeskPos.set( ofGetWidth()/2.0 - deskWidth/2, ofGetHeight()/2 - deskHeight + 50 );
+    
 }
 
 void CenterBook::mapMesh(){
@@ -193,9 +222,9 @@ void CenterBook::mapMesh(){
     //Then set texture coordinates and do a bilinear interpolation
     //of all the grid points between the four corners
     
-    int gridSpacing = 10;
-    int numCols = (deskFBO.getWidth() / gridSpacing);
-    int numRows = (deskFBO.getHeight() / gridSpacing);
+    int gridSpacing = 25;
+    int numCols = (deskWidth / gridSpacing);
+    int numRows = (deskHeight / gridSpacing);
     
     
     
@@ -281,7 +310,7 @@ void CenterBook::drawContentToTexture(){
     ofSetColor(255);
     bookTex.draw(0, 0);
     
-    ofDisableDepthTest();
+//    ofDisableDepthTest();
     //go through all the pages and draw out the text
     for(int i = 0; i < pageText.size(); i++){
         
@@ -289,24 +318,30 @@ void CenterBook::drawContentToTexture(){
         
         //left pages draw closer to page edge
         //right pages draw further to get past page curvature
-        float leftMargin = (i % 2 == 1 ? 10 : 5);
-        float topMargin = 18.5;
+        float leftMargin = (i % 2 == 0 ? page1LeftMargin : page2LeftMargin);
         
-        ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + topMargin);
+        ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + pageTopMargin);
         ofScale( 1.0/widthScale , 1.0);
         ofSetColor(93, 50, 0);
         //                    float lineHeight = font -> stringHeight("A");
         font.drawString(pageText[i], 0, 0); //-lineHeight);
         
+        
+        
         ofPopMatrix();
         
     }
-    ofEnableDepthTest();
+//    ofEnableDepthTest();
     
     bookTexFBO.end();
     
 }
 
+void CenterBook::resetCamera(){
+    camera.setTarget(ofVec3f(deskWidth/2, deskHeight/2, 0));
+    camera.setOrientation(ofVec3f(0, 0, 180));
+    camera.setPosition(deskWidth/2, deskHeight/2, 1000);
+}
 
 void CenterBook::update(){
     
@@ -314,60 +349,65 @@ void CenterBook::update(){
     //Model manipulation
     
     //uncomment to scroll through model animation with mouse
-//    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0, 1.0);
-//    model.setPositionForAllAnimations(x);
+    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0, 1.0);
+    model.setPositionForAllAnimations(x);
 
-    
-    //loop through pages automatically
-    if(ofGetElapsedTimeMillis() - lastPageFlip > 5000){
-        
-        animationPos += 0.001;
-        
-        if(animationPos > animSecondPages){
-            animationPos = animFirstPages;
-            lastPageFlip = ofGetElapsedTimeMillis();
-        }
-    }
-    
-    
-    
+
     
     //draws text to book
     drawContentToTexture();
+
     
     
+//    animationPos = animationSpread1;
+//    model.setPositionForAllAnimations(animationPos);
     
-    model.setPositionForAllAnimations(animationPos);
     model.update();
     
     
-    
-    //update values with GUI
+    //update variables with values from GUI
     if(reMapMeshButton){
         mapMesh();
     }
 
-    bookPos.x = bookPosSlider -> x;
-    bookPos.y = bookPosSlider -> y;
-    
-    widthScale = widthScaleSlider;
-    heightScale = heightScaleSlider;
-    depthScale = depthScaleSlider;
-    bulkScale = bulkScaleSlider;
-    
-    modelScale = baseScale * bulkScale;
-    
-    meshPoints.clear();
-    meshPoints.resize(4);
-    meshPoints[0] = ofVec2f(meshPt0 -> x, meshPt0 -> y);
-    meshPoints[1] = ofVec2f(meshPt1 -> x, meshPt1 -> y);
-    meshPoints[2] = ofVec2f(meshPt2 -> x, meshPt2 -> y);
-    meshPoints[3] = ofVec2f(meshPt3 -> x, meshPt3 -> y);
+    setVariablesFromGui();
 
     
 
     
+    //if we're showing the raw desk, see if the mouse is inside of it and
+    //pass normalized mouse touches into the FBO
     
+    //this is practice for when touches actually come in through OSC
+    //Touches will be normalized from 0-1 over the width/height of the entire desk
+    
+    mouseTouches.clear();
+    
+    if(showRawDeskToggle){
+        
+        ofVec2f m(ofGetMouseX(), ofGetMouseY());
+        
+        if(m.x > rawDeskPos.x && m.x < rawDeskPos.x + deskWidth && m.y > rawDeskPos.y && m.y < rawDeskPos.y + deskHeight){
+            
+            ofVec2f normalizedMouse((m.x - rawDeskPos.x)/deskWidth, (m.y - rawDeskPos.y)/deskHeight);
+            
+            //flip the X, since the X direction in the FBO is inverted due to the camera
+            normalizedMouse.x = 1.0f - normalizedMouse.x;
+            
+            MouseTouch mt;
+            mt.pos = normalizedMouse;
+            mt.bIsTouching = ofGetMousePressed();
+            
+            mouseTouches.push_back(mt);
+            
+        }
+        
+        
+        
+    }
+    
+    
+
 
     
     
@@ -392,7 +432,7 @@ void CenterBook::draw(){
         ofClear(0, 0, 0, 255);
         
         
-        deskTex.draw(0, 0, deskFBO.getWidth(), deskFBO.getHeight());
+        deskTex.draw(0, 0, deskWidth, deskHeight);
         
         ofPushMatrix();
         
@@ -419,27 +459,48 @@ void CenterBook::draw(){
         
         //disable the model textures so we can use our own
         model.disableTextures();
+        ofEnableDepthTest();
         if(bookTexFBO.isAllocated()) bookTexFBO.getTexture().bind();
         
         ofSetColor(255);
         model.drawFaces();
         
         if(bookTexFBO.isAllocated()) bookTexFBO.getTexture().unbind();
-        
+        ofDisableDepthTest();
 
-        
-        
         ofPopMatrix();
+        
+        //go through touches (for now mouseTouches, but eventually OSC data from camera)
+        //draw cursors, do button region detection, etc.
+        for(int i = 0; i < mouseTouches.size(); i++){
+            
+            if(mouseTouches[i].bIsTouching){
+                ofSetColor(0, 255, 0);
+            } else {
+                ofSetColor(0, 128, 255);
+            }
+        
+            
+            ofDrawCircle(mouseTouches[i].pos.x * deskWidth, mouseTouches[i].pos.y * deskHeight, -50, 10);
+            
+        }
+        
+        
         
         camera.end();
         
     }deskFBO.end();
     
+
     //draw the actual texture to screen
     deskFBO.getTexture().bind();
     ofSetColor(255);
     deskMesh.draw();
     deskFBO.getTexture().unbind();
+    
+
+
+    
     
     
 
@@ -457,6 +518,15 @@ void CenterBook::drawDebug(){
     if(drawWireframeToggle){
         ofSetColor(255, 100);
         deskMesh.drawWireframe();
+        
+    }
+    
+    
+    if(drawBookTexToggle){
+        ofSetColor(255);
+        float scale = 0.5;
+        
+        bookTexFBO.draw(10, 10 + bookTexFBO.getHeight() * scale, bookTexFBO.getWidth() * scale, -bookTexFBO.getHeight() * scale);
     }
     
     //draw corners
@@ -476,7 +546,13 @@ void CenterBook::drawDebug(){
     corners.close();
     corners.draw();
     
-    
+    if(showRawDeskToggle){
+
+        //invert the Y since the camera flips the way textures are drawn
+        ofSetColor(255);
+        deskFBO.draw(rawDeskPos.x, rawDeskPos.y + deskFBO.getHeight(), deskWidth, -deskHeight );
+        
+    }
     
     
     
@@ -510,8 +586,8 @@ void CenterBook::setupGui(){
     
     gui.add(positioningLabel.setup("  POSITIONING", ""));
     
-    float maxRangeX = 50;
-    float maxRangeY = 50;
+    float maxRangeX = 100;
+    float maxRangeY = 100;
     ofVec2f plus(maxRangeX, maxRangeY);
     ofVec2f minus(-maxRangeX, -maxRangeY);
     
@@ -519,16 +595,24 @@ void CenterBook::setupGui(){
     
 //    cout << "Vec2 Val: " << bookPos << endl;
 //    cout << "GUI Val: "  << bookPosSlider << endl;
-    gui.add(bulkScaleSlider.setup("Bulk Scale", 1.0f, 0.8f, 1.5f));
-    gui.add(depthScaleSlider.setup("Depth Scale", 1.0f, 0.8f, 1.5f));
-    gui.add(heightScaleSlider.setup("Height Scale", 1.0f, 0.8f, 1.5f));
-    gui.add(widthScaleSlider.setup("Width Scale", 1.0, 0.8, 1.5f));
+    gui.add(bulkScaleSlider.setup("Bulk Scale", 1.0f, 0.8f, 2.5f));
+    gui.add(depthScaleSlider.setup("Depth Scale", 1.0f, 0.2f, 1.5f));
+    gui.add(heightScaleSlider.setup("Height Scale", 1.0f, 0.2f, 1.5f));
+    gui.add(widthScaleSlider.setup("Width Scale", 1.0f, 0.2f, 1.5f));
     
     gui.add(mappingLabel.setup("  MAPPING", ""));
 
+    gui.add(showRawDeskToggle.setup("Show Raw Desk", false));
     gui.add(reMapMeshButton.setup("Re-Map Mesh"));
-    gui.add(showUnwarpedToggle.setup("Show UnWarped", true));
     gui.add(drawWireframeToggle.setup("Draw Wireframe", true));
+
+    gui.add(contentTextureLabel.setup("  CONTENT and TEXTURING", ""));
+    gui.add(page1LeftMarginSlider.setup("Page1 Left Margin", 10, -5, 40));
+    gui.add(page2LeftMarginSlider.setup("Page2 Left Margin", 20, -5, 40));
+    gui.add(pageTopMarginSlider.setup("Page Top Margin", 38, 0, 60));
+    gui.add(drawBookTexToggle.setup("Draw Raw Book Tex", false));
+    
+    
     
     maxRangeX = 100;
     maxRangeY = 250;
@@ -549,6 +633,7 @@ void CenterBook::setupGui(){
     
     positioningLabel.setBackgroundColor(ofColor(255));
     mappingLabel.setBackgroundColor(ofColor(255));
+    contentTextureLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels
     positioningLabel.setDefaultTextColor(ofColor(0));
@@ -569,6 +654,31 @@ void CenterBook::saveSettings(){
     gui.saveToFile(filePath + guiName + ".xml");
     
 }
+
+void CenterBook::setVariablesFromGui(){
+ 
+    bookPos.x = bookPosSlider -> x;
+    bookPos.y = bookPosSlider -> y;
+    
+    widthScale = widthScaleSlider;
+    heightScale = heightScaleSlider;
+    depthScale = depthScaleSlider;
+    bulkScale = bulkScaleSlider;
+    
+    modelScale = baseScale * bulkScale;
+    
+    meshPoints.clear();
+    meshPoints.resize(4);
+    meshPoints[0] = ofVec2f(meshPt0 -> x, meshPt0 -> y);
+    meshPoints[1] = ofVec2f(meshPt1 -> x, meshPt1 -> y);
+    meshPoints[2] = ofVec2f(meshPt2 -> x, meshPt2 -> y);
+    meshPoints[3] = ofVec2f(meshPt3 -> x, meshPt3 -> y);
+    
+    page1LeftMargin = page1LeftMarginSlider;
+    page2LeftMargin = page2LeftMarginSlider;
+    pageTopMargin = pageTopMarginSlider;
+}
+
 
 void CenterBook::drawGui(){
     gui.draw();

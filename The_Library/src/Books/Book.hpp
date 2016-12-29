@@ -30,7 +30,9 @@ public:
     
     void loadModel(int bType, int tType, int fType);
     void setup(ofTexture *_tex, ofTrueTypeFont *_font);
-    void setupUI();
+    void setupContent(Contribution c);
+    
+    void setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelf);
     void update();
     void triggerDisplay();
     void formatTextForDisplay();
@@ -38,6 +40,8 @@ public:
     void draw();
     
     void goToAnimationPos(float a);
+    
+    vector<ofImage> *icons;
     
     //Support Methods
     bool bPrintDebug;
@@ -50,6 +54,8 @@ public:
     
     //shelf numbers left 0,1,2 and right 3,4,5
     int shelfNum;
+    //unique id for this book
+    int bookID;
     
     //for books that have no message and
     //not needed in the library
@@ -64,10 +70,14 @@ public:
     //Book interface
     void showButtons();
     void hideButtons();
-    void checkButtonsForClicks(int x, int y);
+    
+    //returns true if an exit button
+    //is clicked
+    bool checkButtonsForClicks(int x, int y);
     BookUIButton nextButton;
     BookUIButton prevButton;
     BookUIButton exitButton;
+    BookUIButton tagButton;
     
     
     //visuals and texturing
@@ -83,6 +93,16 @@ public:
     float pageWidth, pageHeight;
     
     Contribution userContribution;
+    
+    //local contribution storage for ease
+    int tagNum;
+    vector<string> tagList;
+    
+    //Taglet animation
+    bool bShowTaglet;
+    bool bFadeOutTaglet;
+    ofColor tagCol;
+    float tagTrans;
     
     vector<string> pageText;
     int pageSpreadsAvailable;
@@ -108,9 +128,9 @@ public:
     
     //animation key frames (normalized)
     const float animationStart = 0.0;
-    const float animFirstPages = 0.34;
-    const float animSecondPages = 0.56;
-    const float animThirdPages = 0.77;
+    const float animationSpread1 = 0.34;
+    const float animationSpread2 = 0.56;
+    const float animationSpread3 = 0.77;
     const float animationEnd = 0.94;
     
     //for user selection between pages

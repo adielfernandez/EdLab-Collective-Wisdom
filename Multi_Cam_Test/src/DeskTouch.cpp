@@ -42,6 +42,8 @@ void DeskTouch::renewTouch(ofVec2f p, float d){
     
     update();
     
+
+    
 }
 
 

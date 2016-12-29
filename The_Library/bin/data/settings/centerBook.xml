@@ -1,16 +1,22 @@
 <centerBook>
 	<__POSITIONING/>
-	<Book_Pos>121.735, 170</Book_Pos>
-	<Bulk_Scale>1.29</Bulk_Scale>
-	<Depth_Scale>1</Depth_Scale>
-	<Height_Scale>1</Height_Scale>
-	<Width_Scale>1</Width_Scale>
+	<Book_Pos>109.184, 170.102</Book_Pos>
+	<Bulk_Scale>1.7265</Bulk_Scale>
+	<Depth_Scale>0.6485</Depth_Scale>
+	<Height_Scale>0.7655</Height_Scale>
+	<Width_Scale>0.7655</Width_Scale>
 	<__MAPPING/>
-	<Show_UnWarped>1</Show_UnWarped>
+	<Show_UnWarped>0</Show_UnWarped>
 	<Draw_Wireframe>0</Draw_Wireframe>
-	<Mesh_Pt_0>825, 700</Mesh_Pt_0>
-	<Mesh_Pt_1>1095, 700</Mesh_Pt_1>
-	<Mesh_Pt_2>1095, 880</Mesh_Pt_2>
-	<Mesh_Pt_3>825, 880</Mesh_Pt_3>
+	<Mesh_Pt_0>787.551, 700</Mesh_Pt_0>
+	<Mesh_Pt_1>1135.51, 700</Mesh_Pt_1>
+	<Mesh_Pt_2>1190.61, 1045.82</Mesh_Pt_2>
+	<Mesh_Pt_3>738.571, 1048.37</Mesh_Pt_3>
 <centerBook/>
+<__CONTENT_and_TEXTURING/>
+	<Show_Raw_Desk>0</Show_Raw_Desk>
+	<Page1_Left_Margin>8.725</Page1_Left_Margin>
+	<Page2_Left_Margin>40</Page2_Left_Margin>
+	<Page_Top_Margin>34.5</Page_Top_Margin>
+	<Draw_Raw_Book_Tex>0</Draw_Raw_Book_Tex>
 </centerBook>

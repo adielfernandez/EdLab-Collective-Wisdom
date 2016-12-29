@@ -16,54 +16,19 @@ Frame::Frame(){
     
 }
 
-void Frame::loadMedia(){
-    
-    //load all the images from file
-    ofDirectory dir;
-    dir.listDir("assets/frames/");
-    dir.sort();
-    
-    //load images with manual file names
-    //loading with ofDirectory conflicts with ofxAssimp
-    for(int i = 0; i < (int)dir.size(); i++){
-        
-        ofImage img;
-        img.load(dir.getPath(i));
-        
-        images.push_back(img);
-        
-    }
-    
-    currentImg = round(ofRandom( images.size() - 1 ));
-    
-    
-    //prepare the portrait
-    ofDirectory portraitDirectory;
-    portraitDirectory.listDir("assets/portraits/");
-    portraitDirectory.sort();
-    
-    for(int i = 0; i < (int)portraitDirectory.size(); i++){
-        
-        ofImage img;
-        img.load(portraitDirectory.getPath(i));
-        
-        portraits.push_back(img);
-    }
-    
-    currentPortrait = round(ofRandom( portraits.size() - 1 ));
-    
-}
+
 
 void Frame::setup(string name){
         
     
     //allocate FBO
     //This will be mapped to a mesh to fit inside the portrait
-    //so size is less important than aspect ratio
+    //so size is slightly important than aspect ratio
     float aspect = 1.43;
-    float w = 300;
-    float h = w * aspect;
-    portraitFbo.allocate(w, h, GL_RGBA);
+    portraitWidth = 275;
+    portraitHeight = portraitWidth * aspect;
+    
+    portraitFbo.allocate(portraitWidth, portraitHeight, GL_RGBA);
     
     //clear buffer garbage
     portraitFbo.begin();
@@ -109,8 +74,173 @@ void Frame::setup(string name){
     lastMapTime = 0;
     
     
+
     
 }
+
+void Frame::loadMedia(){
+    
+    //load all the images from file
+    ofDirectory dir;
+    dir.listDir("assets/frames/");
+    dir.sort();
+    
+    //load images with manual file names
+    //loading with ofDirectory conflicts with ofxAssimp
+    for(int i = 0; i < (int)dir.size(); i++){
+        
+        ofImage img;
+        img.load(dir.getPath(i));
+        
+        images.push_back(img);
+        
+    }
+    
+    currentImg = round(ofRandom( images.size() - 1 ));
+    
+    
+    //prepare the portrait
+    ofDirectory portraitDirectory;
+    portraitDirectory.listDir("assets/portraits/");
+    portraitDirectory.sort();
+    
+    for(int i = 0; i < (int)portraitDirectory.size(); i++){
+        
+        ofImage img;
+        img.load(portraitDirectory.getPath(i));
+        
+        portraits.push_back(img);
+    }
+    
+    currentPortrait = round(ofRandom( portraits.size() - 1 ));
+    
+    numScholars = portraits.size();
+    
+    
+    
+    //scholar fact sheet setup and text layout
+    boldFont.load("assets/interface/Century-gothic-bold.ttf", 20);
+    regFont.load("bookFonts/Century-gothic.ttf", 13);
+    
+    regFont.setLineHeight(regFont.stringHeight("A") * 1.22);
+    
+    leftMargin = 10;
+    bodyTextWidth = portraitWidth - leftMargin * 4;
+    
+    
+    scholarData.resize(numScholars);
+    
+    scholarData[0].name = "Anna M. Cooley";
+    scholarData[0].dates = "(1875 - 1955)";
+    scholarData[0].body = "was an influential professor of Home Economics [food, nutrition, clothing, textiles, housing, applied art, household equipment, home management, family economics, child development, family relations] in the early 20th century and the author of popular books on the subject for high schools and colleges. Cooley earned diplomas at the New York Normal College (1893), Jenny Hunter Kindergarten Training School (1894) and Barnard College (1896). She received the B.S. degree and baccalaureate diploma in teaching household arts at Teachers College of Columbia University in 1903.";
+    
+    scholarData[1] = scholarData[0];
+    scholarData[2] = scholarData[0];
+    scholarData[3] = scholarData[0];
+    scholarData[4] = scholarData[0];
+    scholarData[5] = scholarData[0];
+    scholarData[6] = scholarData[0];
+    scholarData[7] = scholarData[0];
+    
+    //go through all the body strings and format them
+    for(int i = 0; i < scholarData.size(); i++){
+        scholarData[i].body = formatText(scholarData[i].body, bodyTextWidth);
+    }
+
+
+    
+    bShowFactSheet = false;
+    factSheetStartTime = 0;
+    
+    
+    factSheetDisplayed.set(0, 0);
+    factSheetHidden.set(portraitWidth, 0);
+    factSheetPos = factSheetHidden;
+    
+    factSheetEaseTime = 0.6f;
+    
+    
+    
+}
+
+//takes in a long string and returns a new one
+//with interspersed line breaks based on how much space there is
+//on the line
+string Frame::formatText(string incoming, int bodyWidth){
+    
+    
+    //split the whole string into a vector of words
+    vector<string> words = ofSplitString(incoming, " ");
+    
+    string outgoingString = "";
+
+    
+    int currentLine = 0;
+    int pixelsLeftInLine = bodyWidth;
+    
+    
+    
+    for(int i = 0; i < words.size(); i++){
+        
+        float thisWordLength = regFont.stringWidth(words[i]);
+        float spaceWidth = regFont.stringWidth(" ");
+        
+        //check if the number of characters left in the current line
+        //is greater than or equal to the current word, add it
+        if(thisWordLength <= pixelsLeftInLine){
+            
+            //add the word
+            outgoingString += words[i];
+            pixelsLeftInLine -= thisWordLength;
+            
+            //if there's no more room on the line...
+        } else {
+            
+            //go to next line
+            outgoingString += "\n";
+            currentLine++;
+            pixelsLeftInLine = bodyWidth;
+            
+            //add the word
+            outgoingString += words[i];
+            pixelsLeftInLine -= thisWordLength;
+            
+        }
+        
+        //add a space
+        outgoingString += " ";
+        pixelsLeftInLine -= spaceWidth;
+        
+        //if thats the end of this line
+        //go to the next line
+        if(pixelsLeftInLine <= 0){
+            outgoingString += "\n";
+            currentLine++;
+            pixelsLeftInLine = bodyWidth;
+        }
+        
+        
+    }
+    
+    return outgoingString;
+    
+    
+}
+
+void Frame::showFactSheet(){
+    
+    bShowFactSheet = true;
+    factSheetStartTime = ofGetElapsedTimef();
+    
+}
+
+void Frame::hideFactSheet(){
+
+    bShowFactSheet = false;
+    factSheetHideTime = ofGetElapsedTimef();
+    
+}
+
 
 
 void Frame::update(){
@@ -173,6 +303,43 @@ void Frame::update(){
     
     
     
+    
+    if(bShowFactSheet){
+        
+        float now = ofGetElapsedTimef();
+        
+        float pct = ofxeasing::map_clamp(now, factSheetStartTime, factSheetStartTime + factSheetEaseTime, 0.0, 1.0, &ofxeasing::cubic::easeOut);
+        
+        factSheetPos = factSheetHidden.getInterpolated(factSheetDisplayed, pct);
+        
+        
+        bFactSheetAnimating = true;
+        factSheetHideTime = now;
+        
+        //if it's been long enough, put the fact sheet away automatically
+        if(now - factSheetStartTime > 15.0f){
+            bShowFactSheet = false;
+        }
+        
+    } else {
+        
+        if(bFactSheetAnimating){
+            
+            float now = ofGetElapsedTimef();
+            
+            float pct = ofxeasing::map_clamp(now, factSheetHideTime, factSheetHideTime + factSheetEaseTime, 0.0, 1.0, &ofxeasing::cubic::easeIn);
+            
+            factSheetPos = factSheetDisplayed.getInterpolated(factSheetHidden, pct);
+            
+            if(pct == 1.0){
+                bFactSheetAnimating = true;
+            }
+        }
+        
+    }
+    
+    
+    
 }
 
 //shadow is the black background behind the bookcase that
@@ -187,20 +354,37 @@ void Frame::drawShadow(){
 
 void Frame::draw(){
     
-    
+    //draw into the portrait FBO
     portraitFbo.begin();
     ofSetColor(255);
     
-
+    //draw the image first
     portraits[currentPortrait].draw(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
     
-//    ofSetColor(0, 255, 0);
-//    ofDrawRectangle(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
+    //then the fact sheet on top of it
+    
+    ofPushMatrix();
+    ofTranslate(factSheetPos);
+    ofSetColor(0);
+    ofDrawRectangle(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
+    
+    
+    //DRAW TEXT BODY
+    ofSetColor(255);
+    regFont.drawString(scholarData[0].body, leftMargin, portraitHeight - 40);
+    
+    
+    ofPopMatrix();
+
     portraitFbo.end();
     
     ofTexture tex;
     tex = portraitFbo.getTexture();
     
+    
+    
+    
+    //draw the FBO mapped onto the Portrait mesh
     //bring forward so it draws clear of the wallpaper tiles
     ofPushMatrix();
     ofTranslate(0, 0, -50);
@@ -759,6 +943,8 @@ void Frame::mapMesh(){
     portraitVerts[1] = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[7], controlPoints[2]);
     portraitVerts[2] = getIntersectionPoint(controlPoints[1], controlPoints[4], controlPoints[6], controlPoints[3]);
     portraitVerts[3] = getIntersectionPoint(controlPoints[0], controlPoints[5], controlPoints[6], controlPoints[3]);
+    
+
     
     
     portraitMesh.clear();

@@ -56,6 +56,7 @@ void Wallpaper::setup(){
     
     tileResSliderName = "Tile Res: ";
     
+    bIsGuiActive = false;
     
     setupGui();
     
@@ -184,22 +185,26 @@ void Wallpaper::update(){
     
     
 
-    
-    tileRes = getResFromSlider(tileResSlider);
-    tileResSlider.setName(tileResSliderName + ofToString(tileRes));
-    
-    //flag that a re-map is needed
-    if(reMapMeshButton){
-        needsReMap = true;
+    if(bIsGuiActive){
+        tileRes = getResFromSlider(tileResSlider);
+        tileResSlider.setName(tileResSliderName + ofToString(tileRes));
+        
+        //flag that a re-map is needed
+        if(reMapMeshButton){
+            needsReMap = true;
+        }
+        
+        //Remap if needed, but wait for there to
+        //be no active wave happening
+        if(needsReMap && !bWave){
+            mapMesh(tileRes);
+            needsReMap = false;
+        }
     }
     
-    //Remap if needed, but wait for there to
-    //be no active wave happening
-    if(needsReMap && !bWave){
-        mapMesh(tileRes);
-        needsReMap = false;
-    }
     
+    //will be set to true if we're drawing the gui
+    bIsGuiActive = false;
     
     TiledObject::updateCommonGui();
 
@@ -256,10 +261,12 @@ void Wallpaper::saveSettings(){
 
 void Wallpaper::drawGui(){
     gui.draw();
+    bIsGuiActive = true;
 }
 
 void Wallpaper::drawGui(int x, int y){
     gui.setPosition(x, y);
     gui.draw();
+    bIsGuiActive = true;
 }
 

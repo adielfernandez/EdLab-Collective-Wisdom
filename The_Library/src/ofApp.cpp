@@ -360,15 +360,19 @@ void ofApp::mousePressed(int x, int y, int button){
     }
     
     
-//    if(button == 0){
-//        bookController.checkMouseEvents(x, y);
-//    }
+    if(button == 0){
+
+        frame.showFactSheet();
+        
+    }
     
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
 
+    frame.hideFactSheet();
+    
 }
 
 //--------------------------------------------------------------

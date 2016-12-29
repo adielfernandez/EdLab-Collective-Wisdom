@@ -48,6 +48,7 @@ public:
     ofxIntSlider tileResSlider;
     ofxButton reMapMeshButton;
 
+    bool bIsGuiActive;
     int tileRes;
     string tileResSliderName;
     bool needsReMap;

@@ -18,8 +18,23 @@
 #include "ofxGui.h"
 #include "Tile.hpp"
 #include "TiledObject.hpp"
+#include "ofxEasing.h"
 
 #pragma once
+
+struct ScholarDatum{
+    
+    string name;
+    string dates;
+    string body;
+    
+    void operator = (const ScholarDatum &D ) {
+        name = D.name;
+        dates = D.dates;
+        body = D.body;
+    }
+    
+};
 
 
 class Frame: public TiledObject{
@@ -46,6 +61,7 @@ public:
     void saveSettings();
     void loadSettings();
     
+    string formatText(string incoming, int bodyWidth);
     
     vector<ofImage> portraits;
     int currentPortrait;
@@ -94,7 +110,30 @@ public:
     ofxFloatSlider controlPtPct7;
     
 
+    //portrait animation and fact sheet stuff
+    ofTrueTypeFont boldFont;
+    ofTrueTypeFont regFont;
     
+    void hideFactSheet();
+    void showFactSheet();
+    
+    bool bShowFactSheet;
+    bool bFactSheetAnimating;
+    double factSheetStartTime;
+    double factSheetHideTime;
+    
+    float factSheetEaseTime;
+    
+    float portraitWidth, portraitHeight;
+    float bodyTextWidth;
+    float leftMargin;
+    
+    ofVec2f factSheetPos;
+    ofVec2f factSheetDisplayed, factSheetHidden;
+    
+    vector<ScholarDatum> scholarData;
+  
+    int numScholars;
     
 };
 

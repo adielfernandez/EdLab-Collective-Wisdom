@@ -60,6 +60,7 @@ public:
     vector<Book> books;
     vector<ofTexture> textures;
     vector<ofTrueTypeFont> fonts;
+    ofTrueTypeFont UIFont;
     vector<ofImage> buttonIcons;
     
     //Book placement and arrangment

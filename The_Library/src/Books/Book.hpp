@@ -29,12 +29,13 @@ public:
     Book();
     
     void loadModel(int bType, int tType, int fType);
-    void setup(ofTexture *_tex, ofTrueTypeFont *_font);
+    void setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UIFont);
     void setupContent(Contribution c);
     
     void setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelf);
     void update();
     void triggerDisplay();
+
     void formatTextForDisplay();
     void drawContentToTexture();
     void draw();
@@ -73,7 +74,7 @@ public:
     
     //returns true if an exit button
     //is clicked
-    bool checkButtonsForClicks(int x, int y);
+    bool checkButtonsForClicks(int x, int y, bool touchState);
     BookUIButton nextButton;
     BookUIButton prevButton;
     BookUIButton exitButton;
@@ -85,8 +86,13 @@ public:
     ofFbo textureFBO;
     ofMaterial material;
     ofTexture *tex;
-    ofTrueTypeFont *font;
     ofVboMesh spineMesh;
+    
+    //get a pointer to the font we'll be using
+    //but also store the font list so we
+    //can give the right font to the UI buttons
+    ofTrueTypeFont *font;
+    ofTrueTypeFont *UIFont;
 
     //Book Content and Page layouts
     vector<ofVec2f> pageTexCoords;
@@ -99,10 +105,12 @@ public:
     vector<string> tagList;
     
     //Taglet animation
+    void showTaglet();
     bool bShowTaglet;
     bool bFadeOutTaglet;
     ofColor tagCol;
     float tagTrans;
+    double tagletStartTime;
     
     vector<string> pageText;
     int pageSpreadsAvailable;

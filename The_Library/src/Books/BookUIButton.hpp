@@ -36,7 +36,7 @@ public:
     
     void setup(int _type, ofVec3f bookPos, vector<ofVec3f> shelf, int _shelfNum, int _bookNum);
     void setIcons(ofImage *icon, ofImage *hover);
-    void setTag(string t, int _tagNum, ofColor c);
+    void setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f);
     void update();
     void draw();
     
@@ -46,7 +46,7 @@ public:
     void hover();
     void select();
     
-    void checkForClicks(int x, int y);
+    void checkForClicks(int x, int y, bool touchState);
     
     
     //0 = exit, 1 = prev, 2 = next
@@ -55,14 +55,21 @@ public:
     int bookNum;
     int shelfNum;
     
+    ofTrueTypeFont *font;
     ofColor tagCol, tagOutlineCol;
     
-    string tag, tagLine1, tagLine2;
     int tagNum;
-    
+    string tag, tagLine1, tagLine2;
     int linesInTag;
+    ofVec3f tagLine1Pos, tagLine2Pos;
+    string tagHelp;
+    ofVec3f tagHelpPos;
+    float tagHelpTrans;
+    float tagHelpScale;
     
     bool buttonState;
+    unsigned long long lastButtonPress;
+    int debounceTime;
     
     bool bIsDisplayed;
     bool bIsUnavailable;
@@ -85,7 +92,10 @@ public:
     ofImage *buttonIcon;
     ofImage *hoverIcon;
     
+    float hoverTrans;
+    unsigned long long lastHoverTime;
     
+    float pushButtonScale;
     
     //event listening between book
     //controller and buttons

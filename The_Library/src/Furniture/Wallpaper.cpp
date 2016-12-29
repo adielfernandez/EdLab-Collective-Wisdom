@@ -20,7 +20,7 @@ void Wallpaper::loadMedia(){
     
     //load all the images from file
     ofDirectory dir;
-    dir.listDir("images/wallpapers/");
+    dir.listDir("assets/wallpapers/");
     dir.sort();
     
     //load images with manual file names

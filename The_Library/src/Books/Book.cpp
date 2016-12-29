@@ -34,10 +34,13 @@ void Book::loadModel(int bType, int tType, int fType){
 }
 
 
-void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
+void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UIFont){
 
     tex = _tex;
-    font = _font;
+    
+    font = _bookFont;
+    UIFont = _UIFont;
+    
     
     
     //--------------------BOOK POSITIONING AND SCALING--------------------
@@ -134,10 +137,10 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_font){
         
     }
 
-    //make display scale different depending on model
-    //goal is to have book fill shelf height, so
-    //height * displayScale should be roughly 138-140
-    displayScale = modelScale * (140.0f/height);
+    //make display scale different depending on model goal is to have book fill shelf height, so
+    //height * displayScale should be a little less than the shelf height (approx. 140)
+    //so that the book isn't so big it overlaps with the buttons
+    displayScale = modelScale * (135.0f/height);
     
 
     height *= bulkScale;
@@ -301,11 +304,12 @@ void Book::hideButtons(){
     
 }
 
-bool Book::checkButtonsForClicks(int x, int y){
+bool Book::checkButtonsForClicks(int x, int y, bool touchState){
     
-    nextButton.checkForClicks(x, y);
-    prevButton.checkForClicks(x, y);
-    exitButton.checkForClicks(x, y);
+    nextButton.checkForClicks(x, y, touchState);
+    prevButton.checkForClicks(x, y, touchState);
+    exitButton.checkForClicks(x, y, touchState);
+    tagButton.checkForClicks(x, y, touchState);
     
 }
 
@@ -330,7 +334,7 @@ void Book::setupContent(Contribution c){
 //    cout << "Book[" << bookID <<"] Tag #" << tagNum << ", Color: " << tagCol << endl;
     
     //setup the tag button
-    tagButton.setTag(userContribution.tag, tagNum, tagCol);
+    tagButton.setTag(userContribution.tag, tagNum, tagCol, UIFont);
     
     
     formatTextForDisplay();
@@ -769,8 +773,15 @@ void Book::update(){
             //fade the color in if we're showing the tag
             tagTrans = ofLerp(tagTrans, 255, 0.075);
             
-            //and prepare to fade it out when it becomes hidden again
-            bFadeOutTaglet = true;
+            //if enough time has passed put the taglet away
+            if(ofGetElapsedTimef() - tagletStartTime > 5.0f){
+                
+                bShowTaglet = false;
+
+                //and prepare to fade it out when it becomes hidden again
+                bFadeOutTaglet = true;
+            }
+            
             
         } else {
             
@@ -788,17 +799,20 @@ void Book::update(){
             }
             
         }
-        //cout << "bShowTaglet = " << bShowTaglet << ", bFadeInTaglet = " << bFadeInTaglet << ", tagCol.a: " << tagTrans << endl;
+
         
     }
     
     
+}
+
+void Book::showTaglet(){
     
-    
-    
-    
+    tagletStartTime = ofGetElapsedTimef();
+    bShowTaglet = true;
     
 }
+
 
 void Book::draw(){
 
@@ -873,10 +887,10 @@ void Book::draw(){
             //only draw if we're showing if intentionally
             //or it is being faded out
             if(bShowTaglet || bFadeOutTaglet){
-                float amp = 5;
-                float shelfHeight = 140;
+                float amp = 7.5;
+                float shelfHeight = 145;
                 float yHeight = -shelfHeight + amp * sin( ofGetElapsedTimef() * 3.2 );
-                float triHeight = 15;
+                float triHeight = 20;
                 ofSetColor(tagCol, tagTrans);
                 int z = -5;
                 ofDrawTriangle(0, yHeight, z, thickness, yHeight, z, thickness/2.0, yHeight + triHeight, z);

@@ -63,7 +63,7 @@ void ofApp::setup(){
     ofAddListener(contentManager.newContributionEvt, &bookController, &BookController::onNewContribution);
     
     
-    bgEdgeMask.load("images/interface/bgMask.png");
+    bgEdgeMask.load("assets/interface/bgMask.png");
     
     
     
@@ -360,9 +360,9 @@ void ofApp::mousePressed(int x, int y, int button){
     }
     
     
-    if(button == 0){
-        bookController.checkMouseEvents(x, y);
-    }
+//    if(button == 0){
+//        bookController.checkMouseEvents(x, y);
+//    }
     
 }
 

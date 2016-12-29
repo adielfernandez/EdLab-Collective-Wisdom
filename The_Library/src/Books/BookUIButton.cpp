@@ -34,11 +34,18 @@ void BookUIButton::setup(int _type, ofVec3f bookPos, vector<ofVec3f> shelf, int 
     
     bIsHovering = false;
     
-    
+    tagHelpTrans = 0.0f;
+    tagHelpScale = 0.0f;
     
     buttonScale = 0.55;
     
+    lastButtonPress = 0;
+    debounceTime = 1000; //in milliseconds
     
+    hoverTrans = 0.0;
+    lastHoverTime = 0;
+    
+    pushButtonScale = 1.0f;
 }
 
 void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
@@ -59,21 +66,21 @@ void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
     float yButtonHeight;
     
     
-    //remember, images are inverted because of ofCamera
+    //images are drawn from the center
     if(type == 0){
         //top button
-        yButtonHeight = -shelfHeight + spacing + buttonHeight;
+        yButtonHeight = -shelfHeight + spacing + buttonHeight * 0.5;
     } else if(type == 1){
         //previous button is on the bottom
-        yButtonHeight = -shelfHeight + spacing * 3 + buttonHeight * 3;
+        yButtonHeight = -shelfHeight + spacing * 3 + buttonHeight * 2.5;
         
     } else {
         //middle button
-        yButtonHeight = -shelfHeight + spacing * 2 + buttonHeight * 2;
+        yButtonHeight = -shelfHeight + spacing * 2 + buttonHeight * 1.5;
     }
     
     //button x position
-    float xButtonPos = shelfCorners[1].x - spacing - buttonWidth;
+    float xButtonPos = shelfCorners[1].x - spacing - buttonWidth * 0.5;
     
     hiddenPos.set(bookDisplayPos.x + 30, bookDisplayPos.y + yButtonHeight, -70);
     displayedPos.set(xButtonPos, bookDisplayPos.y + yButtonHeight, -70);
@@ -81,17 +88,18 @@ void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
     
 }
 
-void BookUIButton::setTag(string t, int _tagNum, ofColor c){
+void BookUIButton::setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f){
     
-    buttonWidth = 100;
-    buttonHeight = 40;
+    buttonWidth = 110;
+    buttonHeight = 50;
     
     tagCol = c;
-    
-    tagOutlineCol.setHsb(tagCol.getHue(), tagCol.getSaturation(), 180);
+    tagOutlineCol.setHsb(tagCol.getHue(), tagCol.getSaturation(), 100);
     
     tag = t;
     tagNum = _tagNum;
+    
+    font = f;
     
     //split the tag up if it has an & symbol
     vector<string> parts = ofSplitString(t, "&");
@@ -102,20 +110,17 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c){
         
         //If the first word is shorter, add the "&" back into it.
         //Else, add it to the beginning of the second line
-        if(parts[1].length() > parts[0].length()){
+        if(parts[1].length() < parts[0].length()){
             
-            tagLine1 = parts[0] + " &";
-            tagLine2 = parts[1];
-            
-        } else {
-         
             tagLine1 = parts[0];
             tagLine2 = "& " + parts[1];
             
-        }
-        
+        } else {
+         
+            tagLine1 = parts[0] + " &";
+            tagLine2 = parts[1];
             
-        
+        }
         
     } else {
         
@@ -124,51 +129,111 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c){
         tagLine2 = "";
         linesInTag = 1;
     }
+
     
-    cout << "---" <<tagLine1 << "," << tagLine2 << "---" << endl;
-    
-    
-    float spacing = 8;
+    //Button and text positioning
+    float spacing = 5;
     
     hiddenPos.set(bookDisplayPos.x + 30, shelfCorners[3].y + spacing, -70);
     displayedPos.set(shelfCorners[3].x + spacing, shelfCorners[3].y + spacing, -70);
     currentPos = hiddenPos;
     
+    //text positioning is relative to currentPos
+    if(linesInTag < 2){
+        //start at button center then shift up and down to center text
+        tagLine1Pos.set(buttonWidth/2 - font -> stringWidth(tagLine1)/2, buttonHeight/2 + font -> stringHeight(tagLine1)/2);
+    } else {
+        
+        //set the spacing between the lines
+        //then make one line above and another below
+        float betweenLines = 3;
+        float fudgeFactor = 2; //shift a few pixels upwards
+        tagLine1Pos.set(buttonWidth/2 - font -> stringWidth(tagLine1)/2, buttonHeight/2 - betweenLines/2.0f - fudgeFactor);
+        tagLine2Pos.set(buttonWidth/2 - font -> stringWidth(tagLine2)/2, buttonHeight/2 + betweenLines/2.0f + font -> stringHeight(tagLine1) - fudgeFactor);
+        
+    }
+    
+    tagHelp =  "Touch tag to\n";
+    tagHelp += "highlight other\n";
+    tagHelp += "books in this\n";
+    tagHelp += "category.";
+    
+    //will draw relative to "currentPos"
+    float helpTextSpace = 8;
+    tagHelpPos.set(0, buttonHeight + helpTextSpace + font -> stringHeight("A"), 0);
+    
 }
 
 
-void BookUIButton::checkForClicks(int x, int y){
+void BookUIButton::checkForClicks(int x, int y, bool touchState){
 
-    if(!bIsUnavailable && bIsDisplayed){
+    //make sure it has been long enough AND the button
+    //is in the proper state to be interacted with
+    if( ofGetElapsedTimeMillis() - lastButtonPress > debounceTime &&  !bIsUnavailable && bIsDisplayed){
         
-        //check for click
-        if(x > currentPos.x &&
-           x < currentPos.x + buttonWidth &&
-           y > currentPos.y - buttonHeight &&
-           y < currentPos.y ){
+        //check if we're in the button
+        bool isInside;
+        
+        //different bounds for different buttons
+        if(type < 3){
             
-            buttonState = true;
+            isInside = x > currentPos.x - buttonWidth/2 &&
+                       x < currentPos.x + buttonWidth/2 &&
+                       y > currentPos.y - buttonHeight/2 &&
+                       y < currentPos.y + buttonHeight/2;
             
+        } else {
+            isInside = x > currentPos.x && x < currentPos.x + buttonWidth &&
+                       y > currentPos.y && y < currentPos.y + buttonHeight;
             
-            ButtonEvent e;
-            e.type = type;
-            e.tag = tag;
-            e.tagNum = tagNum;
-            e.bookNum = bookNum;
-            e.shelfNum = shelfNum;
+        }
+        
+        
+        if( isInside ){
             
-            ofNotifyEvent(newButtonClickEvt, e, this);
-            
+            //if the touch state is pressed or not pressed:
+            if(touchState){
+                
+                //TOUCHING
+                
+                buttonState = true;
+                lastButtonPress = ofGetElapsedTimeMillis();
+                
+                if(type < 3){
+                    pushButtonScale = 0.8;
+                } else {
+                    //no need to shrink the tag button as much
+                    pushButtonScale = 0.9;
+                }
+                
+                if(type == 0 || type == 3){
+                    ButtonEvent e;
+                    e.type = type;
+                    e.tag = tag;
+                    e.tagNum = tagNum;
+                    e.bookNum = bookNum;
+                    e.shelfNum = shelfNum;
+                    
+                    ofNotifyEvent(newButtonClickEvt, e, this);
+                    
+
+                
+                }
+
+            } else {
+                
+                //HOVERING
+                hoverTrans = ofLerp(hoverTrans, 255.0f, 0.1f);
+                lastHoverTime = ofGetElapsedTimeMillis();
+                bIsHovering = true;
+            }
+
         }
         
     }
     
-
     
     
-
-    
-
     
 }
 
@@ -189,8 +254,13 @@ void BookUIButton::hide(){
 
 void BookUIButton::update(){
     
+    
     if(!bIsDisplayed){
+    
+        
         currentPos.interpolate(hiddenPos, 0.07);
+        tagHelpTrans = ofLerp(tagHelpTrans, 0.0f, 0.06);
+        tagHelpScale = ofLerp(tagHelpScale, 0.0f, 0.1);
         
         //if we're really close to the hidden pos, hide the button
         ofVec3f between = currentPos - hiddenPos;
@@ -199,9 +269,39 @@ void BookUIButton::update(){
         }
         
     } else {
-        currentPos.interpolate(displayedPos, 0.09);
+        
+        currentPos.interpolate(displayedPos, 0.08);
         bIsHidden = false;
+        
+        //nav buttons get logic for hovering
+        //tag button gets scale and transparency logic
+        if(type < 3){
+            
+            //if it has been a little while since the last hover
+            //start lerping back to transparent
+            if(ofGetElapsedTimeMillis() - lastHoverTime > 50){
+                hoverTrans = ofLerp(hoverTrans, 0.0, 0.1);
+            }
+            
+            //if we're back to zero transparency, we're not hovering anymore
+            if(hoverTrans < 0.01){
+                bIsHovering = false;
+            }
+            
+
+        } else {
+            tagHelpTrans = ofLerp(tagHelpTrans, 255.0f, 0.1);
+            tagHelpScale = ofLerp(tagHelpScale, 1.0f, 0.1);
+        }
+    
+        //if the button's been pushed, start to make it bigger again
+        if(pushButtonScale < 1.0){
+            pushButtonScale += 0.02;
+        }
+
     }
+    
+    
     
 }
 
@@ -220,22 +320,91 @@ void BookUIButton::draw(){
         //types 0-2 are small arrow icons
         if(type < 3){
         
-            buttonIcon -> draw(currentPos.x, currentPos.y, -70, buttonWidth, -buttonHeight);
+            ofPushMatrix();
+            ofTranslate(currentPos.x, currentPos.y, -70);
+            ofScale(pushButtonScale, pushButtonScale);
+            
+            //draw image flipped so, shift it down first
+            buttonIcon -> draw(0, 0, 0, buttonWidth, -buttonHeight);
+            
+            //draw the hovered image on top
+            
+            if(!bIsUnavailable && bIsHovering){
+                ofSetColor(255, hoverTrans);
+                hoverIcon -> draw(0, 0, -1, buttonWidth, -buttonHeight);
+            }
+            
+//            ofSetColor(255, 0, 255);
+//            ofDrawCircle(0, 0, 0);
+            
+            ofPopMatrix();
             
         } else {
             //type 3 is the tag button
-            ofPushStyle();
+            ofPushMatrix();{
+                ofTranslate(currentPos.x, currentPos.y, -70);
+                ofScale(tagHelpScale, 1);
+                
+                //buttons draw from center so translate to center then draw centered rects
+                ofPushStyle();
+                ofPushMatrix();{
+                   
+                    ofTranslate(buttonWidth/2, buttonHeight/2);
+                    ofScale(pushButtonScale, pushButtonScale);
+                    ofSetRectMode(OF_RECTMODE_CENTER);
+                    
+                    ofFill();
+                    ofSetColor(tagCol, tagHelpTrans);
+                    ofDrawRectangle(0, 0, buttonWidth, buttonHeight);
+                    
+                    ofNoFill();
+                    ofSetColor(tagOutlineCol, tagHelpTrans);
+                    ofSetLineWidth(4);
+                    ofDrawRectangle(0, 0, buttonWidth, buttonHeight);
+                    
+                    ofFill();
+                    
+                }ofPopMatrix();
+                ofPopStyle();
+                //draw the first line of text
+                
+                ofPushMatrix();
+                ofTranslate(tagLine1Pos.x, tagLine1Pos.y, -5);
+                ofScale(1, -1);
+                ofSetColor(tagOutlineCol, tagHelpTrans);
+                font -> drawString(tagLine1, 0, 0);
+                ofPopMatrix();
+                
+                //then the second if needed
+                if(linesInTag > 1){
+                    ofPushMatrix();
+                    ofTranslate(tagLine2Pos.x, tagLine2Pos.y, -5);
+                    ofScale(1, -1);
+                    
+                    font -> drawString(tagLine2, 0, 0);
+                    
+                    ofPopMatrix();
+                }
+                
+                //draw tag help text
+                
+                ofPushMatrix();
+                ofTranslate(tagHelpPos.x, tagHelpPos.y, -8);
+                
+                //draw a rect where the help text will be but pushed back a bit so the text draws in front
+                //this is needed to prevent weirdness between shapes drawn as textures
+                //over the semi transparent shelf overlay
+                ofSetColor(0, tagHelpTrans);
+                ofDrawRectangle(0, -15, 2, buttonWidth, 80);
+                
+                ofScale(0.7, -0.7);
+                ofSetColor(224, 218, 203, tagHelpTrans);
+                font -> drawString(tagHelp, 0, 0);
+                
+                ofPopMatrix();
+                
+            }ofPopMatrix();
             
-            ofFill();
-            ofSetColor(tagCol);
-            ofDrawRectangle(currentPos.x, currentPos.y, -70, buttonWidth, buttonHeight);
-
-            ofNoFill();
-            ofSetColor(tagOutlineCol);
-            ofSetLineWidth(4);
-            ofDrawRectangle(currentPos.x, currentPos.y, -70, buttonWidth, buttonHeight);
-            
-            ofPopStyle();
         }
         
         

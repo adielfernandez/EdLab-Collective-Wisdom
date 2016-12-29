@@ -26,7 +26,7 @@ public:
     float width, height;
     
     float trans = 0.0;
-    float maxTrans = 200;
+    float maxTrans = 255;
     
     //how long to wait after trigger to start action
     //in seconds

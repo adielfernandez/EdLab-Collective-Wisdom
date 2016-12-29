@@ -16,8 +16,8 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 8;
-    numShelves = 1;
+    numBooksPerShelf = 6;
+    numShelves = 6;
     
     int numBooks = numBooksPerShelf * numShelves;
     
@@ -140,7 +140,7 @@ void BookController::setup(vector<Contribution> *cList){
     }
     
     ofDirectory fontDir;
-    fontDir.listDir("fonts");
+    fontDir.listDir("bookFonts");
     
     for(int i = 0; i < (int)fontDir.size(); i++){
         
@@ -148,23 +148,26 @@ void BookController::setup(vector<Contribution> *cList){
         f.load(fontDir.getPath(i), 11);
         
         fonts.push_back(f);
-        
-        
-        
     }
     
+    UIFont.load("assets/interface/Century-gothic-bold.ttf", 15);
+
+    //decrease letter spacing a bit to fit more text into tight spaces
+    UIFont.setLetterSpacing(0.9);
+
+    
     buttonIcons.resize(6);
-    buttonIcons[0].load("images/interface/buttons/exit.png");
-    buttonIcons[1].load("images/interface/buttons/exitHover.png");
-    buttonIcons[2].load("images/interface/buttons/left.png");
-    buttonIcons[3].load("images/interface/buttons/leftHover.png");
-    buttonIcons[4].load("images/interface/buttons/right.png");
-    buttonIcons[5].load("images/interface/buttons/rightHover.png");
+    buttonIcons[0].load("assets/interface/buttons/exit.png");
+    buttonIcons[1].load("assets/interface/buttons/exitHover.png");
+    buttonIcons[2].load("assets/interface/buttons/left.png");
+    buttonIcons[3].load("assets/interface/buttons/leftHover.png");
+    buttonIcons[4].load("assets/interface/buttons/right.png");
+    buttonIcons[5].load("assets/interface/buttons/rightHover.png");
     
     //set the buttons to draw from the middle
-//    for(int i = 0; i < buttonIcons.size(); i++){
-//        buttonIcons[i].setAnchorPercent(0.5f, 0.5f);
-//    }
+    for(int i = 0; i < buttonIcons.size(); i++){
+        buttonIcons[i].setAnchorPercent(0.5f, 0.5f);
+    }
     
     
     ofVec3f shelfStart, shelfEnd;
@@ -232,7 +235,7 @@ void BookController::setup(vector<Contribution> *cList){
         for(int i = bookCounter; i < booksThisShelf; i++){
             
             //now that all the positions and defaults have been set, set it up
-            books[i].setup(&textures[ books[i].texType ], &fonts[ books[i].fontType ] );
+            books[i].setup(&textures[ books[i].texType ], &fonts[ books[i].fontType ], &UIFont );
             
             //get the place of the current book on its own shelf
             int bookNumThisShelf = i % numBooksPerShelf;
@@ -328,8 +331,8 @@ void BookController::checkMouseEvents(int x, int y){
     for(int i = 0; i < books.size(); i++){
      
         
-        //if we're not active, check for book triggers
-        if(!books[i].bIsActive){
+        //if we're not active AND the touch is true, check for book triggers
+        if(!books[i].bIsActive && ofGetMousePressed()){
             
             //only check books that are not on active shelves
             if(shelfOverlays[books[i].shelfNum].bIsActive == false){
@@ -353,7 +356,7 @@ void BookController::checkMouseEvents(int x, int y){
         } else {
             
             //if we ARE active, check for buttons
-            books[i].checkButtonsForClicks(x, y);
+            books[i].checkButtonsForClicks(x, y, ofGetMousePressed());
 
                         
         }
@@ -366,21 +369,28 @@ void BookController::checkMouseEvents(int x, int y){
     
 }
 
+//event triggered only for exit and tag buttons
 void BookController::onButtonClickEvt(ButtonEvent &b){
-    
-    cout << "Button Pressed: " << b.type << endl;
     
     //if it's an exit button event, close that book and deactivate that shelfOverlay
     if(b.type == 0){
         shelfOverlays[b.shelfNum].deactivate();
-        cout << "Closing shelf number:  " << b.shelfNum << endl;
+        
     } else if(b.type == 3){
         
+        
         //go through all the books and activate the tags
-
+        for(int i = 0; i < books.size(); i++){
+            
+            if(books[i].tagNum == b.tagNum){
+                books[i].showTaglet();
+        
+            }
+            
+            
+        }
         
         
-        cout << "Tag reveal activated for tag number:  " << b.tagNum << endl;
         
     }
     
@@ -423,9 +433,13 @@ void BookController::update(){
     //update all books
     for(int i = 0; i < books.size(); i++){
         if(books[i].bIsUnused == false){
+            
             books[i].update();
         }
     }
+    
+    //this will eventually be looping through camera touches
+    checkMouseEvents(ofGetMouseX(), ofGetMouseY());
     
     
     //update the shelf overlays

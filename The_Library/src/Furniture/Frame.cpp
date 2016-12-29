@@ -20,7 +20,7 @@ void Frame::loadMedia(){
     
     //load all the images from file
     ofDirectory dir;
-    dir.listDir("images/frames/");
+    dir.listDir("assets/frames/");
     dir.sort();
     
     //load images with manual file names
@@ -39,7 +39,7 @@ void Frame::loadMedia(){
     
     //prepare the portrait
     ofDirectory portraitDirectory;
-    portraitDirectory.listDir("images/portraits/");
+    portraitDirectory.listDir("assets/portraits/");
     portraitDirectory.sort();
     
     for(int i = 0; i < (int)portraitDirectory.size(); i++){

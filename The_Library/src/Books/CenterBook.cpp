@@ -18,7 +18,7 @@ void CenterBook::loadModel(){
     
 //    cout << "Loading center book model" << endl;
     
-    model.loadModel("images/centralBook/bookMedium.fbx", false);
+    model.loadModel("assets/centralBook/bookMedium.fbx", false);
     
     
     
@@ -75,7 +75,7 @@ void CenterBook::setup(){
     
     //load Book and desk textures
     ofImage b;
-    b.load("images/centralBook/test.png");
+    b.load("assets/centralBook/test.png");
     bookTex = b.getTexture();
     
     bookTexFBO.allocate(bookTex.getWidth(), bookTex.getHeight());
@@ -87,7 +87,7 @@ void CenterBook::setup(){
     
     
     ofImage d;
-    d.load("images/centralBook/deskTex.jpg");
+    d.load("assets/centralBook/deskTex.jpg");
     deskTex = d.getTexture();
 
     //size of the FBO. Just needs to be rough since
@@ -190,7 +190,7 @@ void CenterBook::setup(){
 //    pageText[3] = p2;
     
     
-    font.load("fonts/Arcon-Rounded-Regular.otf", 22);
+    font.load("bookFonts/Arcon-Rounded-Regular.otf", 22);
     
     
     

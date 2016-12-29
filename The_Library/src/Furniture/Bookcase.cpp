@@ -21,7 +21,7 @@ void Bookcase::loadMedia(){
     
     //load all the images from file
     ofDirectory dir;
-    dir.listDir("images/bookcases/");
+    dir.listDir("assets/bookcases/");
     dir.sort();
     
     //load images with manual file names

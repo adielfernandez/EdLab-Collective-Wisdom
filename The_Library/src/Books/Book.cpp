@@ -205,7 +205,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
 
     
     //book tag list and coloring
-    tagList.resize(9);
+    tagList.resize(10);
     tagList[0] = "Arts&Humanities";
     tagList[1] = "Health&Behavior";
     tagList[2] = "Psychology&Cognition";
@@ -215,6 +215,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     tagList[6] = "Assessment";
     tagList[7] = "Administration&Policy";
     tagList[8] = "Culture";
+    tagList[9] = "Other Stuff";
     
     bShowTaglet = false;
     bFadeOutTaglet = true;
@@ -774,7 +775,7 @@ void Book::update(){
             tagTrans = ofLerp(tagTrans, 255, 0.075);
             
             //if enough time has passed put the taglet away
-            if(ofGetElapsedTimef() - tagletStartTime > 5.0f){
+            if(ofGetElapsedTimef() - tagletStartTime > 6.0f){
                 
                 bShowTaglet = false;
 

@@ -315,7 +315,17 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == 'm'){
-        contentManager.logNewContribution("Name", "Culture" , "Message. Message. Message. Message.");
+        
+        //make a message with a random tag
+        //get the tag list from the first book
+        if(bookController.books.size() > 0){
+            int thisTag = floor(ofRandom(bookController.books[0].tagList.size()));
+            
+            string s = bookController.books[0].tagList[thisTag];
+            
+            contentManager.logNewContribution("Jane Doe", s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
+                
+        }
     }
     
 }
@@ -359,10 +369,14 @@ void ofApp::mousePressed(int x, int y, int button){
         
     }
     
-    
-    if(button == 0){
-
-        frame.showFactSheet();
+    //if we click in the frame, trigger the fact sheet
+    if(button == 0 && x > frame.frameCorners[0].x && x < frame.frameCorners[1].x && y < frame.frameCorners[3].y){
+        
+        if(frame.bShowFactSheet){
+            frame.hideFactSheet();
+        } else {
+            frame.showFactSheet();
+        }
         
     }
     
@@ -371,7 +385,7 @@ void ofApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
 
-    frame.hideFactSheet();
+
     
 }
 

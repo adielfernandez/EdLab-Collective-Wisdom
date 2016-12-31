@@ -175,7 +175,9 @@ void BookController::setup(vector<Contribution> *cList){
     ofVec3f midShelfBottom, midShelfTop;
     
     //distance from one book to the next
-    float bookSpacing = 1;
+    float bookSpacing = 0;
+    
+    //space between first book and left edge of shelf
     float leftPadding = 1.5;
     
     int bookCounter = 0;

@@ -52,6 +52,9 @@ public:
     void draw();
     void drawDebug();
     
+    void setScholarData();
+    void setTextPositions();
+    
     void drawShadow();
     ofPath shadow;
     
@@ -64,12 +67,13 @@ public:
     string formatText(string incoming, int bodyWidth);
     
     vector<ofImage> portraits;
-    int currentPortrait;
+    int currentScholar;
     ofMesh portraitMesh;
     vector<ofVec3f> portraitVerts;
     ofFbo portraitFbo;
     void setPortraitTexCoords(int x, int y);
-    unsigned long long lastPortraitChange;
+    unsigned long long lastScholarChange;
+    
     
     
     //Tile coordinates are based on
@@ -126,7 +130,12 @@ public:
     
     float portraitWidth, portraitHeight;
     float bodyTextWidth;
+
     float leftMargin;
+    float nameTopMargin;
+    float dateTopMargin;
+    float bodyTopMargin;
+    float dateBodyGap;
     
     ofVec2f factSheetPos;
     ofVec2f factSheetDisplayed, factSheetHidden;
@@ -134,6 +143,9 @@ public:
     vector<ScholarDatum> scholarData;
   
     int numScholars;
+    
+    ofImage divider;
+    
     
 };
 

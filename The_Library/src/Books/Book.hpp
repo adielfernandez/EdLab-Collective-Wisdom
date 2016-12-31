@@ -81,6 +81,7 @@ public:
     BookUIButton tagButton;
     
     
+    
     //visuals and texturing
     ofxAssimpModelLoader model;
     ofFbo textureFBO;

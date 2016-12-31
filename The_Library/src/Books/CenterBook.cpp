@@ -75,7 +75,7 @@ void CenterBook::setup(){
     
     //load Book and desk textures
     ofImage b;
-    b.load("assets/centralBook/test.png");
+    b.load("assets/centralBook/baseTex.png");
     bookTex = b.getTexture();
     
     bookTexFBO.allocate(bookTex.getWidth(), bookTex.getHeight());
@@ -109,8 +109,38 @@ void CenterBook::setup(){
     meshPoints[3] = ofVec2f( ofGetWidth()/2 - deskWidth/2 , deskHeightFromTop + deskHeight );
     
 
-    
+    filigreeBorder.load("assets/interface/filigree/frame.png");
 
+    
+    borderMargin = 10;
+
+    //scale it down so it fits in the space just right
+    borderHeight = (deskHeight - borderMargin * 2);
+    borderWidth = filigreeBorder.getWidth() * borderHeight/(float)filigreeBorder.getHeight();
+
+    //image X is inverted inside FBO so image anchors from the apparent top right corner
+    borderPos.set(deskWidth - borderMargin - borderWidth, borderMargin);
+    
+    //set help text
+    helpText.resize(2);
+    
+    helpText[0].resize(5);
+    helpText[0][0] = "Choose";
+    helpText[0][1] = "a scholar to";
+    helpText[0][2] = "learn more";
+    helpText[0][3] = "about their";
+    helpText[0][4] = "research";
+    
+    helpText[1].resize(5);
+    helpText[1][0] = "View scholar";
+    helpText[1][1] = "information";
+    helpText[1][2] = "or highlight";
+    helpText[1][3] = "relevant";
+    helpText[1][4] = "works";
+
+    currentHelpText = 0;
+
+    
     
     
     bookPos.set(deskWidth/2, deskHeight - 10);
@@ -152,36 +182,59 @@ void CenterBook::setup(){
     pageWidth *= 2.0;
     pageHeight *= 2.0;
     
-    pageText.clear();
-//    pageText.resize(4);
+
+    scholarList.resize(10);
+    scholarList[0].nameTop = "John";
+    scholarList[0].nameBottom = "Dewey";
+    scholarList[0].id = 0;
+    scholarList[0].selected = false;
     
+    scholarList[1].nameTop = "Jean";
+    scholarList[1].nameBottom = "Piaget";
+    scholarList[1].id = 1;
+    scholarList[1].selected = false;
+
+    scholarList[2].nameTop = "Maria";
+    scholarList[2].nameBottom = "Montessori";
+    scholarList[2].id = 2;
+    scholarList[2].selected = false;
     
-    //Pages can roughly fit 15-16 characters per line and 8 lines per page
-    string p1 = "";
+    scholarList[3].nameTop = "Lev";
+    scholarList[3].nameBottom = "Vygotsky";
+    scholarList[3].id = 3;
+    scholarList[3].selected = false;
     
-    p1 += "John\n";
-    p1 += "Dewey\n";
-    p1 += "Jean\n";
-    p1 += "Piaget\n";
-    p1 += "Maria\n";
-    p1 += "Montessori\n";
-    p1 += "Lev\n";
-    p1 += "Vygotsky\n";
-    p1 += "Gloria\n";
-    p1 += "Ladson-Billings";
+    scholarList[4].nameTop = "Gloria";
+    scholarList[4].nameBottom = "Ladson";
+    scholarList[4].id = 4;
+    scholarList[4].selected = false;
     
-    string p2 = "";
+    scholarList[5].nameTop = "Benjamin";
+    scholarList[5].nameBottom = "Bloom";
+    scholarList[5].id = 5;
+    scholarList[5].selected = false;
     
-    p2 += "Benjamin\n";
-    p2 += "Bloom\n";
-    p2 += "Howard\n";
-    p2 += "Gardner\n";
-    p2 += "Jerome\n";
-    p2 += "Bruner\n";
-    p2 += "Albert\n";
-    p2 += "Bandura\n";
-    p2 += "Lisa\n";
-    p2 += "Delpit";
+    scholarList[6].nameTop = "Howard";
+    scholarList[6].nameBottom = "Gardner";
+    scholarList[6].id = 6;
+    scholarList[6].selected = false;
+    
+    scholarList[7].nameTop = "Jerome";
+    scholarList[7].nameBottom = "Bruner";
+    scholarList[7].id = 7;
+    scholarList[7].selected = false;
+    
+    scholarList[8].nameTop = "Albert";
+    scholarList[8].nameBottom = "Bandura";
+    scholarList[8].id = 8;
+    scholarList[8].selected = false;
+    
+    scholarList[9].nameTop = "Lisa";
+    scholarList[9].nameBottom = "Delpit";
+    scholarList[9].id = 9;
+    scholarList[9].selected = false;
+    
+
     
     
 //    pageText[0] = p1;
@@ -190,9 +243,11 @@ void CenterBook::setup(){
 //    pageText[3] = p2;
     
     
-    font.load("bookFonts/Arcon-Rounded-Regular.otf", 22);
-    
-    
+    font.load("bookFonts/Arcon-Rounded-Regular.otf", 11);
+    boldFont.load("assets/interface/Century-gothic-bold.ttf", 14);
+    boldFont.setLetterSpacing(0.95);
+
+
     
     //GUI SETUP
     
@@ -214,6 +269,32 @@ void CenterBook::setup(){
     //The position the raw desk will draw when debugging
     rawDeskPos.set( ofGetWidth()/2.0 - deskWidth/2, ofGetHeight()/2 - deskHeight + 50 );
     
+    
+    
+    //Layout of the central book content
+    //first page spread: list of scholars
+    topMargin = page1LeftMargin;
+    betweenScholars = 15;
+
+    
+    nameBoxHeight = (pageHeight - topMargin * 2 - betweenScholars * 4)/5.0f;
+    cout << "box height: " << nameBoxHeight << endl;
+    
+    float spaceForName = nameBoxHeight;
+    betweenNames = 4;
+
+    int nameFontSize = (spaceForName - betweenNames)/2.0f;
+    
+    cout << "Font size: " << nameFontSize << endl;
+    
+    scholarFont.load("assets/interface/EBGaramond08-Regular.ttf", nameFontSize);
+    scholarFont.setLetterSpacing(1.05);
+    
+    lineHeight = scholarFont.stringHeight("A");
+    
+    divider.load("assets/interface/filigree/thinDivider.png");
+    divider.setAnchorPercent(0.5f, 0.5f);
+
 }
 
 void CenterBook::mapMesh(){
@@ -296,47 +377,6 @@ void CenterBook::mapMesh(){
 }
 
 
-
-void CenterBook::drawContentToTexture(){
-    
-    //-----DRAW TEXT ONTO TEXTURE-----
-    
-    bookTexFBO.begin();
-    
-    //clear the FBO from the last frame
-    ofClear(255, 255, 255, 255);
-    
-    //draw the base texture first
-    ofSetColor(255);
-    bookTex.draw(0, 0);
-    
-//    ofDisableDepthTest();
-    //go through all the pages and draw out the text
-    for(int i = 0; i < pageText.size(); i++){
-        
-        ofPushMatrix();
-        
-        //left pages draw closer to page edge
-        //right pages draw further to get past page curvature
-        float leftMargin = (i % 2 == 0 ? page1LeftMargin : page2LeftMargin);
-        
-        ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + pageTopMargin);
-        ofScale( 1.0/widthScale , 1.0);
-        ofSetColor(93, 50, 0);
-        //                    float lineHeight = font -> stringHeight("A");
-        font.drawString(pageText[i], 0, 0); //-lineHeight);
-        
-        
-        
-        ofPopMatrix();
-        
-    }
-//    ofEnableDepthTest();
-    
-    bookTexFBO.end();
-    
-}
-
 void CenterBook::resetCamera(){
     camera.setTarget(ofVec3f(deskWidth/2, deskHeight/2, 0));
     camera.setOrientation(ofVec3f(0, 0, 180));
@@ -349,18 +389,18 @@ void CenterBook::update(){
     //Model manipulation
     
     //uncomment to scroll through model animation with mouse
-    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0, 1.0);
-    model.setPositionForAllAnimations(x);
-
-
+    //    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0, 1.0);
+    //    model.setPositionForAllAnimations(x);
+    
+    
     
     //draws text to book
     drawContentToTexture();
-
     
     
-//    animationPos = animationSpread1;
-//    model.setPositionForAllAnimations(animationPos);
+    
+    animationPos = animationSpread1;
+    model.setPositionForAllAnimations(animationPos);
     
     model.update();
     
@@ -369,11 +409,11 @@ void CenterBook::update(){
     if(reMapMeshButton){
         mapMesh();
     }
-
-    setVariablesFromGui();
-
     
-
+    setVariablesFromGui();
+    
+    
+    
     
     //if we're showing the raw desk, see if the mouse is inside of it and
     //pass normalized mouse touches into the FBO
@@ -403,12 +443,52 @@ void CenterBook::update(){
         }
         
         
-        
     }
     
     
-
-
+    //go through all the scholars and turn them off so
+    //we can turn them on with mouse hover
+    for(int i = 0; i < scholarList.size(); i++){
+        scholarList[i].selected = false;
+    }
+    
+    
+    //go through mouse touches and check for detection zones
+    for(int i = 0; i < mouseTouches.size(); i++){
+        
+        ofVec2f m = mouseTouches[i].pos;
+        cout << m << endl;
+        
+        //touch data is normalized from 0-1 in x and y
+        //for now, x is inverted (0 at right) and y is normal
+        
+        //see if we're over book
+        if(m.x < 0.6f){
+            
+            int scholarIndex;
+            
+            //see which page we're on
+            if(m.x > 0.31){
+                //left page
+                
+                //the height divided into 5 regions means each region is 0.2
+                scholarIndex = floor(m.y / 0.2);
+                
+            } else {
+                //right page
+                scholarIndex = floor(m.y / 0.2) + 5;
+                
+            }
+            
+            scholarList[scholarIndex].selected = true;
+            
+            
+        }
+        
+        
+        
+    }
+    
     
     
     
@@ -418,6 +498,115 @@ void CenterBook::update(){
 
 
 
+
+
+void CenterBook::drawContentToTexture(){
+    
+    //-----DRAW TEXT ONTO TEXTURE-----
+    
+    bookTexFBO.begin();
+    
+    //clear the FBO from the last frame
+    ofClear(255, 255, 255, 255);
+    
+    //draw the base texture first
+    ofSetColor(255);
+    bookTex.draw(0, 0);
+    
+    float padding = 5;
+    
+
+    
+    
+    //go through all the pages and draw out the text
+    for(int i = 0; i < scholarList.size(); i++){
+
+        //select things with mouse just for testing
+//        int sliceWidth = ofGetWidth()/scholarList.size();
+//        float mx = ofGetMouseX();
+//        
+//        if(mx > i * sliceWidth && mx < (i + 1) * sliceWidth){
+//            scholarList[i].selected = true;
+//        } else {
+//            scholarList[i].selected = false;
+//        }
+        
+        ofPushMatrix();
+        
+        float boxX, x1, x2, y, w;
+        
+        //draw left page names
+        if(i < 5){
+
+            ofTranslate(pageTexCoords[0]);
+
+            boxX = page1LeftMargin;
+            y = topMargin + (nameBoxHeight + betweenScholars) * i;
+            w = pageWidth - page1LeftMargin * 2;
+            
+            //stagger 2nd and 4th names to right align
+            if(i % 2 == 0){
+                x1 = page1LeftMargin;
+                x2 = x1;
+            } else {
+                x1 = pageWidth - page1LeftMargin * 3 - scholarFont.stringWidth(scholarList[i].nameTop);
+                x2 = pageWidth - page1LeftMargin * 3 - scholarFont.stringWidth(scholarList[i].nameBottom);
+            }
+            
+        } else {
+            
+            //draw right page names
+            ofTranslate(pageTexCoords[1]);
+            
+            boxX = page2LeftMargin;
+            y = topMargin + (nameBoxHeight + betweenScholars) * (i - 5);
+            w = pageWidth - page2LeftMargin - page1LeftMargin;
+            
+            //staggered names are odd on this page
+            if(i % 2 == 1){
+                x1 = page2LeftMargin;
+                x2 = x1;
+            } else {
+                x1 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(scholarList[i].nameTop);
+                x2 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(scholarList[i].nameBottom);
+            }
+            
+        }
+
+        //draw the filigree divider above all names except the 0th and 5th names
+        if(i != 0 && i != 5){
+            
+            ofSetColor(255);
+            divider.draw(pageWidth/2, y - betweenScholars/2, divider.getWidth(), divider.getHeight() * 2 );
+            
+        }
+        
+        
+        //draw highlight box
+        if(scholarList[i].selected){
+            ofSetColor(0, 128, 255);
+            ofDrawRectangle(boxX, y, w, nameBoxHeight);
+            
+            ofSetColor(255);
+        } else {
+            ofSetColor(92, 54, 9);
+        }
+        
+        scholarFont.drawString(scholarList[i].nameTop, x1 + padding, y + padding + lineHeight);
+        scholarFont.drawString(scholarList[i].nameBottom, x2 + padding, y + padding + lineHeight * 2 + betweenNames);
+
+        
+        ofPopMatrix();
+    }
+
+    
+    
+    
+    
+    
+    bookTexFBO.end();
+    
+}
 
 
 
@@ -440,17 +629,10 @@ void CenterBook::draw(){
         //with the bottom left corner of the spine at pos
         ofTranslate(bookPos.x, bookPos.y, 1);
         
-        //        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -90, 90);
-        //        float z = ofMap(ofGetMouseY(), 0, ofGetHeight(), -90, 90);
-        //        cout << "XZ: " << x << ", " << z << endl;
-        
-        
         //now rotate and translate book so that it has the lower left corner of the spine
         //as its origin and is oriented properly: book stored in shelf
         ofRotateX(displayRotX);
         ofRotateZ(displayRotZ + 180);
-        
-        
         
         //scale the model up (with a little extra in the X to add more viewable reading area.
         //Also, squash the book down to minimize the curvature
@@ -470,18 +652,51 @@ void CenterBook::draw(){
 
         ofPopMatrix();
         
+        
+        //draw the filigree border
+        ofSetColor(255);
+
+        
+        filigreeBorder.draw(borderPos, borderWidth, borderHeight);
+
+        //draw help text
+        float betLines = 3;
+        float lineHeight = boldFont.stringWidth("A");
+
+        float startHeight = (deskHeight - lineHeight * 4 - betLines * 4)/2.0f + lineHeight/2.0f; //add an extra line to the end since text draws from the baseline
+        
+        ofPushMatrix();
+        
+
+        
+        //invert the text to cancel out the text texture flipping
+        ofScale(-1, -1);
+        for(int i = 0; i < helpText[currentHelpText].size(); i++){
+            
+            ofSetColor(255);
+            string s = helpText[currentHelpText][i];
+            ofVec2f thisLine(borderPos.x + borderWidth/2 + boldFont.stringWidth(s)/2, startHeight + (lineHeight + betLines) * i);
+
+            //invert the position to cancel out the scaling effect on position
+            thisLine *= -1;
+            boldFont.drawString(s, thisLine.x, thisLine.y);
+            
+        }
+        ofPopMatrix();
+        
+        
         //go through touches (for now mouseTouches, but eventually OSC data from camera)
         //draw cursors, do button region detection, etc.
         for(int i = 0; i < mouseTouches.size(); i++){
             
             if(mouseTouches[i].bIsTouching){
-                ofSetColor(0, 255, 0);
+                ofSetColor(255, 0, 0);
             } else {
-                ofSetColor(0, 128, 255);
+                ofSetColor(0);
             }
         
             
-            ofDrawCircle(mouseTouches[i].pos.x * deskWidth, mouseTouches[i].pos.y * deskHeight, -50, 10);
+            ofDrawCircle(mouseTouches[i].pos.x * deskWidth, mouseTouches[i].pos.y * deskHeight, -50, 5);
             
         }
         
@@ -497,10 +712,7 @@ void CenterBook::draw(){
     ofSetColor(255);
     deskMesh.draw();
     deskFBO.getTexture().unbind();
-    
 
-
-    
     
     
 

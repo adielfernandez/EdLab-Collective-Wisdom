@@ -61,12 +61,22 @@ public:
     
     //Book Content and UI
     ofTrueTypeFont font;
-    vector<string> pageText;
+    ofTrueTypeFont boldFont;
+    ofTrueTypeFont scholarFont;
     vector<ofVec2f> pageTexCoords;
     float pageWidth, pageHeight;
     float page1LeftMargin, page2LeftMargin;
     float pageTopMargin;
     
+    ofImage filigreeBorder;
+    float borderMargin;
+    ofVec2f borderPos;
+    float borderHeight, borderWidth;
+
+    //text stored as vector of lines
+    //so we can draw aligned center
+    vector<vector<string>> helpText;
+    int currentHelpText;
     
     ofVboMesh deskMesh;
     vector<ofVec3f> meshPoints;
@@ -119,6 +129,28 @@ public:
     ofxVec2Slider meshPt1;
     ofxVec2Slider meshPt2;
     ofxVec2Slider meshPt3;
+    
+    struct Scholar{
+        
+        string nameTop;
+        string nameBottom;
+        int id;
+        bool selected;
+        
+        
+    };
+    
+    vector<Scholar> scholarList;
+    float topMargin;
+    float betweenScholars;
+    float betweenNames;
+    float nameBoxHeight;
+    float nameHeight;
+    float lineHeight;
+    
+    ofImage divider;
+    
+    
     
     
     struct MouseTouch{

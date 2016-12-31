@@ -20,6 +20,7 @@
 #include "ofxGui.h"
 
 
+
 class CenterBook{
     
 public:
@@ -150,7 +151,7 @@ public:
     
     ofImage divider;
     
-    
+
     
     
     struct MouseTouch{

@@ -11,6 +11,8 @@
 #include "Content/ContentManager.hpp"
 #include "Books/CenterBook.hpp"
 
+#include "ofxOsc.h"
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -90,6 +92,7 @@ class ofApp : public ofBaseApp{
     
     unsigned long long lastChangeTime;
     int waitTime;
+    
 
 };
 

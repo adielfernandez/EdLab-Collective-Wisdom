@@ -16,7 +16,7 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 0;
+    numBooksPerShelf = 10;
     numShelves = 1;
     
     int numBooks = numBooksPerShelf * numShelves;
@@ -94,7 +94,7 @@ void BookController::loadModels(){
             lastGroupFontType = groupFontType;
         }
         
-        cout << "Loading Book " << i << " - Place in this group " << placeInThisGroup << ", model " << thisBookType << ", texture " << thisTexType << ", font " << thisFontType << endl;
+//        cout << "Loading Book " << i << " - Place in this group " << placeInThisGroup << ", model " << thisBookType << ", texture " << thisTexType << ", font " << thisFontType << endl;
         
         Book b;
         b.loadModel(thisBookType, thisTexType, thisFontType);
@@ -116,6 +116,12 @@ void BookController::setBookCaseRefs(Bookcase *leftCase, Bookcase *rightCase){
 
     leftBookcase = leftCase;
     rightBookcase = rightCase;
+    
+}
+
+void BookController::setScholarData(ScholarData *sData){
+    
+    scholarData = sData;
     
 }
 
@@ -283,8 +289,24 @@ void BookController::setup(vector<Contribution> *cList){
                 //mark book as used
                 books[i].bIsUnused = false;
                 
+                //get tag number and color from the tagList in scholar data to set up the book
+                int tagNum;
+                ofColor tagCol;
+                
+                string thisTag = (*contributionList)[i].tag;
+                
+                //go through the tagList and see which one this tag is
+                for(int i = 0; i < scholarData -> tagList.size(); i++){
+                    if(thisTag.compare(scholarData -> tagList[i]) == 0){
+                        tagNum = i;
+                    }
+                }
+                
+                tagCol = scholarData -> tagColorList[tagNum];
+
+                
                 //set up the content
-                books[i].setupContent((*contributionList)[i]);
+                books[i].setupContent((*contributionList)[i], tagNum, tagCol);
                 
             } else {
                 
@@ -416,8 +438,21 @@ void BookController::onNewContribution( Contribution& c ){
             //mark book as used
             books[i].bIsUnused = false;
             
+            //get tag number and color from the tagList in scholar data to set up the book
+            int tagNum;
+            ofColor tagCol;
+            
+            for(int i = 0; i < scholarData -> tagList.size(); i++){
+                if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
+                    tagNum = i;
+                }
+            }
+            
+            tagCol = scholarData -> tagColorList[tagNum];
+            
+            
             //set up the content
-            books[i].setupContent((*contributionList)[i]);
+            books[i].setupContent( c , tagNum, tagCol);
             
             //now break out of the for loop
             //so we only trigger one book

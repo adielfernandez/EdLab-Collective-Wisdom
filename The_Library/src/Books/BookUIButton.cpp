@@ -14,15 +14,12 @@ BookUIButton::BookUIButton(){
     
 }
 
-void BookUIButton::setup(int _type, ofVec3f bookPos, vector<ofVec3f> shelf, int _shelfNum, int _bookNum ){
+
+
+void BookUIButton::setup(int _type, ofVec3f bookPos ){
     
     type = _type;
-    bookNum = _bookNum;
-    shelfNum = _shelfNum;
-    
-    //buttons draw relative to book pos (bottom right corner of spine)
-    //shelf corners are ordered counter clockwise from bottom left corner
-    shelfCorners = shelf;
+
     
     bookDisplayPos = bookPos;
     
@@ -46,6 +43,24 @@ void BookUIButton::setup(int _type, ofVec3f bookPos, vector<ofVec3f> shelf, int 
     lastHoverTime = 0;
     
     pushButtonScale = 1.0f;
+    
+    centerBookButton = false;
+    
+    bookNum = -1;
+    shelfNum = -1;
+    
+    
+}
+
+void BookUIButton::setLibraryInfo(vector<ofVec3f> shelf, int _shelfNum, int _bookNum){
+    
+    bookNum = _bookNum;
+    shelfNum = _shelfNum;
+    
+    //buttons draw relative to book pos (bottom right corner of spine)
+    //shelf corners are ordered counter clockwise from bottom left corner
+    shelfCorners = shelf;
+    
 }
 
 void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
@@ -88,10 +103,21 @@ void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
     
 }
 
-void BookUIButton::setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f){
+void BookUIButton::setFont(ofTrueTypeFont *f){
     
-    buttonWidth = 110;
-    buttonHeight = 50;
+    font = f;
+    
+}
+
+void BookUIButton::setTag(string t, int _tagNum, ofColor c){
+    
+    if(centerBookButton){
+        buttonWidth = 210;
+        buttonHeight = 100;
+    } else {
+        buttonWidth = 110;
+        buttonHeight = 50;
+    }
     
     tagCol = c;
     tagOutlineCol.setHsb(tagCol.getHue(), tagCol.getSaturation(), 100);
@@ -99,7 +125,7 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f){
     tag = t;
     tagNum = _tagNum;
     
-    font = f;
+    
     
     //split the tag up if it has an & symbol
     vector<string> parts = ofSplitString(t, "&");
@@ -134,9 +160,12 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f){
     //Button and text positioning
     float spacing = 5;
     
-    hiddenPos.set(bookDisplayPos.x + 30, shelfCorners[3].y + spacing, -70);
-    displayedPos.set(shelfCorners[3].x + spacing, shelfCorners[3].y + spacing, -70);
-    currentPos = hiddenPos;
+    //only set the positions if this button isn't in the center book
+    if(!centerBookButton){
+        hiddenPos.set(bookDisplayPos.x + 30, shelfCorners[3].y + spacing, -70);
+        displayedPos.set(shelfCorners[3].x + spacing, shelfCorners[3].y + spacing, -70);
+        currentPos = hiddenPos;
+    }
     
     //text positioning is relative to currentPos
     if(linesInTag < 2){
@@ -158,6 +187,8 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f){
     tagHelp += "books in this\n";
     tagHelp += "category.";
     
+    helpTextCol.set(224, 218, 203);
+    
     //will draw relative to "currentPos"
     float helpTextSpace = 8;
     tagHelpPos.set(0, buttonHeight + helpTextSpace + font -> stringHeight("A"), 0);
@@ -166,7 +197,7 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f){
 
 
 void BookUIButton::checkForClicks(int x, int y, bool touchState){
-
+    
     //make sure it has been long enough AND the button
     //is in the proper state to be interacted with
     if( ofGetElapsedTimeMillis() - lastButtonPress > debounceTime &&  !bIsUnavailable && bIsDisplayed){
@@ -215,9 +246,6 @@ void BookUIButton::checkForClicks(int x, int y, bool touchState){
                     e.shelfNum = shelfNum;
                     
                     ofNotifyEvent(newButtonClickEvt, e, this);
-                    
-
-                
                 }
 
             } else {
@@ -290,6 +318,7 @@ void BookUIButton::update(){
             
 
         } else {
+            
             tagHelpTrans = ofLerp(tagHelpTrans, 255.0f, 0.1);
             tagHelpScale = ofLerp(tagHelpScale, 1.0f, 0.1);
         }
@@ -368,9 +397,10 @@ void BookUIButton::draw(){
                 ofPopStyle();
                 //draw the first line of text
                 
+                
                 ofPushMatrix();
                 ofTranslate(tagLine1Pos.x, tagLine1Pos.y, -5);
-                ofScale(1, -1);
+                if(!centerBookButton) ofScale(1, -1);
                 ofSetColor(tagOutlineCol, tagHelpTrans);
                 font -> drawString(tagLine1, 0, 0);
                 ofPopMatrix();
@@ -379,7 +409,7 @@ void BookUIButton::draw(){
                 if(linesInTag > 1){
                     ofPushMatrix();
                     ofTranslate(tagLine2Pos.x, tagLine2Pos.y, -5);
-                    ofScale(1, -1);
+                    if(!centerBookButton) ofScale(1, -1);
                     
                     font -> drawString(tagLine2, 0, 0);
                     
@@ -387,21 +417,24 @@ void BookUIButton::draw(){
                 }
                 
                 //draw tag help text
-                
-                ofPushMatrix();
-                ofTranslate(tagHelpPos.x, tagHelpPos.y, -8);
-                
-                //draw a rect where the help text will be but pushed back a bit so the text draws in front
-                //this is needed to prevent weirdness between shapes drawn as textures
-                //over the semi transparent shelf overlay
-                ofSetColor(0, tagHelpTrans);
-                ofDrawRectangle(0, -15, 2, buttonWidth, 80);
-                
-                ofScale(0.7, -0.7);
-                ofSetColor(224, 218, 203, tagHelpTrans);
-                font -> drawString(tagHelp, 0, 0);
-                
-                ofPopMatrix();
+                if(!centerBookButton){
+
+                    ofPushMatrix();
+                    ofTranslate(tagHelpPos.x, tagHelpPos.y, -8);
+
+                    //draw a rect where the help text will be but pushed back a bit so the text draws in front
+                    //this is needed to prevent weirdness between shapes drawn as textures
+                    //over the semi transparent shelf overlay
+                    ofSetColor(0, tagHelpTrans);
+                    ofDrawRectangle(0, -15, 2, buttonWidth, 80);
+                    
+                    ofScale(0.7, -0.7);
+                    ofSetColor(helpTextCol, tagHelpTrans);
+                    font -> drawString(tagHelp, 0, 0);
+                    
+                    ofPopMatrix();
+
+                }
                 
             }ofPopMatrix();
             

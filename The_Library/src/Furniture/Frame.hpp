@@ -19,22 +19,11 @@
 #include "Tile.hpp"
 #include "TiledObject.hpp"
 #include "ofxEasing.h"
+#include "../Content/ScholarData.hpp"
 
 #pragma once
 
-struct ScholarDatum{
-    
-    string name;
-    string dates;
-    string body;
-    
-    void operator = (const ScholarDatum &D ) {
-        name = D.name;
-        dates = D.dates;
-        body = D.body;
-    }
-    
-};
+
 
 
 class Frame: public TiledObject{
@@ -52,7 +41,7 @@ public:
     void draw();
     void drawDebug();
     
-    void setScholarData();
+    void setScholarData(ScholarData *data);
     void setTextPositions();
     
     void drawShadow();
@@ -63,6 +52,10 @@ public:
     void drawGui();
     void saveSettings();
     void loadSettings();
+    
+    //container for all scholar data
+    ScholarData *scholarData;
+    int numScholars;
     
     string formatText(string incoming, int bodyWidth);
     
@@ -139,10 +132,6 @@ public:
     
     ofVec2f factSheetPos;
     ofVec2f factSheetDisplayed, factSheetHidden;
-    
-    vector<ScholarDatum> scholarData;
-  
-    int numScholars;
     
     ofImage divider;
     

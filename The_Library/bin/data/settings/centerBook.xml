@@ -17,6 +17,12 @@
 	<Show_Raw_Desk>1</Show_Raw_Desk>
 	<Page1_Left_Margin>8.725</Page1_Left_Margin>
 	<Page2_Left_Margin>33.25</Page2_Left_Margin>
-	<Page_Top_Margin>34.5</Page_Top_Margin>
+	<Page_Top_Margin>33</Page_Top_Margin>
 	<Draw_Raw_Book_Tex>0</Draw_Raw_Book_Tex>
+<__TOUCH_REGIONS/>
+	<Book_Left_Bound>0.605</Book_Left_Bound>
+	<Book_Center>0.315</Book_Center>
+<Book_Top_Bound>0.025</Book_Top_Bound>
+	<Book_Bottom_Bound>0.96</Book_Bottom_Bound>
+<Wait_after_touch>500</Wait_after_touch>
 </centerBook>

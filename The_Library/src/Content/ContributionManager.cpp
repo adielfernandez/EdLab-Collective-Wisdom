@@ -1,20 +1,20 @@
 //
-//  ContentManager.cpp
+//  ContributionManager.cpp
 //  The_Library
 //
 //  Created by Adiel Fernandez on 11/27/16.
 //
 //
 
-#include "ContentManager.hpp"
+#include "ContributionManager.hpp"
 
 
-ContentManager::ContentManager(){
+ContributionManager::ContributionManager(){
     
     
 }
 
-void ContentManager::loadContent(){
+void ContributionManager::loadContent(){
 
     //open the directory with messages
     ofDirectory messageDir;
@@ -57,7 +57,7 @@ void ContentManager::loadContent(){
             c.setMessage(name, tag, message);
             
             contributionList.push_back(c);
-
+            
         }
 
     }
@@ -74,7 +74,7 @@ void ContentManager::loadContent(){
     
 }
 
-void ContentManager::logNewContribution(string n, string tag, string msg){
+void ContributionManager::logNewContribution(string n, string tag, string msg){
     
     //create a message
     Contribution c;
@@ -91,7 +91,7 @@ void ContentManager::logNewContribution(string n, string tag, string msg){
     
 }
 
-void ContentManager::saveContributionToFile(Contribution _c){
+void ContributionManager::saveContributionToFile(Contribution _c){
     
     //also create a new text file to store it for next time
     string filename = "messages/" + ofGetTimestampString() + ".txt";

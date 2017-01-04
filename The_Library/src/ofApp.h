@@ -8,8 +8,10 @@
 #include "Furniture/Bookcase.hpp"
 #include "Books/BookController.hpp"
 #include "Content/Contribution.hpp"
-#include "Content/ContentManager.hpp"
+#include "Content/ContributionManager.hpp"
 #include "Books/CenterBook.hpp"
+
+#include "Content/ScholarData.hpp"
 
 #include "ofxOsc.h"
 
@@ -51,6 +53,9 @@ class ofApp : public ofBaseApp{
     
     bool bShowGUIs;
     
+    //----------Scholar Setup----------
+    ScholarData scholarData;
+    
     //----------Scene Setup----------
     
     Wallpaper wallpaper;
@@ -87,7 +92,7 @@ class ofApp : public ofBaseApp{
     bool bSendHeartbeat;
     
     //-----MESSAGE LOGGING AND RETRIEVAL-----
-    ContentManager contentManager;
+    ContributionManager contributionManager;
     
     
     unsigned long long lastChangeTime;

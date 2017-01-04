@@ -130,11 +130,9 @@ void Frame::loadMedia(){
     bodyTextWidth = portraitWidth - leftMargin * 4;
     
 
-    //LOADS ALL THE STRING DATA INTO THE SCHOLARS
-    //make sure bodyTextWidth is initialized before running this
-    setScholarData();
+
     
-    currentScholar = floor(ofRandom( scholarData.size() ));
+    currentScholar = 0;
 
     
     bShowFactSheet = false;
@@ -152,52 +150,19 @@ void Frame::loadMedia(){
     
 }
 
-void Frame::setScholarData(){
+void Frame::setScholarData(ScholarData *data){
     
-
-    numScholars = 8;
-    
-    scholarData.resize(numScholars);
-    
-    scholarData[0].name = "Anna M. Cooley";
-    scholarData[0].dates = "(1875 - 1955)";
-    scholarData[0].body = "was an influential professor of Home Economics [food, nutrition, clothing, textiles, housing, applied art, household equipment, home management, family economics, child development, family relations] in the early 20th century and the author of popular books on the subject for high schools and colleges. Cooley earned diplomas at the New York Normal College (1893), Jenny Hunter Kindergarten Training School (1894) and Barnard College (1896). She received the B.S. degree and baccalaureate diploma in teaching household arts at Teachers College of Columbia University in 1903.";
-    
-    scholarData[1].name = "Mary S. Rose";
-    scholarData[1].dates = "(1875 - 1955)";
-    scholarData[1].body = "Professor Mary Swartz Rose was a Professor of Household Arts from 1910 to 1923 and a Professor of Nutrition from 1923 to 1940 at Teachers College, Columbia University. She co-created the program in Nutrition at TC with Henry Sherman, a Professor of Chemistry at Columbia University over ninety years ago. In doing so, Rose became the first full-time person to develop a program in nutrition at an American university.\n\nRose conducted extensive research on nutrition and dietetics. She designed the first nutrition laboratory devoted solely to training students in this field. In that laboratory, Rose trained others in her life's work. Some of her studies involved bringing this knowledge to the elementary schools.";
-    
-    scholarData[2].name = "Patty Smith Hill";
-    scholarData[2].dates = "(1868 - 1946)";
-    scholarData[2].body = "was an American nursery school, kindergarten teacher, and key founder of the National Association Nursery Education (NANE) which now exists as the National Association For the Education of Young Children (NAEYC). Perhaps most well known as the sister of Mildred J. Hill with whom she is credited as co-writing the tune to the song Good Morning To All which became popular as Happy Birthday to You, Patty developed the Patty Hill blocks and in 1924 helped create the Institute of Child Welfare Research at Columbia University Teachers College.";
-    
-    scholarData[3].name = "William Heard Kilpatrick";
-    scholarData[3].dates = "(1875 - 1955)";
-    scholarData[3].body = "was an American nursery school, kindergarten teacher, and key founder of the National Association Nursery Education (NANE) which now exists as the National Association For the Education of Young Children (NAEYC). Perhaps most well known as the sister of Mildred J. Hill with whom she is credited as co-writing the tune to the song Good Morning To All which became popular as Happy Birthday to You, Patty developed the Patty Hill blocks and in 1924 helped create the Institute of Child Welfare Research at Columbia University Teachers College.";
-
-    
-    scholarData[4].name = "Mary S. Rose";
-    scholarData[4].dates = "(1875 - 1955)";
-    scholarData[4].body = "was an influential professor of Home Economics [food, nutrition, clothing, textiles, housing, applied art, household equipment, home management, family economics, child development, family relations] in the early 20th century and the author of popular books on the subject for high schools and colleges. Cooley earned diplomas at the New York Normal College (1893), Jenny Hunter Kindergarten Training School (1894) and Barnard College (1896). She received the B.S. degree and baccalaureate diploma in teaching household arts at Teachers College of Columbia University in 1903.";
-    
-    scholarData[5].name = "William Heard Kilpatrick";
-    scholarData[5].dates = "(1875 - 1955)";
-    scholarData[5].body = "Professor Mary Swartz Rose was a Professor of Household Arts from 1910 to 1923 and a Professor of Nutrition from 1923 to 1940 at Teachers College, Columbia University. She co-created the program in Nutrition at TC with Henry Sherman, a Professor of Chemistry at Columbia University over ninety years ago. In doing so, Rose became the first full-time person to develop a program in nutrition at an American university.\n\nRose conducted extensive research on nutrition and dietetics. She designed the first nutrition laboratory devoted solely to training students in this field. In that laboratory, Rose trained others in her life's work. Some of her studies involved bringing this knowledge to the elementary schools.";
-    
-    scholarData[6].name = "Lev Vygotsky";
-    scholarData[6].dates = "(1875 - 1955)";
-    scholarData[6].body = "was an influential professor of Home Economics [food, nutrition, clothing, textiles, housing, applied art, household equipment, home management, family economics, child development, family relations] in the early 20th century and the author of popular books on the subject for high schools and colleges. Cooley earned diplomas at the New York Normal College (1893), Jenny Hunter Kindergarten Training School (1894) and Barnard College (1896). She received the B.S. degree and baccalaureate diploma in teaching household arts at Teachers College of Columbia University in 1903.";
-    
-    scholarData[7].name = "Maria Montessori";
-    scholarData[7].dates = "(1875 - 1955)";
-    scholarData[7].body = "was an American nursery school, kindergarten teacher, and key founder of the National Association Nursery Education (NANE) which now exists as the National Association For the Education of Young Children (NAEYC). Perhaps most well known as the sister of Mildred J. Hill with whom she is credited as co-writing the tune to the song Good Morning To All which became popular as Happy Birthday to You, Patty developed the Patty Hill blocks and in 1924 helped create the Institute of Child Welfare Research at Columbia University Teachers College.";
-    
-    
+    scholarData = data;
     
     //go through all the body strings and format them
-    for(int i = 0; i < scholarData.size(); i++){
-        scholarData[i].body = formatText(scholarData[i].body, bodyTextWidth);
+    for(int i = 0; i < scholarData -> scholarList.size(); i++){
+
+        string s = formatText(scholarData -> scholarList[i].factSheet, bodyTextWidth);
+        scholarData -> scholarList[i].factSheet = s;
+        
     }
+    
+    
     
 }
 
@@ -356,7 +321,7 @@ void Frame::update(){
 //        currentScholar = floor(ofRandom( numScholars ));
         currentScholar ++;
         
-        if(currentScholar == numScholars){
+        if(currentScholar == scholarData -> numScholars){
             currentScholar = 0;
         }
 
@@ -437,17 +402,17 @@ void Frame::draw(){
     ofSetColor(255);
 
     //find horizontal positioning for name and date
-    float nameX = portraitWidth/2 - boldFont.stringWidth(scholarData[currentScholar].name)/2.0f;
-    float dateX = portraitWidth/2 - regFont.stringWidth(scholarData[currentScholar].dates)/2.0f;
+    float nameX = portraitWidth/2 - boldFont.stringWidth(scholarData -> scholarList[currentScholar].nameFull)/2.0f;
+    float dateX = portraitWidth/2 - regFont.stringWidth(scholarData -> scholarList[currentScholar].dates)/2.0f;
     
     //Scholar name
-    boldFont.drawString(scholarData[currentScholar].name, nameX, portraitHeight - nameTopMargin);
+    boldFont.drawString(scholarData -> scholarList[currentScholar].nameFull, nameX, portraitHeight - nameTopMargin);
     
     //dates sub heading
-    regFont.drawString(scholarData[currentScholar].dates, dateX, portraitHeight - dateTopMargin);
+    regFont.drawString(scholarData -> scholarList[currentScholar].dates, dateX, portraitHeight - dateTopMargin);
     
     //Y axis is inverted inside FBO
-    regFont.drawString(scholarData[currentScholar].body, leftMargin, portraitHeight - bodyTopMargin);
+    regFont.drawString(scholarData -> scholarList[currentScholar].factSheet, leftMargin, portraitHeight - bodyTopMargin);
 
     ofSetColor(255);
     divider.draw(portraitWidth/2, portraitHeight - dateTopMargin - dateBodyGap/2, portraitWidth * 0.75, 15);
@@ -576,7 +541,7 @@ void Frame::setupGui(){
     mappingLabel.setBackgroundColor(ofColor(255));
     
     
-    gui.setPosition(frameCorners[0].x - 240 , frameCorners[0].y - 80 );
+    gui.setPosition(frameCorners[0].x - 240 , frameCorners[0].y - 120 );
     
     //if we're drawing the gui, then it's active so
     //we'll update all the values in update()

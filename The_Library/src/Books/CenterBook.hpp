@@ -18,7 +18,8 @@
 #include "ofxAssimpModelLoader.h"
 #include "Book.hpp"
 #include "ofxGui.h"
-
+#include "../Content/ScholarData.hpp"
+#include "BookUIButton.hpp"
 
 
 class CenterBook{
@@ -28,7 +29,7 @@ public:
     CenterBook();
     
     void loadModel();
-    void setup();
+    void setup(ScholarData *sData);
     void update();
     void draw();
     void drawDebug();
@@ -36,6 +37,9 @@ public:
     void resetCamera();
 
     void mapMesh();
+    
+    ScholarData *scholarData;
+    
     
     //Model stuff
     ofxAssimpModelLoader model;
@@ -61,9 +65,10 @@ public:
     ofVec2f rawDeskPos;
     
     //Book Content and UI
-    ofTrueTypeFont font;
-    ofTrueTypeFont boldFont;
+    ofTrueTypeFont boldUIFont;
+    ofTrueTypeFont tagButtonFont;
     ofTrueTypeFont scholarFont;
+    ofTrueTypeFont smallBookFont;
     vector<ofVec2f> pageTexCoords;
     float pageWidth, pageHeight;
     float page1LeftMargin, page2LeftMargin;
@@ -84,6 +89,7 @@ public:
     
     //animation key frames (normalized)
     float animationPos;
+    float targetAnimationPos;
     const float animationStart = 0.0;
     const float animationSpread1 = 0.34;
     const float animationSpread2 = 0.56;
@@ -93,6 +99,9 @@ public:
     const float displayRotX = -90;
     const float displayRotZ = 180;
     
+    int currentOpenPage;
+    int currentScholar;
+    
     //-----GUI SETUP-----
     void setupGui();
     void drawGui();
@@ -100,6 +109,7 @@ public:
     void saveSettings();
     void loadSettings();
     void setVariablesFromGui();
+    bool bIsGuiActive;
     
     ofxPanel gui;
     string guiName;
@@ -123,7 +133,12 @@ public:
     ofxFloatSlider pageTopMarginSlider;
     ofxToggle drawBookTexToggle;
     
-    
+    ofxLabel detectionLabel;
+    ofxFloatSlider bookLeftBoundSlider;
+    ofxFloatSlider bookCenterSlider;
+    ofxFloatSlider bookPageTopSlider;
+    ofxFloatSlider bookPageBottomSlider;
+    ofxIntSlider touchWaitSlider;
     
     //desk positions
     ofxVec2Slider meshPt0;
@@ -131,17 +146,6 @@ public:
     ofxVec2Slider meshPt2;
     ofxVec2Slider meshPt3;
     
-    struct Scholar{
-        
-        string nameTop;
-        string nameBottom;
-        int id;
-        bool selected;
-        
-        
-    };
-    
-    vector<Scholar> scholarList;
     float topMargin;
     float betweenScholars;
     float betweenNames;
@@ -150,8 +154,16 @@ public:
     float lineHeight;
     
     ofImage divider;
+    ofImage thinDivider;
+    ofColor textColor;
+    ofColor highlightColor;
     
-
+    vector<bool> scholarHoverStates;
+    
+    ofVec3f tagPos;
+    ofVec3f tagHelpTextPos;
+    string tagHelpText;
+    BookUIButton tagButton;
     
     
     struct MouseTouch{
@@ -162,7 +174,8 @@ public:
     };
     
     vector<MouseTouch> mouseTouches;
-    
+    unsigned long long lastTouchTime;
+
 };
 
 

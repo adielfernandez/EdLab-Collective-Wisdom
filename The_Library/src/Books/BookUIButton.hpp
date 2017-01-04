@@ -34,9 +34,11 @@ public:
     
     BookUIButton();
     
-    void setup(int _type, ofVec3f bookPos, vector<ofVec3f> shelf, int _shelfNum, int _bookNum);
+    void setup(int _type, ofVec3f bookPos);
+    void setLibraryInfo(vector<ofVec3f> shelf, int _shelfNum, int _bookNum);
     void setIcons(ofImage *icon, ofImage *hover);
-    void setTag(string t, int _tagNum, ofColor c, ofTrueTypeFont *f);
+    void setTag(string t, int _tagNum, ofColor c);
+    void setFont( ofTrueTypeFont *f );
     void update();
     void draw();
     
@@ -55,6 +57,10 @@ public:
     int bookNum;
     int shelfNum;
     
+    //for the one off button we draw
+    //in the central book
+    bool centerBookButton;
+    
     ofTrueTypeFont *font;
     ofColor tagCol, tagOutlineCol;
     
@@ -66,6 +72,8 @@ public:
     ofVec3f tagHelpPos;
     float tagHelpTrans;
     float tagHelpScale;
+    
+    ofColor helpTextCol;
     
     bool buttonState;
     unsigned long long lastButtonPress;

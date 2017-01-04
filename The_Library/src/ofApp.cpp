@@ -21,10 +21,14 @@ void ofApp::setup(){
     lastHeartbeatTime = 0;
     heartbeatInterval = 200;
     
+    //----------SCHOLAR INFO Setup----------
+    
+    scholarData.setupData();
+    
     
     //----------Scene Setup----------
     
-    currentView = 3;
+    currentView = 1;
     numViews = 4;
     
     
@@ -34,7 +38,7 @@ void ofApp::setup(){
     leftBookcase.setup("leftBookcase", true);
     rightBookcase.setup("rightBookcase", false);
     bookController.setBookCaseRefs(&leftBookcase, &rightBookcase);
-
+    bookController.setScholarData(&scholarData);
     
     //Book models need to be loaded before other objects load their media
     //because of a bug in ofxAssimpModelLoader, otherwise loading will crash
@@ -47,21 +51,26 @@ void ofApp::setup(){
     leftBookcase.loadMedia();
     rightBookcase.loadMedia();
     
+    //pass scholar data down the chain to where it is needed
+    frame.setScholarData(&scholarData);
+    
     
     //Load contributions from file
-    contentManager.loadContent();
+    contributionManager.loadContent();
     
     
     //Finally, now that the book models have been loaded
     //and the bookcases have been setup, we can setup book textures
     //and place them on the shelves
-    bookController.setup(&contentManager.contributionList);
-    centerBook.setup();
+    bookController.setup(&contributionManager.contributionList);
+    centerBook.setup(&scholarData);
     
     //add a listener in the Book controller for events
     //in the content manager when it gets new messages
-    ofAddListener(contentManager.newContributionEvt, &bookController, &BookController::onNewContribution);
+    ofAddListener(contributionManager.newContributionEvt, &bookController, &BookController::onNewContribution);
     
+    //add another listener in the book controller to the tagButton in the center book
+    ofAddListener(centerBook.tagButton.newButtonClickEvt, &bookController, &BookController::onButtonClickEvt);
     
     bgEdgeMask.load("assets/interface/bgMask.png");
     
@@ -211,19 +220,25 @@ void ofApp::draw(){
     
     if(currentView == 1){
         
-        //wallpaper and frame debug
+        ofDisableDepthTest();
         
+        //Center Book debug
+        centerBook.drawDebug();
+        centerBook.drawGui();
+        
+    } else if(currentView == 2){
         
         ofDisableDepthTest();
         
+        //wallpaper and frame debug
         frame.drawDebug();
         frame.drawGui();
         
         wallpaper.drawGui();
         
+    } else if(currentView == 3){
         
-    } else if(currentView == 2){
-    
+        
         ofDisableDepthTest();
         
         //Bookcases debug
@@ -232,15 +247,6 @@ void ofApp::draw(){
         
         rightBookcase.drawDebug();
         rightBookcase.drawGui();
-        
-        
-    } else if(currentView == 3){
-        
-        ofDisableDepthTest();
-        
-        //Center Book debug
-        centerBook.drawDebug();
-        centerBook.drawGui();
         
     }
     
@@ -319,11 +325,11 @@ void ofApp::keyPressed(int key){
         //make a message with a random tag
         //get the tag list from the first book
         if(bookController.books.size() > 0){
-            int thisTag = floor(ofRandom(bookController.books[0].tagList.size()));
+            int thisTag = floor(ofRandom(scholarData.tagList.size()));
             
-            string s = bookController.books[0].tagList[thisTag];
+            string s = scholarData.tagList[thisTag];
             
-            contentManager.logNewContribution("Jane Doe", s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
+            contributionManager.logNewContribution("Jane Doe", s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
                 
         }
     }
@@ -451,7 +457,7 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
         
         cout << "From: " << name << "\nTag: " << tag << "\nMessage: " << message << "\n" << endl;
         
-        contentManager.logNewContribution(name, tag, message);
+        contributionManager.logNewContribution(name, tag, message);
         
     }
     

@@ -263,7 +263,8 @@ void Tile::update(){
 
 void Tile::draw(){
     
-//    ofEnableDepthTest();{
+    //do not disable depth test! Otherwise, tile flipping won't work right.
+    ofEnableDepthTest();{
     
         ofPushMatrix();
         
@@ -347,8 +348,8 @@ void Tile::draw(){
         }
         ofPopMatrix();
         
-//    }ofDisableDepthTest();
-    
+    }ofDisableDepthTest();
+
 }
 
 

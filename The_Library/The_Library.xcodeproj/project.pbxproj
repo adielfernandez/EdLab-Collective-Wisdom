@@ -49,7 +49,7 @@
 		D72C746F1DEBCB2C00D770C8 /* TiledObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74661DEBCB2C00D770C8 /* TiledObject.cpp */; };
 		D72C74701DEBCB2C00D770C8 /* Wallpaper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74681DEBCB2C00D770C8 /* Wallpaper.cpp */; };
 		D72C74751DEBCD7A00D770C8 /* Contribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74731DEBCD7A00D770C8 /* Contribution.cpp */; };
-		D72C74781DEBCD8A00D770C8 /* ContentManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74761DEBCD8A00D770C8 /* ContentManager.cpp */; };
+		D72C74781DEBCD8A00D770C8 /* ContributionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74761DEBCD8A00D770C8 /* ContributionManager.cpp */; };
 		D72C74831DED442B00D770C8 /* BookUIButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74811DED442B00D770C8 /* BookUIButton.cpp */; };
 		D7E190BD1DFDFBFA00D52145 /* CenterBook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E190BB1DFDFBFA00D52145 /* CenterBook.cpp */; };
 		D7E2DC881E17308A00AEB632 /* ofxOscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC611E17308A00AEB632 /* ofxOscBundle.cpp */; };
@@ -64,6 +64,7 @@
 		D7E2DC911E17308A00AEB632 /* OscPrintReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC821E17308A00AEB632 /* OscPrintReceivedElements.cpp */; };
 		D7E2DC921E17308A00AEB632 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC841E17308A00AEB632 /* OscReceivedElements.cpp */; };
 		D7E2DC931E17308A00AEB632 /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC861E17308A00AEB632 /* OscTypes.cpp */; };
+		D7E2DC9A1E1C5D6700AEB632 /* ScholarData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -422,8 +423,8 @@
 		D72C74691DEBCB2C00D770C8 /* Wallpaper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wallpaper.hpp; sourceTree = "<group>"; };
 		D72C74731DEBCD7A00D770C8 /* Contribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Contribution.cpp; sourceTree = "<group>"; };
 		D72C74741DEBCD7A00D770C8 /* Contribution.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Contribution.hpp; sourceTree = "<group>"; };
-		D72C74761DEBCD8A00D770C8 /* ContentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentManager.cpp; sourceTree = "<group>"; };
-		D72C74771DEBCD8A00D770C8 /* ContentManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ContentManager.hpp; sourceTree = "<group>"; };
+		D72C74761DEBCD8A00D770C8 /* ContributionManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContributionManager.cpp; sourceTree = "<group>"; };
+		D72C74771DEBCD8A00D770C8 /* ContributionManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ContributionManager.hpp; sourceTree = "<group>"; };
 		D72C74811DED442B00D770C8 /* BookUIButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookUIButton.cpp; sourceTree = "<group>"; };
 		D72C74821DED442B00D770C8 /* BookUIButton.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BookUIButton.hpp; sourceTree = "<group>"; };
 		D75B5B9E1E1476360027C98E /* ShelfOverlay.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ShelfOverlay.hpp; sourceTree = "<group>"; };
@@ -462,6 +463,8 @@
 		D7E2DC851E17308A00AEB632 /* OscReceivedElements.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscReceivedElements.h; sourceTree = "<group>"; };
 		D7E2DC861E17308A00AEB632 /* OscTypes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OscTypes.cpp; sourceTree = "<group>"; };
 		D7E2DC871E17308A00AEB632 /* OscTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscTypes.h; sourceTree = "<group>"; };
+		D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScholarData.cpp; sourceTree = "<group>"; };
+		D7E2DC991E1C5D6700AEB632 /* ScholarData.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScholarData.hpp; sourceTree = "<group>"; };
 		D825FF1F1EA48B305BB428B7 /* scene.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = scene.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/scene.h; sourceTree = SOURCE_ROOT; };
 		D847EBE484F4F500F9CF2549 /* ofxCvImage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvImage.h; path = ../../../addons/ofxOpenCv/src/ofxCvImage.h; sourceTree = SOURCE_ROOT; };
 		D8DE36BE576A104A4CAAED41 /* Hand.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Hand.hpp; path = ../../../addons/ofxOrbbecAstra/libs/astra/include/astra/streams/Hand.hpp; sourceTree = SOURCE_ROOT; };
@@ -1499,10 +1502,12 @@
 		D72C74721DEBCD7A00D770C8 /* Content */ = {
 			isa = PBXGroup;
 			children = (
-				D72C74771DEBCD8A00D770C8 /* ContentManager.hpp */,
-				D72C74761DEBCD8A00D770C8 /* ContentManager.cpp */,
+				D72C74771DEBCD8A00D770C8 /* ContributionManager.hpp */,
+				D72C74761DEBCD8A00D770C8 /* ContributionManager.cpp */,
 				D72C74741DEBCD7A00D770C8 /* Contribution.hpp */,
 				D72C74731DEBCD7A00D770C8 /* Contribution.cpp */,
+				D7E2DC991E1C5D6700AEB632 /* ScholarData.hpp */,
+				D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -1863,13 +1868,14 @@
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
+				D7E2DC9A1E1C5D6700AEB632 /* ScholarData.cpp in Sources */,
 				D7E2DC8A1E17308A00AEB632 /* ofxOscParameterSync.cpp in Sources */,
 				D72C746D1DEBCB2C00D770C8 /* Frame.cpp in Sources */,
 				D72C746E1DEBCB2C00D770C8 /* Tile.cpp in Sources */,
 				D7E2DC901E17308A00AEB632 /* OscOutboundPacketStream.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
-				D72C74781DEBCD8A00D770C8 /* ContentManager.cpp in Sources */,
+				D72C74781DEBCD8A00D770C8 /* ContributionManager.cpp in Sources */,
 				D7E190BD1DFDFBFA00D52145 /* CenterBook.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,

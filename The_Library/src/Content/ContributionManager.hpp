@@ -1,17 +1,17 @@
 //
-//  ContentManager.hpp
+//  ContributionManager.hpp
 //  The_Library
 //
 //  Created by Adiel Fernandez on 11/27/16.
 //
 //
 
-#ifndef ContentManager_hpp
-#define ContentManager_hpp
+#ifndef ContributionManager_hpp
+#define ContributionManager_hpp
 
 #include <stdio.h>
 
-#endif /* ContentManager_hpp */
+#endif /* ContributionManager_hpp */
 
 
 #include "ofMain.h"
@@ -19,11 +19,11 @@
 #pragma once
 
 
-class ContentManager{
+class ContributionManager{
     
 public:
     
-    ContentManager();
+    ContributionManager();
     
     void loadContent();
     void saveContributionToFile(Contribution _c);

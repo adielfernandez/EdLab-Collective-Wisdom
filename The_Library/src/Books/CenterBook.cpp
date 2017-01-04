@@ -25,7 +25,9 @@ void CenterBook::loadModel(){
 }
 
 
-void CenterBook::setup(){
+void CenterBook::setup(ScholarData *sData){
+    
+    scholarData = sData;
     
     //Since model Scale and dimensions are mostly hardcoded to give good, pixel related values,
     //"modelScale" scales all of them equally to make minor adjustments
@@ -183,71 +185,6 @@ void CenterBook::setup(){
     pageHeight *= 2.0;
     
 
-    scholarList.resize(10);
-    scholarList[0].nameTop = "John";
-    scholarList[0].nameBottom = "Dewey";
-    scholarList[0].id = 0;
-    scholarList[0].selected = false;
-    
-    scholarList[1].nameTop = "Jean";
-    scholarList[1].nameBottom = "Piaget";
-    scholarList[1].id = 1;
-    scholarList[1].selected = false;
-
-    scholarList[2].nameTop = "Maria";
-    scholarList[2].nameBottom = "Montessori";
-    scholarList[2].id = 2;
-    scholarList[2].selected = false;
-    
-    scholarList[3].nameTop = "Lev";
-    scholarList[3].nameBottom = "Vygotsky";
-    scholarList[3].id = 3;
-    scholarList[3].selected = false;
-    
-    scholarList[4].nameTop = "Gloria";
-    scholarList[4].nameBottom = "Ladson";
-    scholarList[4].id = 4;
-    scholarList[4].selected = false;
-    
-    scholarList[5].nameTop = "Benjamin";
-    scholarList[5].nameBottom = "Bloom";
-    scholarList[5].id = 5;
-    scholarList[5].selected = false;
-    
-    scholarList[6].nameTop = "Howard";
-    scholarList[6].nameBottom = "Gardner";
-    scholarList[6].id = 6;
-    scholarList[6].selected = false;
-    
-    scholarList[7].nameTop = "Jerome";
-    scholarList[7].nameBottom = "Bruner";
-    scholarList[7].id = 7;
-    scholarList[7].selected = false;
-    
-    scholarList[8].nameTop = "Albert";
-    scholarList[8].nameBottom = "Bandura";
-    scholarList[8].id = 8;
-    scholarList[8].selected = false;
-    
-    scholarList[9].nameTop = "Lisa";
-    scholarList[9].nameBottom = "Delpit";
-    scholarList[9].id = 9;
-    scholarList[9].selected = false;
-    
-
-    
-    
-//    pageText[0] = p1;
-//    pageText[1] = p2;
-//    pageText[2] = p1;
-//    pageText[3] = p2;
-    
-    
-    font.load("bookFonts/Arcon-Rounded-Regular.otf", 11);
-    boldFont.load("assets/interface/Century-gothic-bold.ttf", 14);
-    boldFont.setLetterSpacing(0.95);
-
-
     
     //GUI SETUP
     
@@ -264,7 +201,7 @@ void CenterBook::setup(){
     
     mapMesh();
     
-    drawContentToTexture();
+
     
     //The position the raw desk will draw when debugging
     rawDeskPos.set( ofGetWidth()/2.0 - deskWidth/2, ofGetHeight()/2 - deskHeight + 50 );
@@ -278,23 +215,68 @@ void CenterBook::setup(){
 
     
     nameBoxHeight = (pageHeight - topMargin * 2 - betweenScholars * 4)/5.0f;
-    cout << "box height: " << nameBoxHeight << endl;
+
     
     float spaceForName = nameBoxHeight;
     betweenNames = 4;
 
     int nameFontSize = (spaceForName - betweenNames)/2.0f;
-    
-    cout << "Font size: " << nameFontSize << endl;
-    
+        
+    //scholar font
     scholarFont.load("assets/interface/EBGaramond08-Regular.ttf", nameFontSize);
-    scholarFont.setLetterSpacing(1.05);
+    scholarFont.setLetterSpacing(.95);
     
     lineHeight = scholarFont.stringHeight("A");
     
-    divider.load("assets/interface/filigree/thinDivider.png");
+    //smaller serif font in book
+    smallBookFont.load("assets/interface/EBGaramond08-Regular.ttf", 12);
+    
+    
+    //bold interface text
+    boldUIFont.load("assets/interface/Century-gothic-bold.ttf", 14);
+    boldUIFont.setLetterSpacing(0.95);
+    
+    tagButtonFont.load("assets/interface/Century-gothic-bold.ttf", 26);
+    tagButtonFont.setLetterSpacing(0.9);
+    
+    //brownish color for text
+    textColor.set(92, 54, 9);
+    highlightColor.set(0, 128, 255);
+    
+    //Hover states, initialize all to false
+    scholarHoverStates.assign(10, false);
+    
+    
+    thinDivider.load("assets/interface/filigree/thinDivider.png");
+    thinDivider.setAnchorPercent(0.5f, 0.5f);
+    
+    divider.load("assets/interface/filigree/divider.png");
     divider.setAnchorPercent(0.5f, 0.5f);
-
+    
+    
+    //Animation and page flipping
+    currentOpenPage = 0;
+    targetAnimationPos = animationSpread1;
+    
+    //don't check for touches
+    lastTouchTime = 0;
+    
+    
+    
+    //make a tag button by hijacking the tag
+    //button object we use for the regular books
+    tagPos.set(-35, 250, 0);
+    
+    tagButton.setup(3, tagPos);
+    tagButton.setFont(&tagButtonFont);
+    tagButton.centerBookButton = true;
+    tagButton.setTag("", 0, ofColor(0));
+    tagButton.helpTextCol = textColor;
+    tagButton.show();
+    
+    tagHelpTextPos.set(page1LeftMargin, tagPos.y - scholarFont.stringHeight("A") * 4 - 15);
+    tagHelpText = "Tag associated\nwith this\nscholar:";
+    
 }
 
 void CenterBook::mapMesh(){
@@ -399,19 +381,22 @@ void CenterBook::update(){
     
     
     
-    animationPos = animationSpread1;
-    model.setPositionForAllAnimations(animationPos);
-    
-    model.update();
+
     
     
-    //update variables with values from GUI
-    if(reMapMeshButton){
-        mapMesh();
+    //update variables with values from GUI if it's active
+    if(bIsGuiActive){
+        
+        if(reMapMeshButton){
+            mapMesh();
+        }
+        
+        setVariablesFromGui();
+        
     }
     
-    setVariablesFromGui();
-    
+    //will be set back to true if we're actually drawing the gui.
+    bIsGuiActive = false;
     
     
     
@@ -440,48 +425,129 @@ void CenterBook::update(){
             
             mouseTouches.push_back(mt);
             
+            cout << normalizedMouse << endl;
+            
         }
         
         
     }
     
     
-    //go through all the scholars and turn them off so
-    //we can turn them on with mouse hover
-    for(int i = 0; i < scholarList.size(); i++){
-        scholarList[i].selected = false;
+    //go through and manage scholars
+    for(int i = 0; i < scholarHoverStates.size(); i++){
+        //set all the hover states off, we'll turn them
+        //back on if we're actually hovering over them
+        scholarHoverStates[i] = false;
     }
+    
     
     
     //go through mouse touches and check for detection zones
     for(int i = 0; i < mouseTouches.size(); i++){
         
+
+        
+        
+        
+        
         ofVec2f m = mouseTouches[i].pos;
-        cout << m << endl;
+//        cout << m << endl;
         
         //touch data is normalized from 0-1 in x and y
         //for now, x is inverted (0 at right) and y is normal
         
         //see if we're over book
-        if(m.x < 0.6f){
+        if(m.x < bookLeftBoundSlider && m.y > bookPageTopSlider && m.y < bookPageBottomSlider){
             
-            int scholarIndex;
+            //now we have different detection zones based on what page we're on
+            if(currentOpenPage == 0){
             
-            //see which page we're on
-            if(m.x > 0.31){
-                //left page
+
                 
-                //the height divided into 5 regions means each region is 0.2
-                scholarIndex = floor(m.y / 0.2);
                 
-            } else {
-                //right page
-                scholarIndex = floor(m.y / 0.2) + 5;
+                //FIRST OPEN PAGE: SCHOLAR SELECT
+                //The height of each name region = space between the top and bottom bounds divided into 5 regions
+                float regionHeight = (bookPageBottomSlider - bookPageTopSlider)/5.0f;
+                
+                int scholarIndex;
+                
+                //see which page we're on
+                if(m.x > bookCenterSlider){
+                    //left page
+                    
+                    scholarIndex = floor( (m.y - bookPageTopSlider)/regionHeight );
+                    
+                } else {
+                    //right page = next 5 scholars
+                    scholarIndex = floor( (m.y - bookPageTopSlider)/regionHeight ) + 5;
+                    
+                }
+                
+                //set hover state to true
+                scholarHoverStates[scholarIndex] = true;
+                
+                
+                //check if the "touch" is actually selecting the scholar
+                if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                    
+                    currentOpenPage = 1;
+                    currentScholar = scholarIndex;
+                    
+                    //set the tag button to the current scholar's data
+                    string t = scholarData -> scholarList[currentScholar].tag;
+                    ofColor c = scholarData -> tagColorList[currentScholar];
+                    tagButton.setTag(t, currentScholar, c);
+                    
+                    lastTouchTime = ofGetElapsedTimeMillis();
+                    
+                    //don't check any other touches this frame
+                    break;
+                    
+                }
+                
+            } else if(currentOpenPage == 1){
+                
+                //SECOND OPEN PAGE: SCHOLAR INFO AND TAG SELECT
+                
+                int optionSelect = 0;
+                
+                //We already know we're hovering over the book
+                //but let's see which page we're on
+                if(m.x > bookCenterSlider){
+                    //left page
+                    
+//                    scholarIndex = floor(m.y / 0.2);
+                    if(m.y > 0.62 && m.y < 0.87){
+                        
+                        //if we're inside the tag button, fake a button press
+                        //to trigger the event to the book controller
+                        tagButton.checkForClicks(tagButton.currentPos.x + 10, tagButton.currentPos.y + 10, mouseTouches[i].bIsTouching);
+                    }
+                    
+                    
+                } else {
+                    
+                    //right page
+                    //The height of each option = space between the top and bottom bounds divided into 4 regions
+                    float regionHeight = (bookPageBottomSlider - bookPageTopSlider)/4.0f;
+                    optionSelect = floor(m.y / regionHeight);
+                    
+                }
+                
+                
+                if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                    cout << "Option selected: " << optionSelect << endl;
+                    
+                    lastTouchTime = ofGetElapsedTimeMillis();
+                    
+                    //just check the 4th button to go back to the first page for now
+                    if(optionSelect == 3){
+                        currentOpenPage = 0;
+                    }
+                    
+                }
                 
             }
-            
-            scholarList[scholarIndex].selected = true;
-            
             
         }
         
@@ -491,7 +557,27 @@ void CenterBook::update(){
     
     
     
+    //Actual book manipulation
     
+    if(currentOpenPage == 0){
+        targetAnimationPos = animationSpread1;
+        currentHelpText = 0;
+    } else if(currentOpenPage == 1){
+        targetAnimationPos = animationSpread2;
+        currentHelpText = 1;
+    }
+    
+    animationPos = ofLerp(animationPos, targetAnimationPos, 0.05);
+    
+    model.setPositionForAllAnimations(animationPos);
+    model.update();
+    
+    
+    //tag button stuff
+    tagButton.currentPos = tagPos;
+    tagButton.displayedPos = tagPos;
+    tagButton.update();
+
     
 }
 
@@ -507,7 +593,7 @@ void CenterBook::drawContentToTexture(){
     bookTexFBO.begin();
     
     //clear the FBO from the last frame
-    ofClear(255, 255, 255, 255);
+    ofClear(255, 255, 255, 0);
     
     //draw the base texture first
     ofSetColor(255);
@@ -516,20 +602,10 @@ void CenterBook::drawContentToTexture(){
     float padding = 5;
     
 
-    
+    //DRAW FIRST OPEN SPREAD: SCHOLAR LIST
     
     //go through all the pages and draw out the text
-    for(int i = 0; i < scholarList.size(); i++){
-
-        //select things with mouse just for testing
-//        int sliceWidth = ofGetWidth()/scholarList.size();
-//        float mx = ofGetMouseX();
-//        
-//        if(mx > i * sliceWidth && mx < (i + 1) * sliceWidth){
-//            scholarList[i].selected = true;
-//        } else {
-//            scholarList[i].selected = false;
-//        }
+    for(int i = 0; i < scholarData -> scholarList.size(); i++){
         
         ofPushMatrix();
         
@@ -549,8 +625,8 @@ void CenterBook::drawContentToTexture(){
                 x1 = page1LeftMargin;
                 x2 = x1;
             } else {
-                x1 = pageWidth - page1LeftMargin * 3 - scholarFont.stringWidth(scholarList[i].nameTop);
-                x2 = pageWidth - page1LeftMargin * 3 - scholarFont.stringWidth(scholarList[i].nameBottom);
+                x1 = pageWidth - page1LeftMargin * 3 - scholarFont.stringWidth(scholarData -> scholarList[i].nameTop);
+                x2 = pageWidth - page1LeftMargin * 3 - scholarFont.stringWidth(scholarData -> scholarList[i].nameBottom);
             }
             
         } else {
@@ -567,41 +643,77 @@ void CenterBook::drawContentToTexture(){
                 x1 = page2LeftMargin;
                 x2 = x1;
             } else {
-                x1 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(scholarList[i].nameTop);
-                x2 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(scholarList[i].nameBottom);
+                x1 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(scholarData -> scholarList[i].nameTop);
+                x2 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(scholarData -> scholarList[i].nameBottom);
             }
             
         }
 
-        //draw the filigree divider above all names except the 0th and 5th names
+        //draw the filigree thinDivider above all names except the 0th and 5th names
         if(i != 0 && i != 5){
             
             ofSetColor(255);
-            divider.draw(pageWidth/2, y - betweenScholars/2, divider.getWidth(), divider.getHeight() * 2 );
+            thinDivider.draw(pageWidth/2, y - betweenScholars/2, thinDivider.getWidth(), thinDivider.getHeight() * 2 );
             
         }
         
         
         //draw highlight box
-        if(scholarList[i].selected){
-            ofSetColor(0, 128, 255);
+        if(scholarHoverStates[i]){
+            ofSetColor(highlightColor);
             ofDrawRectangle(boxX, y, w, nameBoxHeight);
             
             ofSetColor(255);
         } else {
-            ofSetColor(92, 54, 9);
+            ofSetColor(textColor);
         }
         
-        scholarFont.drawString(scholarList[i].nameTop, x1 + padding, y + padding + lineHeight);
-        scholarFont.drawString(scholarList[i].nameBottom, x2 + padding, y + padding + lineHeight * 2 + betweenNames);
+        scholarFont.drawString(scholarData -> scholarList[i].nameTop, x1 + padding, y + padding + lineHeight);
+        scholarFont.drawString(scholarData -> scholarList[i].nameBottom, x2 + padding, y + padding + lineHeight * 2 + betweenNames);
 
         
         ofPopMatrix();
     }
 
+    //DRAW SECOND OPEN SPREAD: SCHOLAR INFO AND TAG SELECT
+    
+    //left page
+    ofPushMatrix();
+    ofTranslate(pageTexCoords[2]);
+    
+    ofSetColor(textColor);
+    scholarFont.drawString(scholarData -> scholarList[currentScholar].nameTop, page1LeftMargin, topMargin + lineHeight);
+    scholarFont.drawString(scholarData -> scholarList[currentScholar].nameBottom, page1LeftMargin, topMargin + lineHeight * 2 + betweenNames * 2);
+    
+    //draw divider below bottom name
+    thinDivider.draw(pageWidth/2, topMargin + lineHeight * 2 + betweenNames + 20, thinDivider.getWidth(), thinDivider.getHeight() );
+    
+    
+    //draw tag help text
+
+    //squish the font together a bit
+    scholarFont.setLetterSpacing(0.95);
+    scholarFont.drawString(tagHelpText, tagHelpTextPos.x, tagHelpTextPos.y);
+    
+    
+    //draw tag button
+    tagButton.draw();
     
     
     
+    
+    
+    ofPopMatrix();
+    
+    
+    //right page
+    ofPushMatrix();
+    ofTranslate(pageTexCoords[3]);
+    
+
+    
+    
+    ofPopMatrix();
     
     
     bookTexFBO.end();
@@ -661,7 +773,9 @@ void CenterBook::draw(){
 
         //draw help text
         float betLines = 3;
-        float lineHeight = boldFont.stringWidth("A");
+        
+        //divide by two since we're scaling the font down to half
+        float lineHeight = boldUIFont.stringWidth("A");
 
         float startHeight = (deskHeight - lineHeight * 4 - betLines * 4)/2.0f + lineHeight/2.0f; //add an extra line to the end since text draws from the baseline
         
@@ -671,18 +785,23 @@ void CenterBook::draw(){
         
         //invert the text to cancel out the text texture flipping
         ofScale(-1, -1);
+        
         for(int i = 0; i < helpText[currentHelpText].size(); i++){
             
             ofSetColor(255);
             string s = helpText[currentHelpText][i];
-            ofVec2f thisLine(borderPos.x + borderWidth/2 + boldFont.stringWidth(s)/2, startHeight + (lineHeight + betLines) * i);
+            ofVec2f thisLine(borderPos.x + borderWidth/2 + boldUIFont.stringWidth(s)/ 2.0f, startHeight + (lineHeight + betLines) * i);
 
             //invert the position to cancel out the scaling effect on position
             thisLine *= -1;
-            boldFont.drawString(s, thisLine.x, thisLine.y);
-            
+            ofPushMatrix();
+//            ofScale(0.5f, 0.5f);
+            boldUIFont.drawString(s, thisLine.x, thisLine.y);
+            ofPopMatrix();
         }
         ofPopMatrix();
+        
+
         
         
         //go through touches (for now mouseTouches, but eventually OSC data from camera)
@@ -722,9 +841,36 @@ void CenterBook::draw(){
 void CenterBook::drawDebug(){
     
     ofPushStyle();
+    
+    deskFBO.begin();
+    
+    ofSetLineWidth(2);
+    ofSetColor(255, 0, 255);
+    
+    //Draw lines that outline touch regions
+    //We're not using the camera to draw in debug so we need to flip everything
+    //to match the coordinates that ARE being drawn with the camera in draw()
+    float topY = (1.0f - bookPageTopSlider) * deskHeight;
+    float botY = (1.0f - bookPageBottomSlider) * deskHeight;
+    float leftX = (1.0f - bookLeftBoundSlider) * deskWidth;
+    float centerX = (1.0f - bookCenterSlider) * deskWidth;
+    
+    //Book left edge
+    ofDrawLine(leftX, 0, leftX, deskHeight);
+    //Book center
+    ofDrawLine(centerX, 0, centerX, deskHeight);
+    
+    //Top and bottom bounds
+    ofDrawLine(leftX, topY, deskWidth, topY);
+    ofDrawLine(leftX, botY, deskWidth, botY);
+    
+    deskFBO.end();
+
+    
+    
+    
     ofNoFill();
     ofSetLineWidth(2);
-    
     
     
     if(drawWireframeToggle){
@@ -771,7 +917,7 @@ void CenterBook::drawDebug(){
     ofPopStyle();
     
     
-    
+    bIsGuiActive = true;
     
 }
 
@@ -824,7 +970,12 @@ void CenterBook::setupGui(){
     gui.add(pageTopMarginSlider.setup("Page Top Margin", 38, 0, 60));
     gui.add(drawBookTexToggle.setup("Draw Raw Book Tex", false));
     
-    
+    gui.add(detectionLabel.setup("  TOUCH REGIONS", ""));
+    gui.add(bookLeftBoundSlider.setup("Book Left Bound", 0.6f, 0.0, 1.0));
+    gui.add(bookCenterSlider.setup("Book Center", 0.31f, 0.0, 1.0));
+    gui.add(bookPageTopSlider.setup("Book Top Bound", 0.1f, 0.0, 1.0));
+    gui.add(bookPageBottomSlider.setup("Book Bottom Bound", 0.95f, 0.0, 1.0));
+    gui.add(touchWaitSlider.setup("Wait after touch", 500, 10, 2000));
     
     maxRangeX = 100;
     maxRangeY = 250;
@@ -846,11 +997,14 @@ void CenterBook::setupGui(){
     positioningLabel.setBackgroundColor(ofColor(255));
     mappingLabel.setBackgroundColor(ofColor(255));
     contentTextureLabel.setBackgroundColor(ofColor(255));
+    detectionLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels
     positioningLabel.setDefaultTextColor(ofColor(0));
     
-    gui.setPosition(meshPoints[0].x - 300, meshPoints[0].y - 120);
+    gui.setPosition(meshPoints[0].x - 300, meshPoints[0].y - 160);
+    
+    bIsGuiActive = true;
     
 }
 

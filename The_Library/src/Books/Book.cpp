@@ -182,7 +182,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     float texCoordY = 13.254;
     float texWidth = 22.125;
     float texHeight = 189.917;
-    spineMesh = tex -> getMeshForSubsection(0, -height, 0, thickness, height, texCoordX, texCoordY, texWidth, texHeight, true, OF_RECTMODE_CORNER);
+    spineMesh = tex -> getMeshForSubsection(0, -height, -1, thickness, height, texCoordX, texCoordY, texWidth, texHeight, true, OF_RECTMODE_CORNER);
     
     
     //--------------------Book Text and Page Layouts--------------------
@@ -205,17 +205,19 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
 
     
     //book tag list and coloring
-    tagList.resize(10);
-    tagList[0] = "Arts&Humanities";
-    tagList[1] = "Health&Behavior";
-    tagList[2] = "Psychology&Cognition";
-    tagList[3] = "STEM";
-    tagList[4] = "Literacy&Language";
-    tagList[5] = "Curriculum";
-    tagList[6] = "Assessment";
-    tagList[7] = "Administration&Policy";
-    tagList[8] = "Culture";
-    tagList[9] = "Other Stuff";
+//    tagList.resize(10);
+//    tagList[0] = "Arts&Humanities";
+//    tagList[1] = "Health&Behavior";
+//    tagList[2] = "Psychology&Cognition";
+//    tagList[3] = "STEM";
+//    tagList[4] = "Literacy&Language";
+//    tagList[5] = "Curriculum";
+//    tagList[6] = "Assessment";
+//    tagList[7] = "Administration&Policy";
+//    tagList[8] = "Culture";
+//    tagList[9] = "Other Stuff";
+    
+
     
     bShowTaglet = false;
     bFadeOutTaglet = true;
@@ -271,19 +273,23 @@ void Book::setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelfPts){
     
     //Buttons are drawn relative to the book's position on the shelf (lower left corner)
     //draw the next button on top, then prev, then exit on bottom
-    exitButton.setup( 0, displayPos, shelfPts, shelfNum, bookID );
-    prevButton.setup( 1, displayPos, shelfPts, shelfNum, bookID );
-    nextButton.setup( 2, displayPos, shelfPts, shelfNum, bookID );
+    exitButton.setup( 0, displayPos);
+    prevButton.setup( 1, displayPos);
+    nextButton.setup( 2, displayPos);
+    
+    exitButton.setLibraryInfo(shelfPts, shelfNum, bookID);
+    prevButton.setLibraryInfo(shelfPts, shelfNum, bookID);
+    nextButton.setLibraryInfo(shelfPts, shelfNum, bookID);
+    tagButton.setLibraryInfo(shelfPts, shelfNum, bookID);
     
     //set button icons
     exitButton.setIcons( &(*icons)[0], &(*icons)[1] );
     prevButton.setIcons( &(*icons)[2], &(*icons)[3] );
     nextButton.setIcons( &(*icons)[4], &(*icons)[5] );
     
-    
-    //tagButton does not use the third parameter
     //tag button will finish setting up in the setupContent() method
-    tagButton.setup(3, displayPos, shelfPts, shelfNum, bookID );
+    tagButton.setup(3, displayPos);
+
     
 }
 
@@ -315,28 +321,15 @@ bool Book::checkButtonsForClicks(int x, int y, bool touchState){
 }
 
 
-void Book::setupContent(Contribution c){
+void Book::setupContent(Contribution c, int _tagNum, ofColor _tagCol){
     
     userContribution = c;
-
-    
-    //find out which tag we have
-    for(int i = 0; i < tagList.size(); i++){
-        if(userContribution.tag.compare(tagList[i]) == 0){
-            tagNum = i;
-        }
-    }
-    
-    //set the color of this tag
-    //split up the HSB spectrum based on how many tags we have
-    int hueDiff = 255 / tagList.size();
-    tagCol.setHsb( tagNum * hueDiff, 165, 255);
-    
-//    cout << "Book[" << bookID <<"] Tag #" << tagNum << ", Color: " << tagCol << endl;
+    tagNum = _tagNum;
+    tagCol = _tagCol;
     
     //setup the tag button
-    tagButton.setTag(userContribution.tag, tagNum, tagCol, UIFont);
-    
+    tagButton.setFont(UIFont);
+    tagButton.setTag(userContribution.tag, tagNum, tagCol);
     
     formatTextForDisplay();
     drawContentToTexture();

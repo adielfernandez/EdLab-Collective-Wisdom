@@ -19,6 +19,7 @@
 #include "../Content/Contribution.hpp"
 #include "BookUIButton.hpp"
 
+
 #pragma once
 
 class Book{
@@ -30,7 +31,7 @@ public:
     
     void loadModel(int bType, int tType, int fType);
     void setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UIFont);
-    void setupContent(Contribution c);
+    void setupContent(Contribution c, int _tagNum, ofColor _tagCol);
     
     void setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelf);
     void update();
@@ -102,14 +103,14 @@ public:
     Contribution userContribution;
     
     //local contribution storage for ease
+//    vector<string> tagList;
     int tagNum;
-    vector<string> tagList;
+    ofColor tagCol;
     
     //Taglet animation
     void showTaglet();
     bool bShowTaglet;
     bool bFadeOutTaglet;
-    ofColor tagCol;
     float tagTrans;
     double tagletStartTime;
     

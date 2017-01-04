@@ -19,8 +19,10 @@
 #include "ShelfOverlay.hpp"
 #include "../Furniture/Bookcase.hpp"
 #include "../Content/Contribution.hpp"
-#include "../Content/ContentManager.hpp"
+#include "../Content/ContributionManager.hpp"
 #include "BookUIButton.hpp"
+
+#include "../Content/ScholarData.hpp"
 
 
 #pragma once
@@ -34,12 +36,14 @@ public:
     
     void loadModels();
     void setBookCaseRefs(Bookcase *leftCase, Bookcase *rightCase);
+    void setScholarData(ScholarData *sData);
     void setup(vector<Contribution> *cList);
     void update();
     void draw();
     
     void checkMouseEvents(int x, int y);
     
+    ScholarData *scholarData;
     
     //Content for all the books
     vector<Contribution> *contributionList;

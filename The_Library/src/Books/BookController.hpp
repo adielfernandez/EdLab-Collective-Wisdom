@@ -71,11 +71,17 @@ public:
     ofTrueTypeFont UIFont;
     vector<ofImage> buttonIcons;
     
+    vector<Contribution> archive;
+    
     //Book placement and arrangment
     int numBooksPerShelf;
     int numShelves;
     
     int availableBooks;
+    
+    double lastRecycleTime;
+    float recycleInterval;
+    
     
     //-----SHELF OVERLAYS AND TRACKING
     //for keeping track of which shelves are in use

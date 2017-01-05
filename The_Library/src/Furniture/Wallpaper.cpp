@@ -16,27 +16,7 @@ Wallpaper::Wallpaper(){
     
 }
 
-void Wallpaper::loadMedia(){
-    
-    //load all the images from file
-    ofDirectory dir;
-    dir.listDir("assets/wallpapers/");
-    dir.sort();
-    
-    //load images with manual file names
-    //loading with ofDirectory conflicts with ofxAssimp
-    for(int i = 0; i < (int)dir.size(); i++){
-        
-        ofImage img;
-        img.load(dir.getPath(i));
-        
-        images.push_back(img);
-        
-    }
-    
-    currentImg = 3; //round(ofRandom( images.size() - 1 ));
-    
-}
+
 
 void Wallpaper::setup(){
     
@@ -71,12 +51,38 @@ void Wallpaper::setup(){
     
     tileRes = getResFromSlider(tileResSlider);
     tileResSlider.setName(tileResSliderName + ofToString(tileRes));
+    
+    currentImg = 3; //round(ofRandom( images.size() - 1 ));
+    
     mapMesh(tileRes);
     
     needsReMap = false;
     
     //Setup the parent class TiledObject with all th info set above
     TiledObject::setupTiledObject(false);   //NOT a bookcase
+    
+    
+    
+}
+
+//runs AFTER setup()
+void Wallpaper::loadMedia(){
+    
+    //load all the images from file
+    ofDirectory dir;
+    dir.listDir("assets/wallpapers/");
+    dir.sort();
+    
+    //load images with manual file names
+    //loading with ofDirectory conflicts with ofxAssimp
+    for(int i = 0; i < (int)dir.size(); i++){
+        
+        ofImage img;
+        img.load(dir.getPath(i));
+        
+        images.push_back(img);
+        
+    }
     
     
     
@@ -200,13 +206,15 @@ void Wallpaper::update(){
             mapMesh(tileRes);
             needsReMap = false;
         }
+        
+        TiledObject::updateCommonGui();
+        
     }
     
     
     //will be set to true if we're drawing the gui
     bIsGuiActive = false;
     
-    TiledObject::updateCommonGui();
 
     
     
@@ -219,9 +227,18 @@ void Wallpaper::update(){
 
 void Wallpaper::draw(){
     
-
+    //only draw all the tiles if we're animating
+    //otherwise, draw the static image
     
-    TiledObject::draw();
+    if(bIsAnimating){
+        
+        TiledObject::draw();
+        
+    } else {
+        //flip the image in Y because of the camera
+        ofSetColor(255);
+        images[currentImg].draw(0, 1200, 1920, -1200);
+    }
     
 }
 

@@ -16,7 +16,7 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 10;
+    numBooksPerShelf = 8;
     numShelves = 1;
     
     int numBooks = numBooksPerShelf * numShelves;
@@ -178,8 +178,11 @@ void BookController::setup(vector<Contribution> *cList){
     
     availableBooks = 0;
     lastNewBookEvent = 0;
-    newBookInterval = 2.0f;
+    newBookInterval = 0.5f;
+    lastRecycleTime = 0.0f;
     
+    //bring a book back from the archive every two minutes
+    recycleInterval = 120.0f;
     
     ofVec3f shelfStart, shelfEnd;
     ofVec3f dirToShelfEnd;
@@ -255,7 +258,7 @@ void BookController::setup(vector<Contribution> *cList){
             
             ofVec3f stored;
             ofVec3f display;
-            int shelfNum = j;
+            int overallShelfNum = j;
             int bookNum = i;
             
             //after setup (once book has found its own dimensions),
@@ -273,7 +276,7 @@ void BookController::setup(vector<Contribution> *cList){
             
             
             //give books their locations
-            books[i].setLocation(stored, display, shelfNum, bookNum);
+            books[i].setLocation(stored, display, overallShelfNum, bookNum);
             
             //give the book buttons the icon images and the position of the shelf corners
             books[i].setupUI(&buttonIcons, leftOrRight -> shelfCorners[shelfNum]);
@@ -307,23 +310,18 @@ void BookController::setup(vector<Contribution> *cList){
 
                 
                 //set up the content
-                books[i].setupContent((*contributionList)[i], tagNum, tagCol);
+                //give a reference to the individual contribution in the list
+                books[i].setupContent( (*contributionList)[i] , tagNum, tagCol);
                 books[i].putInShelf();
+                
+                //also mark this message as no longer archived
+                (*contributionList)[i].bIsArchived = false;
                 
             } else {
                 
                 books[i].bIsUnused = true;
                 
                 availableBooks++;
-                
-                //-----REMOVE THIS WHEN DONE TESTING!!!-----
-                
-                //copy the contribution into the book
-//                books[i].userContribution = (*contributionList)[0];
-//                
-//                //and format the text to be displayed
-//                //print the book number too
-//                books[i].formatTextForDisplay();
                 
             }
             
@@ -345,6 +343,11 @@ void BookController::setup(vector<Contribution> *cList){
     }
 
 
+    
+    //now we need to take any left over messages and put them into the archive
+    
+
+    
     
     
     
@@ -446,9 +449,8 @@ void BookController::onNewContribution( Contribution& c ){
                     //jot it down so we can reset it below
                     bookIndex = i;
                     
-                    cout << "Initializing unused book: " << bookIndex << endl;
-                    
-                    cout << "Num books left available: " << availableBooks << endl;
+//                    cout << "Initializing unused book: " << bookIndex << endl;
+//                    cout << "Num books left available: " << availableBooks << endl;
                     
                     //we found a book, don't keep looking
                     break;
@@ -469,15 +471,36 @@ void BookController::onNewContribution( Contribution& c ){
                 
                 int checkIndex = floor( ofRandom(books.size()) );
                 
-                cout << "Checking book: " << checkIndex << endl;
+//                cout << "Checking book: " << checkIndex << endl;
                 
+                //look for a book that is available (not active or spawning)
                 if( !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
+                    
                     foundBook = true;
                     
                     //jot it down so we can reset it below
                     bookIndex = checkIndex;
                     
-                    cout << "Recycling book: " << bookIndex << endl;
+//                    cout << "Recycling book: " << bookIndex << endl;
+                    
+                    //if we're recycling a used book, we need to mark the
+                    //contribution that it currently has as archived before replacing it
+                    
+                    //find the book in the contributionList that matches the ID of this
+                    //message then mark it
+                    for(int i = 0; i < contributionList -> size(); i++){
+                        
+                        if( (*contributionList)[i].ID == books[bookIndex].userContribution.ID ){
+                            
+                            (*contributionList)[i].bIsArchived = true;
+//                            cout << "Marking " << (*contributionList)[i].ID << " as archived" << endl;
+                            break;
+                            
+                        }
+                        
+                    }
+                    
+                    
                 }
                 
                 
@@ -502,6 +525,22 @@ void BookController::onNewContribution( Contribution& c ){
         //set up the content
         books[bookIndex].setupContent( c , tagNum, tagCol);
         
+        //Find the message in the contributionList and mark as NOT archived since
+        //the message is in a book. We need to do this since the book's user
+        //contribution is a copy, not the live message we're keeping track of
+        for(int i = 0; i < contributionList -> size(); i++){
+            
+            if( (*contributionList)[i].ID == c.ID ){
+                
+                (*contributionList)[i].bIsArchived = false;
+//                cout << "Marking " << (*contributionList)[i].ID << " as UNarchived" << endl;
+                break;
+                
+            }
+            
+        }
+        
+        
         books[bookIndex].triggerNewBookEvt();
         
         lastNewBookEvent = ofGetElapsedTimef();
@@ -509,7 +548,7 @@ void BookController::onNewContribution( Contribution& c ){
     
     } else {
         
-        //it hasn't been long enough, store the book in the queue
+        //it hasn't been long enough, store the index of the book in the queue
         incomingQueue.push_back( c );
         
         
@@ -557,7 +596,55 @@ void BookController::update(){
         incomingQueue.pop_front();
     }
     
+    //if there are more contributions than there are books
+    //we'll cycle in one of the old books every now and then
+    if( contributionList -> size() > books.size() ){
     
+        //AND it's been long enough...
+        if( ofGetElapsedTimef() - lastRecycleTime > recycleInterval){
+
+//            cout << "Triggering recycle event" << endl;
+            
+            //-----BRING ONE BACK FROM THE DEAD/ARCHIVE-----
+            //Go through all the contributions and compile a short list of all the
+            //archived messages into a vector. Then go through that vector
+            //and randomly pick one (It's the easiest way to randomly pick from the
+            //archived ones without having to sort the contribution list)
+            //Then send that message to the onNewContribution()
+            //method to assign it to a new book
+            
+            vector<int> archivedIndices;
+            
+//            cout << "Found the following indices archived: " << endl;
+            for(int i = 0; i < contributionList -> size(); i++){
+                if( (*contributionList)[i].bIsArchived ){
+                    archivedIndices.push_back(i);
+                    
+                    cout << i << endl;
+                }
+            }
+            
+            if( archivedIndices.size() > 0 ){
+                
+                int randIndex = floor( ofRandom(archivedIndices.size()) );
+                int indexToRecycle = archivedIndices[randIndex];
+                
+//                cout << "Bringing back index number: " << indexToRecycle << ", ID: " << (*contributionList)[indexToRecycle].ID << endl;
+                
+                //send to get recycled, this method will take care of
+                //switching the archival stats of the old/new messages
+                onNewContribution( (*contributionList)[indexToRecycle] );
+            
+            }
+            
+            
+            
+            lastRecycleTime = ofGetElapsedTimef();
+        }
+    
+    }
+
+
     
 }
 

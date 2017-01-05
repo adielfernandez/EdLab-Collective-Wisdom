@@ -17,28 +17,6 @@ Bookcase::Bookcase(){
     
 }
 
-void Bookcase::loadMedia(){
-    
-    //load all the images from file
-    ofDirectory dir;
-    dir.listDir("assets/bookcases/");
-    dir.sort();
-    
-    //load images with manual file names
-    //loading with ofDirectory conflicts with ofxAssimp
-    for(int i = 0; i < (int)dir.size(); i++){
-        
-        ofImage img;
-        img.load(dir.getPath(i));
-        
-        images.push_back(img);
-        
-    }
-    
-//    currentImg = round(ofRandom( images.size() - 1 ));
-    currentImg = 0;
-    
-}
 
 void Bookcase::setup(string name, bool _leftCase){
     
@@ -91,15 +69,40 @@ void Bookcase::setup(string name, bool _leftCase){
     
 }
 
+void Bookcase::loadMedia(){
+    
+    //load all the images from file
+    ofDirectory dir;
+    dir.listDir("assets/bookcases/");
+    dir.sort();
+    
+    //load images with manual file names
+    //loading with ofDirectory conflicts with ofxAssimp
+    for(int i = 0; i < (int)dir.size(); i++){
+        
+        ofImage img;
+        img.load(dir.getPath(i));
+        
+        images.push_back(img);
+        
+    }
+    
+    //    currentImg = round(ofRandom( images.size() - 1 ));
+    currentImg = 0;
+    
+}
+
+
 
 void Bookcase::update(){
     
-    TiledObject::updateCommonGui();
     
     
     //this only updates variables from the GUI values if the GUI is on screen
     //Simple hack to avoid using listeners/callbacks for EACH of the GUI elements
     if(bIsGuiActive){
+        
+        TiledObject::updateCommonGui();
     
         //set variables from GUI settings
         bookcaseCorners[0] = frameCorner0;
@@ -177,6 +180,7 @@ void Bookcase::drawShadow(){
 
 void Bookcase::draw(){
     
+
     //bring forward so it draws clear of the wallpaper tiles
     ofPushMatrix();
     ofTranslate(0, 0, -50);
@@ -184,6 +188,8 @@ void Bookcase::draw(){
     TiledObject::draw();
     
     ofPopMatrix();
+        
+    
 }
 
 void Bookcase::drawDebug(){
@@ -1208,6 +1214,7 @@ void Bookcase::mapMesh(){
     shadow.addVertex(bookcaseCorners[1]);
     shadow.addVertex(bookcaseCorners[2]);
     shadow.addVertex(bookcaseCorners[3]);
+    
 
     
     //get location of the shelf corners

@@ -54,7 +54,11 @@ void ContributionManager::loadContent(){
             }
 
             Contribution c;
+            c.ID = contributionList.size();
             c.setMessage(name, tag, message);
+            
+            //make name the ID for debug
+//            c.setMessage(ofToString(c.ID), tag, message);
             
             contributionList.push_back(c);
             
@@ -64,13 +68,8 @@ void ContributionManager::loadContent(){
     
     //shuffle the vector so messages books dont
     //have the same order every time we run
-    std::random_shuffle(contributionList.begin(), contributionList.end());
+//    std::random_shuffle(contributionList.begin(), contributionList.end());
     
-
-    //Print data from file for debug
-//    for(int i = 0; i < contributionList.size(); i++){
-//        cout << "Contibution [" << i << "] Name: " << contributionList[i].name << ", Message: " << contributionList[i].message <<endl;
-//    }
     
 }
 
@@ -78,7 +77,11 @@ void ContributionManager::logNewContribution(string n, string tag, string msg){
     
     //create a message
     Contribution c;
+    c.ID = contributionList.size();
     c.setMessage(n, tag, msg);
+
+    //make name the ID for debug
+//    c.setMessage(ofToString(c.ID), tag, msg);
     
     //push it to the list
     contributionList.push_back(c);

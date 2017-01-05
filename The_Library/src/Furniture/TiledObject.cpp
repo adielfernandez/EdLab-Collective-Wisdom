@@ -19,16 +19,16 @@ void TiledObject::setupTiledObject(bool isBookcase){
     
     bIsBookcase = isBookcase;
     
-    //if we're a book case, we'll go through the images one by one
-    //instead of at random to keep both bookcases linked
-    if(bIsBookcase){
-        
-        currentImg = 0;
-        
-    } else {
-        
-        currentImg = round(ofRandom( images.size() - 1 ));
-    }
+//    //if we're a book case, we'll go through the images one by one
+//    //instead of at random to keep both bookcases linked
+//    if(bIsBookcase){
+//        
+//        currentImg = 0;
+//        
+//    } else {
+//        
+//        currentImg = round(ofRandom( images.size() - 1 ));
+//    }
     
 
     
@@ -36,7 +36,8 @@ void TiledObject::setupTiledObject(bool isBookcase){
     waveSpeed = 2.0;   //in pixels per ms
     waveTileIndex = 0;
     
-    
+    bIsAnimating = false;
+    lastAnimationTime = 0;
     
 }
 
@@ -77,6 +78,8 @@ void TiledObject::updateCommonGui(){
 }
 
 void TiledObject::triggerWave(ofVec2f epicenter){
+    
+
     
     waveEpicenter = epicenter;
     
@@ -130,8 +133,11 @@ void TiledObject::triggerWave(ofVec2f epicenter){
     std::sort(tiles.begin(), tiles.end());
     
     bWave = true;
+    bIsAnimating = true;
     waveStartTime = ofGetElapsedTimeMillis();
     waveTileIndex = 0;
+    
+    cout << "Triggering wave, bIsAnimating = " << bIsAnimating << endl;
     
 }
 
@@ -197,17 +203,17 @@ void TiledObject::update(){
             //trigger the ones that need to be triggered in between frames
             if(ofGetElapsedTimeMillis() > waveStartTime + tiles[waveTileIndex].timeUntilWave + timeBetweenFrames){
                 
-//                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_AXIS, 0.0, waveEpicenter );
+                
                 tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_RAND, 0.0, waveEpicenter );
-//                tiles[ waveTileIndex ].triggerEffect( Tile::FLIP_TRANSITION_HORIZ, 0.0, waveEpicenter );
                 
                 waveTileIndex++;
-                
                 
                 if(waveTileIndex > tiles.size() - 1){
                     
                     //turn off wave
                     bWave = false;
+                    
+                    
                     
                     //set the next image as the current one
                     currentImg = nextImg;
@@ -223,13 +229,18 @@ void TiledObject::update(){
                 
             }
             
-            
         }
         
         
+        lastAnimationTime = ofGetElapsedTimef();
         
     }
     
+    //if it's been a few seconds since we've last animated
+    //anything, turn the animation flag off
+    if(ofGetElapsedTimef() - lastAnimationTime > 2.0f){
+        bIsAnimating = false;
+    }
     
     
     for(int i = 0; i < tiles.size(); i++){

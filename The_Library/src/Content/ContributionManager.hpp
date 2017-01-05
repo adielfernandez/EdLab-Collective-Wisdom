@@ -32,6 +32,8 @@ public:
     
     vector<Contribution> contributionList;
     
+    
+    
     ofEvent<Contribution> newContributionEvt;
     
     

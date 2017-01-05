@@ -237,6 +237,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     bIsActive = false;
     bIsInShelf = false;
     bIsDisplayed = false;
+    bIsNewBookEvt = false;
     
     //Rotation/translation variables to move book
     //from stored position to display position
@@ -352,9 +353,12 @@ void Book::setupContent(Contribution c, int _tagNum, ofColor _tagCol){
     tagNum = _tagNum;
     tagCol = _tagCol;
     
+    //mark this contribution as not archived
+    userContribution.bIsArchived = false;
+    
     //setup the tag button
     tagButton.setFont(UIFont);
-    tagButton.setTag(userContribution.tag, tagNum, tagCol);
+    tagButton.setTag( userContribution.tag, tagNum, tagCol);
     
     formatTextForDisplay();
     drawContentToTexture();

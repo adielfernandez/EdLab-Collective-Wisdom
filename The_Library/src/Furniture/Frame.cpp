@@ -276,11 +276,11 @@ void Frame::setTextPositions(){
 
 void Frame::update(){
     
-    TiledObject::updateCommonGui();
     
     //this only updates variables from the GUI values if the GUI is on screen
     //Simple hack to avoid using listeners/callbacks for EACH of the GUI elements
     if(bIsGuiActive){
+        TiledObject::updateCommonGui();
         
         //set variables from GUI settings
         frameCorners[0] = frameCorner0;

@@ -64,6 +64,9 @@ public:
     ofVec2f waveEpicenter;
     int waveTileIndex;
     unsigned long waveStartTime;
+    
+    bool bIsAnimating;
+    double lastAnimationTime;
 
     //convenience algorithm for finding
     //intersection of two line segments

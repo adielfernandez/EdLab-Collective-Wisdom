@@ -100,7 +100,7 @@ void ofApp::setup(){
     
     
     lastChangeTime = 0;
-    waitTime = 10000;
+    waitTime = 30000;
 
 }
 
@@ -167,10 +167,23 @@ void ofApp::update(){
 //        } else {
 //            wallpaper.triggerWave(ofVec2f(x, y));
 //        }
-//        
+//    
 //        waitTime = ofRandom(5000, 10000);
 //        lastChangeTime = ofGetElapsedTimeMillis();
 //    }
+    
+    
+    //print messages and their archival status
+//    string s = "";
+//    
+//    for(int i = 0; i < contributionManager.contributionList.size(); i++){
+//        
+//        s += contributionManager.contributionList[i].name + ": " + ofToString(contributionManager.contributionList[i].bIsArchived) + ", ";
+//        
+//    }
+//    
+//    cout << s << endl;
+    
     
 }
 
@@ -212,6 +225,7 @@ void ofApp::draw(){
     
     
     //camera inverts textures so draw the edge mask upside down
+    ofSetColor(255);
     bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
     
     
@@ -332,10 +346,13 @@ void ofApp::keyPressed(int key){
         if(bookController.books.size() > 0){
             int thisTag = floor(ofRandom(scholarData.tagList.size()));
             
+            string name = "JaneDoe" + ofToString(ofGetElapsedTimef(), 2);
             string s = scholarData.tagList[thisTag];
             
-            contributionManager.logNewContribution("Jane Doe", s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
-                
+            contributionManager.logNewContribution(name, s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
+            
+            
+            cout << "New manual contribution with tag: " << s << endl;
         }
     }
     

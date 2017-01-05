@@ -52,8 +52,9 @@ public:
     //when a new contribution is received
     void onNewContribution( Contribution& c );
     
-    vector<Contribution> incommingQueue;
+    list<Contribution> incomingQueue;
     double lastNewBookEvent;
+    float newBookInterval;
     
     void onButtonClickEvt(ButtonEvent &b);
     

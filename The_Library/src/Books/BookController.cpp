@@ -178,6 +178,7 @@ void BookController::setup(vector<Contribution> *cList){
     
     availableBooks = 0;
     lastNewBookEvent = 0;
+    newBookInterval = 2.0f;
     
     
     ofVec3f shelfStart, shelfEnd;
@@ -422,87 +423,103 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
 
 void BookController::onNewContribution( Contribution& c ){
     
-    //go through the book vector, if we have any unused books available,
-    //trigger those, if not, recycle an existing one
-    
-
-    int bookIndex = 0;
-    
-    
-    //See if any unused books are available
-    if( availableBooks > 0 ){
+    //check if it has been long enough since the last event.
+    //if not, add the contribution to the queue and wait
+    if(ofGetElapsedTimef() - lastNewBookEvent > newBookInterval){
         
-        for(int i = 0; i < books.size(); i++){
+        //go through the book vector, if we have any unused books available,
+        //trigger those, if not, recycle an existing one
+        int bookIndex = 0;
+        
+        
+        //See if any unused books are available
+        if( availableBooks > 0 ){
             
-            if(books[i].bIsUnused == true){
+            for(int i = 0; i < books.size(); i++){
                 
-                //mark book as used
-                books[i].bIsUnused = false;
-                availableBooks--;
-                
-                //jot it down so we can reset it below
-                bookIndex = i;
-                
-                cout << "Initializing unused book: " << bookIndex << endl;
-                
-                cout << "Num books left available: " << availableBooks << endl;
-                
-                //we found a book, don't keep looking
-                break;
-                
+                if(books[i].bIsUnused == true){
+                    
+                    //mark book as used
+                    books[i].bIsUnused = false;
+                    availableBooks--;
+                    
+                    //jot it down so we can reset it below
+                    bookIndex = i;
+                    
+                    cout << "Initializing unused book: " << bookIndex << endl;
+                    
+                    cout << "Num books left available: " << availableBooks << endl;
+                    
+                    //we found a book, don't keep looking
+                    break;
+                    
+                }
             }
+            
+            
+        } else {
+            
+            //no unused books available, recycle an existing one
+            //pick a random number and find a book that is available
+            //doing it this way instead of using a for loop
+            //prevents reusing the same few books at the beginning of the vector
+            bool foundBook = false;
+            
+            do {
+                
+                int checkIndex = floor( ofRandom(books.size()) );
+                
+                cout << "Checking book: " << checkIndex << endl;
+                
+                if( !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
+                    foundBook = true;
+                    
+                    //jot it down so we can reset it below
+                    bookIndex = checkIndex;
+                    
+                    cout << "Recycling book: " << bookIndex << endl;
+                }
+                
+                
+            } while ( !foundBook );
+            
         }
         
         
+        //if we've gotten this far,
+        //get tag number and color from the tagList in scholar data to set up the book
+        int tagNum;
+        ofColor tagCol;
+        
+        for(int i = 0; i < scholarData -> tagList.size(); i++){
+            if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
+                tagNum = i;
+            }
+        }
+        
+        tagCol = scholarData -> tagColorList[tagNum];
+        
+        //set up the content
+        books[bookIndex].setupContent( c , tagNum, tagCol);
+        
+        books[bookIndex].triggerNewBookEvt();
+        
+        lastNewBookEvent = ofGetElapsedTimef();
+    
+    
     } else {
         
-        //no unused books available, recycle an existing one
-        //pick a random number and find a book that is available
-        //doing it this way instead of using a for loop
-        //prevents reusing the same few books at the beginning of the vector
-        bool foundBook = false;
+        //it hasn't been long enough, store the book in the queue
+        incomingQueue.push_back( c );
         
-        do {
-
-            int checkIndex = floor( ofRandom(books.size()) );
-            
-            cout << "Checking book: " << checkIndex << endl;
-            
-            if( !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
-                foundBook = true;
-                
-                //jot it down so we can reset it below
-                bookIndex = checkIndex;
-                
-                cout << "Recycling book: " << bookIndex << endl;
-            }
-            
-            
-        } while ( !foundBook );
+        
         
     }
     
-
-    //if we've gotten this far,
-    //get tag number and color from the tagList in scholar data to set up the book
-    int tagNum;
-    ofColor tagCol;
-    
-    for(int i = 0; i < scholarData -> tagList.size(); i++){
-        if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
-            tagNum = i;
-        }
-    }
-    
-    tagCol = scholarData -> tagColorList[tagNum];
-    
-    //set up the content
-    books[bookIndex].setupContent( c , tagNum, tagCol);
-    
-    books[bookIndex].triggerNewBookEvt();
     
     
-
+    
+    
 
     
     
@@ -527,6 +544,17 @@ void BookController::update(){
     //update the shelf overlays
     for(int i = 0; i < shelfOverlays.size(); i++){
         shelfOverlays[i].update();
+    }
+    
+    //if theres anything in the incoming queue AND
+    //it's been long enough, trigger a new contribution event
+    if( !incomingQueue.empty() && ofGetElapsedTimef() - lastNewBookEvent > newBookInterval ){
+        
+        //trigger a new book event with the oldest
+        onNewContribution( *incomingQueue.begin() );
+        
+        //remove the first element of the vector
+        incomingQueue.pop_front();
     }
     
     

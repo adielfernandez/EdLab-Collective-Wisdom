@@ -51,6 +51,9 @@ void ofApp::setup(){
     leftBookcase.loadMedia();
     rightBookcase.loadMedia();
     
+    //Trinkets too
+//    globe.setup( (rightBookcase.shelfCorners[0][0] + rightBookcase.shelfCorners[0][1])/2.0f );
+    
     //pass scholar data down the chain to where it is needed
     frame.setScholarData(&scholarData);
     
@@ -63,7 +66,7 @@ void ofApp::setup(){
     //and the bookcases have been setup, we can setup book textures
     //and place them on the shelves
     bookController.setup(&contributionManager.contributionList);
-    centerBook.setup(&scholarData);
+    centerBook.setup(&scholarData, &frame);
     
     //add a listener in the Book controller for events
     //in the content manager when it gets new messages
@@ -116,7 +119,7 @@ void ofApp::update(){
     
     centerBook.update();
     
-    
+//    globe.update();
     
     
     
@@ -145,7 +148,7 @@ void ofApp::update(){
 
     
     
-    
+    //timer based tile animations
 //    if(ofGetElapsedTimeMillis() - lastChangeTime > waitTime){
 //        
 //        float rand = ofRandom(3);
@@ -184,12 +187,8 @@ void ofApp::draw(){
     //draw objects on top of wall paper regardless of depth
     ofDisableDepthTest();
     
-    //push wallpaper back a tiny bit so it's always in the background
-    ofPushMatrix();
-    ofTranslate(0, 0, -1);
-    
     wallpaper.draw();
-    ofPopMatrix();
+
     
     //draw object shadows before we enable depth testing again
     frame.drawShadow();
@@ -201,9 +200,15 @@ void ofApp::draw(){
     leftBookcase.draw();
     rightBookcase.draw();
     
+//    globe.draw();
+    
+    
+    
     centerBook.draw();
     
     bookController.draw();
+    
+    
     
     
     //camera inverts textures so draw the edge mask upside down
@@ -376,15 +381,15 @@ void ofApp::mousePressed(int x, int y, int button){
     }
     
     //if we click in the frame, trigger the fact sheet
-    if(button == 0 && x > frame.frameCorners[0].x && x < frame.frameCorners[1].x && y < frame.frameCorners[3].y){
-        
-        if(frame.bShowFactSheet){
-            frame.hideFactSheet();
-        } else {
-            frame.showFactSheet();
-        }
-        
-    }
+//    if(button == 0 && x > frame.frameCorners[0].x && x < frame.frameCorners[1].x && y < frame.frameCorners[3].y){
+//        
+//        if(frame.bShowFactSheet){
+//            frame.hideFactSheet();
+//        } else {
+//            frame.showFactSheet();
+//        }
+//        
+//    }
     
 }
 

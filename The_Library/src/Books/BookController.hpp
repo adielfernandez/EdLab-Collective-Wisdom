@@ -52,6 +52,9 @@ public:
     //when a new contribution is received
     void onNewContribution( Contribution& c );
     
+    vector<Contribution> incommingQueue;
+    double lastNewBookEvent;
+    
     void onButtonClickEvt(ButtonEvent &b);
     
     //get pointers to the bookcase where we'll
@@ -70,6 +73,8 @@ public:
     //Book placement and arrangment
     int numBooksPerShelf;
     int numShelves;
+    
+    int availableBooks;
     
     //-----SHELF OVERLAYS AND TRACKING
     //for keeping track of which shelves are in use

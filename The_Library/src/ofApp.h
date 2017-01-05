@@ -13,6 +13,8 @@
 
 #include "Content/ScholarData.hpp"
 
+#include "Trinkets/Globe.hpp"
+
 #include "ofxOsc.h"
 
 class ofApp : public ofBaseApp{
@@ -97,6 +99,10 @@ class ofApp : public ofBaseApp{
     
     unsigned long long lastChangeTime;
     int waitTime;
+    
+    
+    //Trinkets on shelves
+//    Globe globe;
     
 
 };

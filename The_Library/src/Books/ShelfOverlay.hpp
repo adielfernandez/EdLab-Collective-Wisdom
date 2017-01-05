@@ -34,16 +34,22 @@ public:
     
     bool bIsActive = false;
     bool bFadeOut = false;
+    bool bIsInUse = false;
     
     double triggerTime;
     
     void activate(){
         bIsActive = true;
+        bIsInUse = true;
         triggerTime = ofGetElapsedTimef();
+        
+        cout << "Activating shelf" << endl;
+        
     }
     void deactivate(){
         bIsActive = false;
         triggerTime = ofGetElapsedTimef();
+        cout << "DEactivating shelf" << endl;
     }
     
     void update(){
@@ -79,6 +85,9 @@ public:
                     
                     if(pct == 1.0f){
                         bFadeOut = false;
+                        
+                        //done fading, mark bookshelf as available
+                        bIsInUse = false;
                     }
                 }
             }

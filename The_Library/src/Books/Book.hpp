@@ -34,8 +34,12 @@ public:
     void setupContent(Contribution c, int _tagNum, ofColor _tagCol);
     
     void setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelf);
+    
+    void setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum);
+    
     void update();
     void triggerDisplay();
+    void triggerNewBookEvt();
 
     void formatTextForDisplay();
     void drawContentToTexture();
@@ -68,6 +72,13 @@ public:
     bool bIsDisplayed;
     bool bIsClosing;
     double closingStartTime;
+    
+    bool bIsInShelf;
+    
+    void putInShelf();
+    
+    
+    bool bIsNewBookEvt;
     
     //Book interface
     void showButtons();
@@ -119,17 +130,22 @@ public:
     float widthScale;
     float flatScale, flattenAmt;
     
+    float spineTrans;
     
     //positioning and animation
     ofVec3f pos;
     ofVec3f pulledOutPos;
     ofVec3f displayPos;
     ofVec3f storedPos;
+    ofVec3f spawnPos;
+    
     const float storedRotX = -90;
     const float storedRotZ = 90;
     const float displayRotX = -90;
     const float displayRotZ = 180;
     float currentRotX, currentRotZ;
+    
+    float spawnAngleX, spawnAngleZ;
     
     double animStartTime;
     float animPos;

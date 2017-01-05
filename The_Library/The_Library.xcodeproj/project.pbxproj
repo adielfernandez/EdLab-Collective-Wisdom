@@ -65,6 +65,7 @@
 		D7E2DC921E17308A00AEB632 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC841E17308A00AEB632 /* OscReceivedElements.cpp */; };
 		D7E2DC931E17308A00AEB632 /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC861E17308A00AEB632 /* OscTypes.cpp */; };
 		D7E2DC9A1E1C5D6700AEB632 /* ScholarData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */; };
+		D7E2DCA31E1D99FA00AEB632 /* Globe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DCA11E1D99FA00AEB632 /* Globe.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -465,6 +466,8 @@
 		D7E2DC871E17308A00AEB632 /* OscTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscTypes.h; sourceTree = "<group>"; };
 		D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScholarData.cpp; sourceTree = "<group>"; };
 		D7E2DC991E1C5D6700AEB632 /* ScholarData.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScholarData.hpp; sourceTree = "<group>"; };
+		D7E2DCA11E1D99FA00AEB632 /* Globe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Globe.cpp; sourceTree = "<group>"; };
+		D7E2DCA21E1D99FA00AEB632 /* Globe.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Globe.hpp; sourceTree = "<group>"; };
 		D825FF1F1EA48B305BB428B7 /* scene.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = scene.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/scene.h; sourceTree = SOURCE_ROOT; };
 		D847EBE484F4F500F9CF2549 /* ofxCvImage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvImage.h; path = ../../../addons/ofxOpenCv/src/ofxCvImage.h; sourceTree = SOURCE_ROOT; };
 		D8DE36BE576A104A4CAAED41 /* Hand.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Hand.hpp; path = ../../../addons/ofxOrbbecAstra/libs/astra/include/astra/streams/Hand.hpp; sourceTree = SOURCE_ROOT; };
@@ -1609,6 +1612,16 @@
 			path = osc;
 			sourceTree = "<group>";
 		};
+		D7E2DCA01E1D99FA00AEB632 /* Trinkets */ = {
+			isa = PBXGroup;
+			children = (
+				D7E2DCA21E1D99FA00AEB632 /* Globe.hpp */,
+				D7E2DCA11E1D99FA00AEB632 /* Globe.cpp */,
+			);
+			name = Trinkets;
+			path = src/Trinkets;
+			sourceTree = SOURCE_ROOT;
+		};
 		DCC60D6724B56635AE867535 /* libs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1660,6 +1673,7 @@
 				D72C74721DEBCD7A00D770C8 /* Content */,
 				D72C745A1DEBCB2C00D770C8 /* Books */,
 				D72C745F1DEBCB2C00D770C8 /* Furniture */,
+				D7E2DCA01E1D99FA00AEB632 /* Trinkets */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1847,6 +1861,7 @@
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
 				D72C74701DEBCB2C00D770C8 /* Wallpaper.cpp in Sources */,
+				D7E2DCA31E1D99FA00AEB632 /* Globe.cpp in Sources */,
 				EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */,
 				6AABAB39E82AF5CFEA23A205 /* ContourFinder.cpp in Sources */,
 				D72C74831DED442B00D770C8 /* BookUIButton.cpp in Sources */,

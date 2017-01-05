@@ -18,6 +18,8 @@
 #include "Tile.hpp"
 #include "TiledObject.hpp"
 
+
+
 #pragma once
 
 
@@ -45,7 +47,6 @@ public:
     void saveSettings();
     void loadSettings();
     
-
     
     //LEFT or RIGHT
     bool bLeftCase;

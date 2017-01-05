@@ -113,6 +113,7 @@ public:
     
     void hideFactSheet();
     void showFactSheet();
+    void changeScholar(int num);
     
     bool bShowFactSheet;
     bool bFactSheetAnimating;

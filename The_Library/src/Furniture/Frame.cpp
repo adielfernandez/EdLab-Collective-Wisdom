@@ -162,7 +162,7 @@ void Frame::setScholarData(ScholarData *data){
         
     }
     
-    
+    numScholars = scholarData -> scholarList.size();
     
 }
 
@@ -247,6 +247,18 @@ void Frame::hideFactSheet(){
     
 }
 
+void Frame::changeScholar(int num){
+    
+    if(num >= 0 && num < numScholars){
+        currentScholar = num;
+    
+        setTextPositions();
+        
+        lastScholarChange = ofGetElapsedTimeMillis();
+    }
+    
+}
+
 void Frame::setTextPositions(){
     
     //Change text positions based on the current name
@@ -316,19 +328,16 @@ void Frame::update(){
     //like tile manipulation, wave effects, etc.
     TiledObject::update();
     
-    
-    if(ofGetElapsedTimeMillis() - lastScholarChange > 5000){
-//        currentScholar = floor(ofRandom( numScholars ));
-        currentScholar ++;
-        
-        if(currentScholar == scholarData -> numScholars){
-            currentScholar = 0;
-        }
 
-        setTextPositions();
-        
-        lastScholarChange = ofGetElapsedTimeMillis();
-    }
+    
+    //to change the scholar on a timer
+//    if(ofGetElapsedTimeMillis() - lastScholarChange > 1000){
+//      
+//        int n = floor(ofRandom( numScholars ));
+//        changeScholar( n );
+//        
+//
+//    }
     
     
     

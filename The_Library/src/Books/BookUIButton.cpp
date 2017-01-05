@@ -286,7 +286,7 @@ void BookUIButton::update(){
     if(!bIsDisplayed){
     
         
-        currentPos.interpolate(hiddenPos, 0.07);
+        currentPos.interpolate(hiddenPos, 0.08);
         tagHelpTrans = ofLerp(tagHelpTrans, 0.0f, 0.06);
         tagHelpScale = ofLerp(tagHelpScale, 0.0f, 0.1);
         

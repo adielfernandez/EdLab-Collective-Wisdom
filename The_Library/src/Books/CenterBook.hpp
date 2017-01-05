@@ -20,6 +20,7 @@
 #include "ofxGui.h"
 #include "../Content/ScholarData.hpp"
 #include "BookUIButton.hpp"
+#include "../Furniture/Frame.hpp"
 
 
 class CenterBook{
@@ -29,7 +30,7 @@ public:
     CenterBook();
     
     void loadModel();
-    void setup(ScholarData *sData);
+    void setup(ScholarData *sData, Frame *f);
     void update();
     void draw();
     void drawDebug();
@@ -39,7 +40,7 @@ public:
     void mapMesh();
     
     ScholarData *scholarData;
-    
+    Frame *frame;
     
     //Model stuff
     ofxAssimpModelLoader model;
@@ -149,7 +150,7 @@ public:
     float topMargin;
     float betweenScholars;
     float betweenNames;
-    float nameBoxHeight;
+    float highlightBoxHeight;
     float nameHeight;
     float lineHeight;
     
@@ -159,12 +160,14 @@ public:
     ofColor highlightColor;
     
     vector<bool> scholarHoverStates;
+    vector<bool> page4OptionHoverStates;
     
     ofVec3f tagPos;
     ofVec3f tagHelpTextPos;
     string tagHelpText;
     BookUIButton tagButton;
     
+    vector<string> page4OptionText;
     
     struct MouseTouch{
         

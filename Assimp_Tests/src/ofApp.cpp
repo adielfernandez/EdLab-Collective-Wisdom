@@ -12,10 +12,11 @@ void ofApp::setup(){
     bAnimateMouse = false;
     animationPosition = 0;
     
-    model.loadModel("finalBook/bookMedium.fbx", false);
+//    model.loadModel("finalBook/bookMedium.fbx", false);
 //    model.loadModel("converted/bookMedium.fbx", false);
 //    model.loadModel("converted/bookShort.fbx", false);
-//    model.loadModel("ship/Ship N181113.3DS", false);
+    model.loadModel("globe/globe.3ds", false);
+    
     
 /*
  
@@ -60,14 +61,14 @@ void ofApp::setup(){
     }
     
     drawOnTex = false;
-    meshNum = 0;
+
     
     //get original texture
 //    origTex = model.getTextureForMesh(meshNum);
     
     //set new texture here
     ofImage t;
-    t.load("finalBook/textures/03.png");
+    t.load("globe/globeWithBase.png");
     origTex = t.getTexture();
     
     //copy it to an FBO we'll actually draw with
@@ -77,9 +78,9 @@ void ofApp::setup(){
     ofClear(255, 255, 255, 255);
     ofSetColor(255);
     
-//    t.draw(0, 0);
+
     origTex.draw(0, 0);
-//    model.getTextureForMesh(meshNum).draw(0, 0);
+
     
     newSkin.end();
     
@@ -243,6 +244,11 @@ void ofApp::setup(){
     cam.setFarClip(1000000);
     
     animationPosition = 0.55;
+    
+    meshNum = -1;
+    
+    numMeshes = model.getNumMeshes();
+    
 }
 
 //--------------------------------------------------------------
@@ -309,7 +315,13 @@ void ofApp::draw(){
     model.disableTextures();
     if(newSkin.isAllocated()) newSkin.getTexture().bind();
     
-    model.drawFaces();
+    if(meshNum == -1){
+        model.drawFaces();
+    } else {
+        
+        model.getMesh(meshNum).draw();
+    }
+    
 
     if(newSkin.isAllocated()) newSkin.getTexture().unbind();
     
@@ -436,7 +448,7 @@ void ofApp::keyPressed(int key){
         origTex.draw(0, 0);
         newSkin.end();
     } else if(key == OF_KEY_SHIFT){
-        drawOnTex = true;
+        drawOnTex = !drawOnTex;
         cam.disableMouseInput();
     } else if(key == 'a'){
         
@@ -447,6 +459,25 @@ void ofApp::keyPressed(int key){
         
     }
     
+    
+    if(key == OF_KEY_RIGHT){
+        
+        meshNum++;
+        
+        if(meshNum == numMeshes){
+            meshNum = -1;
+        }
+        
+        
+    } else if(key == OF_KEY_LEFT){
+
+        meshNum--;
+        
+        if(meshNum == -1){
+            meshNum = numMeshes - 1;
+        }
+        
+    }
     
     
     model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
@@ -479,7 +510,7 @@ void ofApp::keyReleased(int key){
     
 
     
-    drawOnTex = false;
+//    drawOnTex = false;
     cam.enableMouseInput();
 }
 

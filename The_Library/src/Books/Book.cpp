@@ -222,6 +222,8 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     bShowTaglet = false;
     bFadeOutTaglet = true;
     tagTrans = 0;
+    
+    spineTrans = 0;
 
     
     //--------------------ANIMATION--------------------
@@ -233,6 +235,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     
     bIsUnused = true;
     bIsActive = false;
+    bIsInShelf = false;
     bIsDisplayed = false;
     
     //Rotation/translation variables to move book
@@ -257,11 +260,33 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     //this will also inversely scale the text to return to normal
     widthScale = 1.0;
     flatScale = 0.5;
-    flattenAmt = flatScale;
+    
+    //start flatness out as 1.0
+    flattenAmt = 1.0;
     
     //setup the buttons
     //nevermind, this is called from the book controller
 //    setupUI();
+    
+}
+
+void Book::setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum){
+    
+    
+    storedPos = stored;
+    displayPos = display;
+    
+    shelfNum = sNum;
+    bookID = bNum;
+    
+    float sideShift = -100;
+    pulledOutPos = stored + ofVec3f(sideShift, 0, -depth);
+    
+    //book spawns off screen directly above it's stored position
+    spawnPos.set(storedPos.x, - 100, storedPos.z);
+    
+    pos = storedPos;
+    
     
 }
 
@@ -333,6 +358,15 @@ void Book::setupContent(Contribution c, int _tagNum, ofColor _tagCol){
     
     formatTextForDisplay();
     drawContentToTexture();
+    
+}
+
+//only called on books that are placeed in shelf
+//at program start, without an animation
+void Book::putInShelf(){
+    
+    bIsInShelf = true;
+    spineTrans = 255;
     
 }
 
@@ -500,6 +534,7 @@ void Book::drawContentToTexture(){
 void Book::triggerDisplay(){
     
     bIsActive = true;
+    bIsInShelf = false;
     bIsDisplayed = false;
     bIsClosing = false;
     
@@ -507,13 +542,137 @@ void Book::triggerDisplay(){
     
 }
 
+void Book::triggerNewBookEvt(){
+    
+    bIsNewBookEvt = true;
+    bIsUnused = false;
+
+    bIsActive = false;
+    
+    bIsInShelf = true;
+    
+    animStartTime = ofGetElapsedTimef();
+    
+    
+    spawnAngleZ = 360;
+    spawnAngleX = 90;
+    
+    //start the book at the fully open position so
+    //we can animate it to the beginning
+    animPos = animationSpread3;
+    
+}
+
 void Book::update(){
     
 
+
+    if( bIsNewBookEvt ){
+        
+        
+        //if the book is already in the shelf we need to fade it out
+        //then animate it in, otherwise the book is bIsUnused=true and ready to be used
+        
+        float fadeOutOffsetTime = 0;
+        
+        if( bIsInShelf ){
+            
+            //if the book is not already transparent, fade it out before moving on
+            if( spineTrans != 0 ){
+                
+                //The book is already in the shelf but inactive
+                double now = ofGetElapsedTimef();
+                
+                float fadeOutTime = animStartTime + 1.0f;
+                
+                spineTrans = ofxeasing::map_clamp(now, animStartTime, fadeOutTime, 255, 0, &ofxeasing::linear::easeOut);
+                
+                
+                
+            } else {
+                
+                //if we've disappeared we're ready to spawn
+                //set the book to the spawn position
+                bIsInShelf = false;
+                bIsActive = true;
+                
+                pos = spawnPos;
+                
+                //reset the animation start time to now so
+                //the next step animates correctly
+                animStartTime = ofGetElapsedTimef();
+
+            }
+            
+        } else {
+            
+            
+            model.update();
+            
+            model.setPositionForAllAnimations(animPos);
+            
+            //Book is not in the shelf so it's a new book coming in.
+            //animate the book into the scene
+            
+
+            double now = ofGetElapsedTimef();
+            
+            //The time we'll get from spawn position to the pulled out position
+            float pulledOutPosTime = animStartTime + 4.0f;
+
+            
+            if(now < pulledOutPosTime){
+                
+                
+                //book is now closed, animate back to pulled out position
+                float backEasePct = ofxeasing::map_clamp(now, animStartTime, pulledOutPosTime, 0.0, 1.0, &ofxeasing::back::easeOut_s, 1.0);
+                
+                pos = spawnPos.getInterpolated(storedPos, backEasePct);
+                
+                //start at a large rot angle so the book spins into position on the way down
+                float anglePct = ofxeasing::map_clamp(now, animStartTime, pulledOutPosTime, 0.0, 1.0, &ofxeasing::linear::easeOut);
+                currentRotZ = ofLerp(spawnAngleZ, storedRotZ, anglePct);
+                currentRotX = ofLerp(spawnAngleX, storedRotX, anglePct);
+
+                //animation needs to end a tad earlier so book is closed when it goes into the shelf
+                double animationEndTime = pulledOutPosTime - 0.5f;
+                float animPct = ofxeasing::map_clamp(now, animStartTime, animationEndTime, 0.0, 1.0, &ofxeasing::linear::easeOut);
+                animPos = ofLerp(animationSpread3, animationStart, animPct);
+                
+                
+                
+                
+                //force the book forward so it clears the shelf while animating
+                pos.z = -200;
+
+                
+            } else {
+                
+                //put the book back at the correct Z
+                pos.z = storedPos.z;
+                
+                //animation is finished
+                bIsNewBookEvt = false;
+                bIsActive = false;
+                bIsDisplayed = false;
+                
+                bIsInShelf = true;
+                spineTrans = 255;
+                
+                
+            }
+            
+        }
+        
+        
+        
+        
+        
+    }
     
     
-    
-    if(bIsActive){
+    //update if we're active but NOT in a new book spawning event
+    if( bIsActive && !bIsNewBookEvt ){
         
         //update buttons
         nextButton.update();
@@ -523,8 +682,8 @@ void Book::update(){
         
         model.update();
 
-//        drawContentToTexture();
-
+        // bIsDisplayed: runs through book being pulled out to display
+        // position and being put back in the shelf
         if(!bIsDisplayed){
 
             //ANIMATION TO PULL BOOK OUT
@@ -590,7 +749,7 @@ void Book::update(){
                 
             }
         
-        } else {
+         } else {
 
 
             
@@ -740,6 +899,7 @@ void Book::update(){
                     //mark as inactive
                     bIsDisplayed = false;
                     bIsActive = false;
+                    bIsInShelf = true;
                     
                 }
                 
@@ -749,16 +909,12 @@ void Book::update(){
         }
         
         
-        
-        
         model.setPositionForAllAnimations(animPos);
         
-        
-        
-
-        
-    } else {
-        //bIsActive = false:
+    }
+    
+    
+    if( bIsInShelf ){
         
         //if we're showing the taglet, fade it in
         //if we're not, fade it out
@@ -813,88 +969,91 @@ void Book::draw(){
 
 
     
-        if(bIsActive){
-            
-            ofPushMatrix();
-                
-            //translate the book to the position on the shelf
-            //with the bottom left corner of the spine at pos
-            //also push it forward so it clears the rotating wallpaper tiles
-            ofTranslate(pos);
-            
-            
-            //        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -90, 90);
-            //        float z = ofMap(ofGetMouseY(), 0, ofGetHeight(), -90, 90);
-            //        cout << "XZ: " << x << ", " << z << endl;
-            
-
-            //now rotate and translate book so that it has the lower left corner of the spine
-            //as its origin and is oriented properly: book stored in shelf
-            ofRotateX(currentRotX);
-            ofRotateZ(currentRotZ);
-            
-            
-            
-            //scale the model up (with a little extra in the X to add more viewable reading area.
-            //Also, squash the book down to minimize the curvature
-            //making text close to the spine easier to read
-            ofScale(currentScale * widthScale, currentScale * flattenAmt, currentScale);
-            
-            //disable the model textures so we can use our own
-            model.disableTextures();
-            ofDisableArbTex();
-            if(textureFBO.isAllocated()) textureFBO.getTexture().bind();
-            
-            ofSetColor(255);
-            model.drawFaces();
-            
-            if(textureFBO.isAllocated()) textureFBO.getTexture().unbind();
-
-            ofPopMatrix();
-
-            //draw buttons
-            nextButton.draw();
-            prevButton.draw();
-            exitButton.draw();
-            tagButton.draw();
-            
-
-            
-        } else {
-            
-            //draw inactive placeholder (an image of the spine
-            
-            ofPushMatrix();
-                
-            //translate the book to the position on the shelf
-            //with the bottom left corner of the spine at pos
-            ofTranslate(pos);
-                
-            if(tex -> isAllocated()) tex -> bind();
-            ofSetColor(255);
-            spineMesh.draw();
-            if(tex -> isAllocated()) tex -> unbind();
-            
-
-
-            
-            //only draw if we're showing if intentionally
-            //or it is being faded out
-            if(bShowTaglet || bFadeOutTaglet){
-                float amp = 7.5;
-                float shelfHeight = 145;
-                float yHeight = -shelfHeight + amp * sin( ofGetElapsedTimef() * 3.2 );
-                float triHeight = 20;
-                ofSetColor(tagCol, tagTrans);
-                int z = -5;
-                ofDrawTriangle(0, yHeight, z, thickness, yHeight, z, thickness/2.0, yHeight + triHeight, z);
-            }
-            
-            ofPopMatrix();
-            
+    if(bIsActive){
+        
+        ofPushMatrix();
+        
+        //translate the book to the position on the shelf
+        //with the bottom left corner of the spine at pos
+        //also push it forward so it clears the rotating wallpaper tiles
+        ofTranslate(pos);
+        
+        
+        //        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -90, 90);
+        //        float z = ofMap(ofGetMouseY(), 0, ofGetHeight(), -90, 90);
+        //        cout << "XZ: " << x << ", " << z << endl;
+        
+        
+        //now rotate and translate book so that it has the lower left corner of the spine
+        //as its origin and is oriented properly: book stored in shelf
+        ofRotateX(currentRotX);
+        ofRotateZ(currentRotZ);
+        
+        
+        
+        //scale the model up (with a little extra in the X to add more viewable reading area.
+        //Also, squash the book down to minimize the curvature
+        //making text close to the spine easier to read
+        ofScale(currentScale * widthScale, currentScale * flattenAmt, currentScale);
+        
+        //disable the model textures so we can use our own
+        model.disableTextures();
+        ofDisableArbTex();
+        if(textureFBO.isAllocated()) textureFBO.getTexture().bind();
+        
+        ofSetColor(255);
+        model.drawFaces();
+        
+        if(textureFBO.isAllocated()) textureFBO.getTexture().unbind();
+        
+        ofPopMatrix();
+        
+        //draw buttons
+        nextButton.draw();
+        prevButton.draw();
+        exitButton.draw();
+        tagButton.draw();
+        
+        
+        
+    }
+    
+    
+    if( bIsInShelf ){
+        
+        //placeholder image of the spine when the book is in the shelf
+        
+        ofPushMatrix();
+        
+        //translate the book to the position on the shelf
+        //with the bottom left corner of the spine at pos
+        ofTranslate(pos);
+        
+        if(tex -> isAllocated()) tex -> bind();
+        ofSetColor(255, spineTrans);
+        spineMesh.draw();
+        if(tex -> isAllocated()) tex -> unbind();
+        
+        
+        
+        
+        //only draw if we're showing if intentionally
+        //or it is being faded out
+        if(bShowTaglet || bFadeOutTaglet){
+            float amp = 7.5;
+            float shelfHeight = 145;
+            float yHeight = -shelfHeight + amp * sin( ofGetElapsedTimef() * 3.2 );
+            float triHeight = 20;
+            ofSetColor(tagCol, tagTrans);
+            int z = -5;
+            ofDrawTriangle(0, yHeight, z, thickness, yHeight, z, thickness/2.0, yHeight + triHeight, z);
         }
         
+        ofPopMatrix();
         
+    }
+        
+    
     
     
 }

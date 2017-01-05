@@ -37,7 +37,7 @@ class ofApp : public ofBaseApp{
 
     float normFactor;
     
-    int meshNum;
+    int meshNum, numMeshes;
     ofVec3f meshCenter;
     float maxX;
     float minX;
@@ -67,5 +67,7 @@ class ofApp : public ofBaseApp{
     ofMaterial material;
     
     ofEasyCam cam;
+    
+
     
 };

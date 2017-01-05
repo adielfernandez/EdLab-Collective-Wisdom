@@ -176,6 +176,10 @@ void BookController::setup(vector<Contribution> *cList){
     }
     
     
+    availableBooks = 0;
+    lastNewBookEvent = 0;
+    
+    
     ofVec3f shelfStart, shelfEnd;
     ofVec3f dirToShelfEnd;
     ofVec3f midShelfBottom, midShelfTop;
@@ -248,39 +252,35 @@ void BookController::setup(vector<Contribution> *cList){
             //get the place of the current book on its own shelf
             int bookNumThisShelf = i % numBooksPerShelf;
             
-            //after setup (once book has found its own dimensions),
-            //set its position in the bookcase
-            books[i].pos = currentShelfPos;
+            ofVec3f stored;
+            ofVec3f display;
+            int shelfNum = j;
+            int bookNum = i;
             
-            //move book out away from wall to clear the wallpaper tiles
-            books[i].pos.z -= 50;
+            //after setup (once book has found its own dimensions),
+            //set its position in the bookcase but pushed toward viewer
+            stored.set(currentShelfPos.x, currentShelfPos.y, -50);
+            
+            //figure out the display position of this book: the center
+            //of the current shelf, raised so book is centered
+            display = (shelfStart + shelfEnd)/2.0f;
+            
+            //X: shifted to the right in the shelf to make room for the tag button on the left
+            //Y: upward a tad to move it vertically off the shelf
+            //Z: shift the book out towards the viewer
+            display += ofVec3f(52, -5, -70);
+            
+            
+            //give books their locations
+            books[i].setLocation(stored, display, shelfNum, bookNum);
+            
+            //give the book buttons the icon images and the position of the shelf corners
+            books[i].setupUI(&buttonIcons, leftOrRight -> shelfCorners[shelfNum]);
+
             
             //add the book thickness to the shelf to place the next book
             currentShelfPos += dirToShelfEnd * (books[i].thickness + bookSpacing);
             
-            //figure out the display position of this book: the center
-            //of the current shelf, raised so book is centered
-            books[i].displayPos = (shelfStart + shelfEnd)/2.0f;
-
-            //shift the book out (z) towards the viewer and shifted to the right
-            books[i].displayPos += ofVec3f(52, 0, books[i].pos.z - 20);
-            
-            //shift the book up (y) a bit to center it and out (z) towards the viewer
-//            books[i].displayPos += ofVec3f(0, books[i].h  eight/2.0, -20);
-            
-            books[i].storedPos = books[i].pos;
-            
-            float sideShift = -100; //ofMap(pctOfShelf, 0.0, 1.0, -50, -lengthOfShelf/3.0f);
-            
-            //shift the position to the left, move it up so it's centered (like displayPos)
-            //and pull it out the depth of the book
-            books[i].pulledOutPos = books[i].pos + ofVec3f(sideShift, 0, -(books[i].depth));
-
-            books[i].shelfNum = j;
-            books[i].bookID = i;
-            
-            //give the book buttons the icon images and the position of the shelf corners
-            books[i].setupUI(&buttonIcons, leftOrRight -> shelfCorners[shelfNum]);
             
             //Add the contributions from the list to the book
             //if we don't have enough contributions, mark extra books as bIsUnused
@@ -307,10 +307,13 @@ void BookController::setup(vector<Contribution> *cList){
                 
                 //set up the content
                 books[i].setupContent((*contributionList)[i], tagNum, tagCol);
+                books[i].putInShelf();
                 
             } else {
                 
                 books[i].bIsUnused = true;
+                
+                availableBooks++;
                 
                 //-----REMOVE THIS WHEN DONE TESTING!!!-----
                 
@@ -354,12 +357,11 @@ void BookController::checkMouseEvents(int x, int y){
     //Check all books for mouse presence
     for(int i = 0; i < books.size(); i++){
      
-        
         //if we're not active AND the touch is true, check for book triggers
         if(!books[i].bIsActive && ofGetMousePressed()){
             
             //only check books that are not on active shelves
-            if(shelfOverlays[books[i].shelfNum].bIsActive == false){
+            if(shelfOverlays[books[i].shelfNum].bIsInUse == false){
                 
                 //see if mouse is inside book
                 //remember: book pos is lower left corner
@@ -372,7 +374,6 @@ void BookController::checkMouseEvents(int x, int y){
                     //mark this shelf as active and trigger the shelf overlay
                     shelfOverlays[books[i].shelfNum].activate();
 
-                    
                 }
 
             }
@@ -411,55 +412,99 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
         
             }
             
-            
         }
-        
-        
         
     }
     
-    //now check for tag activations!
-    
-    
-    
 
-    
     
 }
 
 void BookController::onNewContribution( Contribution& c ){
     
-    //go through the book vector, look for the first unused book
-    //then mark it as used and add the contribution to it
-    for(int i = 0; i < books.size(); i++){
+    //go through the book vector, if we have any unused books available,
+    //trigger those, if not, recycle an existing one
+    
+
+    int bookIndex = 0;
+    
+    
+    //See if any unused books are available
+    if( availableBooks > 0 ){
         
-        if(books[i].bIsUnused == true){
+        for(int i = 0; i < books.size(); i++){
             
-            //mark book as used
-            books[i].bIsUnused = false;
-            
-            //get tag number and color from the tagList in scholar data to set up the book
-            int tagNum;
-            ofColor tagCol;
-            
-            for(int i = 0; i < scholarData -> tagList.size(); i++){
-                if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
-                    tagNum = i;
-                }
+            if(books[i].bIsUnused == true){
+                
+                //mark book as used
+                books[i].bIsUnused = false;
+                availableBooks--;
+                
+                //jot it down so we can reset it below
+                bookIndex = i;
+                
+                cout << "Initializing unused book: " << bookIndex << endl;
+                
+                cout << "Num books left available: " << availableBooks << endl;
+                
+                //we found a book, don't keep looking
+                break;
+                
             }
-            
-            tagCol = scholarData -> tagColorList[tagNum];
-            
-            
-            //set up the content
-            books[i].setupContent( c , tagNum, tagCol);
-            
-            //now break out of the for loop
-            //so we only trigger one book
-            break;
         }
         
+        
+    } else {
+        
+        //no unused books available, recycle an existing one
+        //pick a random number and find a book that is available
+        //doing it this way instead of using a for loop
+        //prevents reusing the same few books at the beginning of the vector
+        bool foundBook = false;
+        
+        do {
+
+            int checkIndex = floor( ofRandom(books.size()) );
+            
+            cout << "Checking book: " << checkIndex << endl;
+            
+            if( !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
+                foundBook = true;
+                
+                //jot it down so we can reset it below
+                bookIndex = checkIndex;
+                
+                cout << "Recycling book: " << bookIndex << endl;
+            }
+            
+            
+        } while ( !foundBook );
+        
     }
+    
+
+    //if we've gotten this far,
+    //get tag number and color from the tagList in scholar data to set up the book
+    int tagNum;
+    ofColor tagCol;
+    
+    for(int i = 0; i < scholarData -> tagList.size(); i++){
+        if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
+            tagNum = i;
+        }
+    }
+    
+    tagCol = scholarData -> tagColorList[tagNum];
+    
+    //set up the content
+    books[bookIndex].setupContent( c , tagNum, tagCol);
+    
+    books[bookIndex].triggerNewBookEvt();
+    
+    
+
+
+    
     
 }
 

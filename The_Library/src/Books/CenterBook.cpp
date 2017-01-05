@@ -25,9 +25,10 @@ void CenterBook::loadModel(){
 }
 
 
-void CenterBook::setup(ScholarData *sData){
+void CenterBook::setup(ScholarData *sData, Frame *f){
     
     scholarData = sData;
+    frame = f;
     
     //Since model Scale and dimensions are mostly hardcoded to give good, pixel related values,
     //"modelScale" scales all of them equally to make minor adjustments
@@ -214,10 +215,10 @@ void CenterBook::setup(ScholarData *sData){
     betweenScholars = 15;
 
     
-    nameBoxHeight = (pageHeight - topMargin * 2 - betweenScholars * 4)/5.0f;
+    highlightBoxHeight = (pageHeight - topMargin * 2 - betweenScholars * 4)/5.0f;
 
     
-    float spaceForName = nameBoxHeight;
+    float spaceForName = highlightBoxHeight;
     betweenNames = 4;
 
     int nameFontSize = (spaceForName - betweenNames)/2.0f;
@@ -245,7 +246,7 @@ void CenterBook::setup(ScholarData *sData){
     
     //Hover states, initialize all to false
     scholarHoverStates.assign(10, false);
-    
+    page4OptionHoverStates.assign(4, false);
     
     thinDivider.load("assets/interface/filigree/thinDivider.png");
     thinDivider.setAnchorPercent(0.5f, 0.5f);
@@ -276,6 +277,21 @@ void CenterBook::setup(ScholarData *sData){
     
     tagHelpTextPos.set(page1LeftMargin, tagPos.y - scholarFont.stringHeight("A") * 4 - 15);
     tagHelpText = "Tag associated\nwith this\nscholar:";
+    
+    //text for page 4 options
+    //multi lines are broken out into different elements of vector
+    page4OptionText.resize(8);
+    page4OptionText[0] = "Show Scholar";
+    page4OptionText[1] = "Portrait";
+    page4OptionText[2] = "Show Scholar";
+    page4OptionText[3] = "Fact Sheet";
+    page4OptionText[4] = "Set Room to";
+    page4OptionText[5] = "This Scholar";
+    page4OptionText[6] = "Back to";
+    page4OptionText[7] = "Scholar List";
+    
+    //draw everything to the texture
+    drawContentToTexture();
     
 }
 
@@ -368,22 +384,6 @@ void CenterBook::resetCamera(){
 void CenterBook::update(){
     
     
-    //Model manipulation
-    
-    //uncomment to scroll through model animation with mouse
-    //    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0, 1.0);
-    //    model.setPositionForAllAnimations(x);
-    
-    
-    
-    //draws text to book
-    drawContentToTexture();
-    
-    
-    
-
-    
-    
     //update variables with values from GUI if it's active
     if(bIsGuiActive){
         
@@ -395,8 +395,7 @@ void CenterBook::update(){
         
     }
     
-    //will be set back to true if we're actually drawing the gui.
-    bIsGuiActive = false;
+
     
     
     
@@ -408,7 +407,7 @@ void CenterBook::update(){
     
     mouseTouches.clear();
     
-    if(showRawDeskToggle){
+    if(showRawDeskToggle && bIsGuiActive){
         
         ofVec2f m(ofGetMouseX(), ofGetMouseY());
         
@@ -425,8 +424,6 @@ void CenterBook::update(){
             
             mouseTouches.push_back(mt);
             
-            cout << normalizedMouse << endl;
-            
         }
         
         
@@ -440,14 +437,17 @@ void CenterBook::update(){
         scholarHoverStates[i] = false;
     }
     
+    //same for page 4 options
+    for(int i = 0; i < page4OptionHoverStates.size(); i++){
+        page4OptionHoverStates[i] = false;
+    }
+    
+    
+
     
     
     //go through mouse touches and check for detection zones
     for(int i = 0; i < mouseTouches.size(); i++){
-        
-
-        
-        
         
         
         ofVec2f m = mouseTouches[i].pos;
@@ -493,6 +493,11 @@ void CenterBook::update(){
                     currentOpenPage = 1;
                     currentScholar = scholarIndex;
                     
+                    //set frame to show this scholar
+                    frame -> changeScholar(currentScholar);
+                    
+                    cout << "Changing scholar to: " << currentScholar << endl;
+                    
                     //set the tag button to the current scholar's data
                     string t = scholarData -> scholarList[currentScholar].tag;
                     ofColor c = scholarData -> tagColorList[currentScholar];
@@ -509,7 +514,8 @@ void CenterBook::update(){
                 
                 //SECOND OPEN PAGE: SCHOLAR INFO AND TAG SELECT
                 
-                int optionSelect = 0;
+                //which option on the right page is beign selected
+                int optionSelect;
                 
                 //We already know we're hovering over the book
                 //but let's see which page we're on
@@ -532,26 +538,55 @@ void CenterBook::update(){
                     float regionHeight = (bookPageBottomSlider - bookPageTopSlider)/4.0f;
                     optionSelect = floor(m.y / regionHeight);
                     
-                }
-                
-                
-                if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
-                    cout << "Option selected: " << optionSelect << endl;
-                    
-                    lastTouchTime = ofGetElapsedTimeMillis();
-                    
-                    //just check the 4th button to go back to the first page for now
-                    if(optionSelect == 3){
-                        currentOpenPage = 0;
+                    page4OptionHoverStates[optionSelect] = true;
+
+                    if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+
+                        
+                        lastTouchTime = ofGetElapsedTimeMillis();
+                        
+                        //just check the 4th button to go back to the first page for now
+                        if(optionSelect == 0){
+                            
+                            frame -> changeScholar(currentScholar);
+                            frame -> hideFactSheet();
+                            
+                            
+                        } else if(optionSelect == 1){
+
+                            frame -> changeScholar(currentScholar);
+                            frame -> showFactSheet();
+                            
+                            
+                        } else if(optionSelect == 2){
+                            
+                            //set room to scholar(?)
+                            
+                        } else if(optionSelect == 3){
+                            currentOpenPage = 0;
+                        }
+                        
                     }
                     
                 }
+                
+                
                 
             }
             
         }
         
         
+        
+    }
+    
+    
+    //hack to save a few CPU cycles. Only redraw the texture if there are actual touches.
+    //otherwise the texture will be static.
+    if(mouseTouches.size()){
+        
+        //draws text to book
+        drawContentToTexture();
         
     }
     
@@ -579,6 +614,13 @@ void CenterBook::update(){
     tagButton.update();
 
     
+    
+    
+    
+    //will be set back to true if we're actually drawing the gui.
+    bIsGuiActive = false;
+    
+    
 }
 
 
@@ -603,6 +645,7 @@ void CenterBook::drawContentToTexture(){
     
 
     //DRAW FIRST OPEN SPREAD: SCHOLAR LIST
+    highlightBoxHeight = (pageHeight - topMargin * 2 - betweenScholars * 4)/5.0f;
     
     //go through all the pages and draw out the text
     for(int i = 0; i < scholarData -> scholarList.size(); i++){
@@ -617,7 +660,7 @@ void CenterBook::drawContentToTexture(){
             ofTranslate(pageTexCoords[0]);
 
             boxX = page1LeftMargin;
-            y = topMargin + (nameBoxHeight + betweenScholars) * i;
+            y = topMargin + (highlightBoxHeight + betweenScholars) * i;
             w = pageWidth - page1LeftMargin * 2;
             
             //stagger 2nd and 4th names to right align
@@ -635,7 +678,7 @@ void CenterBook::drawContentToTexture(){
             ofTranslate(pageTexCoords[1]);
             
             boxX = page2LeftMargin;
-            y = topMargin + (nameBoxHeight + betweenScholars) * (i - 5);
+            y = topMargin + (highlightBoxHeight + betweenScholars) * (i - 5);
             w = pageWidth - page2LeftMargin - page1LeftMargin;
             
             //staggered names are odd on this page
@@ -661,7 +704,7 @@ void CenterBook::drawContentToTexture(){
         //draw highlight box
         if(scholarHoverStates[i]){
             ofSetColor(highlightColor);
-            ofDrawRectangle(boxX, y, w, nameBoxHeight);
+            ofDrawRectangle(boxX, y, w, highlightBoxHeight);
             
             ofSetColor(255);
         } else {
@@ -676,6 +719,7 @@ void CenterBook::drawContentToTexture(){
     }
 
     //DRAW SECOND OPEN SPREAD: SCHOLAR INFO AND TAG SELECT
+    highlightBoxHeight = (pageHeight - topMargin * 2 - betweenScholars * 3)/4.0f;
     
     //left page
     ofPushMatrix();
@@ -686,7 +730,8 @@ void CenterBook::drawContentToTexture(){
     scholarFont.drawString(scholarData -> scholarList[currentScholar].nameBottom, page1LeftMargin, topMargin + lineHeight * 2 + betweenNames * 2);
     
     //draw divider below bottom name
-    thinDivider.draw(pageWidth/2, topMargin + lineHeight * 2 + betweenNames + 20, thinDivider.getWidth(), thinDivider.getHeight() );
+    ofSetColor(textColor);
+    divider.draw(pageWidth/2 - 10, topMargin + lineHeight * 2 + betweenNames + 20, thinDivider.getWidth(), thinDivider.getHeight() * 2 );
     
     
     //draw tag help text
@@ -699,11 +744,58 @@ void CenterBook::drawContentToTexture(){
     //draw tag button
     tagButton.draw();
     
-    
-    
-    
-    
     ofPopMatrix();
+    
+    //right page has 4 options
+    //first 3 are left align, last one is right align
+    for(int i = 0; i < 4; i++){
+        
+        ofPushMatrix();
+        
+        float boxX, x1, x2, y, w;
+        
+        //Move to right page of spread 2
+        ofTranslate(pageTexCoords[3]);
+        
+        //positioning of elements and the highlight box
+        boxX = page2LeftMargin;
+        y = topMargin + (highlightBoxHeight + betweenScholars) * i;
+        w = pageWidth - page2LeftMargin - page1LeftMargin;
+        
+        //4th option is right aligned
+        if(i < 3){
+            x1 = page2LeftMargin;
+            x2 = x1;
+        } else {
+            x1 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(page4OptionText[ i * 2 ]);
+            x2 = pageWidth - page1LeftMargin * 2 - scholarFont.stringWidth(page4OptionText[ i * 2 + 1 ]);
+        }
+        
+        //draw the filigree thinDivider above all names except the first one
+        if(i != 0){
+            
+            ofSetColor(255);
+            thinDivider.draw(pageWidth/2, y - betweenScholars/2, thinDivider.getWidth(), thinDivider.getHeight() * 2 );
+            
+        }
+        
+        
+        //draw highlight box
+        if(page4OptionHoverStates[i]){
+            ofSetColor(highlightColor);
+            ofDrawRectangle(boxX, y, w, highlightBoxHeight);
+            
+            ofSetColor(255);
+        } else {
+            ofSetColor(textColor);
+        }
+        
+        scholarFont.drawString(page4OptionText[ i * 2 ]    , x1 + padding, y + padding + lineHeight);
+        scholarFont.drawString(page4OptionText[ i * 2 + 1 ], x2 + padding, y + padding + lineHeight * 2 + betweenNames);
+            
+        
+        ofPopMatrix();
+    }
     
     
     //right page

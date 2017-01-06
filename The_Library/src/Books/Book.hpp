@@ -96,6 +96,8 @@ public:
     
     //visuals and texturing
     ofxAssimpModelLoader model;
+    bool bNeedsUpdate;
+    
     ofFbo textureFBO;
     ofMaterial material;
     ofTexture *tex;

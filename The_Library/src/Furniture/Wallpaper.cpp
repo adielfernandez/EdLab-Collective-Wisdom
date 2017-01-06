@@ -217,9 +217,9 @@ void Wallpaper::update(){
     
 
     
-    
-    TiledObject::update();
-    
+    if( bIsAnimating ){
+        TiledObject::update();
+    }
 
     
     

@@ -137,8 +137,6 @@ void TiledObject::triggerWave(ofVec2f epicenter){
     waveStartTime = ofGetElapsedTimeMillis();
     waveTileIndex = 0;
     
-    cout << "Triggering wave, bIsAnimating = " << bIsAnimating << endl;
-    
 }
 
 void TiledObject::applyEffectToAll(Tile::Effect e){
@@ -236,9 +234,9 @@ void TiledObject::update(){
         
     }
     
-    //if it's been a few seconds since we've last animated
-    //anything, turn the animation flag off
-    if(ofGetElapsedTimef() - lastAnimationTime > 2.0f){
+    //Wait for the last tile to finish it's effect
+    //the turn the animation flag off
+    if(ofGetElapsedTimef() - lastAnimationTime > effectDurationSlider){
         bIsAnimating = false;
     }
     

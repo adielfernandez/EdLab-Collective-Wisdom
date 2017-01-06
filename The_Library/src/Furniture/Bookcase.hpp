@@ -40,12 +40,21 @@ public:
     
     void drawShadow();
     ofVboMesh shadow;
+    
         
     void setupGui();
     void drawGui();
     void drawGui(int x, int y);
     void saveSettings();
     void loadSettings();
+    
+    //these hold a mesh and texture
+    //we'll draw when the bookcase tiles
+    //are not actively flipping
+    void setStaticBookcase();
+    ofVboMesh staticBookcase;
+    ofTexture staticBookcaseTex;
+    bool bStaticCaseNeedsUpdate;
     
     
     //LEFT or RIGHT

@@ -178,7 +178,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     //Get a texture for the spine that has the width/height we need
     //but remapped from the texture. To do this, we'll get a subsection
     //of the texture as a mesh, create an FBO, draw the mesh into the FBO then steal THAT texture.
-    spineMesh = tex -> getMeshForSubsection(0, -height, -1, thickness, height, spineTexCoordX, spineTexCoordY, spineTexWidth, spineTexHeight, false, OF_RECTMODE_CORNER);
+    spineMesh = tex -> getMeshForSubsection(0, -height, -1, thickness, height, spineTexCoordX, spineTexCoordY, spineTexWidth, spineTexHeight, true, OF_RECTMODE_CORNER);
 
     
     
@@ -639,6 +639,7 @@ void Book::update(){
                 pos.z = -200;
 
                 
+                //if we want to open the book during the fly in
 //                model.update();
 //                model.setPositionForAllAnimations(animPos);
                 
@@ -681,7 +682,7 @@ void Book::update(){
         exitButton.update();
         tagButton.update();
         
-        model.update();
+
 
         // bIsDisplayed: runs through book being pulled out to display
         // position and being put back in the shelf
@@ -749,19 +750,21 @@ void Book::update(){
                 currentOpenPage = 0;
                 
             }
-        
+            
+            //Only update the model after we're in display position
+            if(now > displayReadyTime){
+                bNeedsUpdate = true;
+            } else {
+                bNeedsUpdate = false;
+            }
+            
          } else {
 
-
-            
-            
             //the book is now open and ready!
             //i.e. bIsDisplayed is true
             
             //if we're not closing, check for user buttons
             if(!bIsClosing){
-                
-
                 
                 bool exiting = false;
                 
@@ -833,6 +836,7 @@ void Book::update(){
                         bIsClosing = true;
                         closingStartTime = ofGetElapsedTimef();
                         
+                        
                     }
                     
                     //put away the buttons
@@ -840,8 +844,20 @@ void Book::update(){
                     
                 }
                 
-                //then lerp to that position
-                animPos = ofLerp(animPos, targetAnimPos, pageLerpSpeed);
+                //This is the page flipping segment. Only update if
+                //we're not at our desired page
+                if( abs( animPos - targetAnimPos ) > 0.01){
+                   
+                    bNeedsUpdate = true;
+                    
+                    //then lerp to that position
+                    animPos = ofLerp(animPos, targetAnimPos, pageLerpSpeed);
+                    
+                } else {
+                    bNeedsUpdate = false;
+                }
+                
+                
                 
             } else {
                 
@@ -858,6 +874,9 @@ void Book::update(){
                 //Book is inserted back into shelf
                 float putBackTime = backToPulledOutTime + 1.0f;
                 
+                //update the model for each of the animation steps to close the book
+                bNeedsUpdate = true;
+                
                 if(now < closeBookTime){
                     
                     //do a linear mapping of the animation and clamp it
@@ -868,6 +887,10 @@ void Book::update(){
 
                     
                 } else if(now < backToPulledOutTime){
+                    
+                    //from this point on the book is closed and doesn't need to be updated
+                    bNeedsUpdate = false;
+                    
                     
                     //book is now closed, animate back to pulled out pos and stored angles
                     float pct = ofxeasing::map_clamp(now, closeBookTime, backToPulledOutTime, 0.0, 1.0, &ofxeasing::back::easeOut_s, 0.5);
@@ -909,8 +932,14 @@ void Book::update(){
             
         }
         
+        if( bNeedsUpdate ){
+            model.setPositionForAllAnimations(animPos);
+            model.update();
+            cout << "Updating Model" << endl;
+        } else {
+            cout << "NOT Updating" << endl;
+        }
         
-        model.setPositionForAllAnimations(animPos);
         
     }
     

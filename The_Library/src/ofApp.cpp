@@ -210,6 +210,7 @@ void ofApp::draw(){
     
     leftBookcase.drawShadow();
     rightBookcase.drawShadow();
+    
     leftBookcase.draw();
     rightBookcase.draw();
     

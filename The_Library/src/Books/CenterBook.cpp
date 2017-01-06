@@ -604,8 +604,14 @@ void CenterBook::update(){
     
     animationPos = ofLerp(animationPos, targetAnimationPos, 0.05);
     
-    model.setPositionForAllAnimations(animationPos);
-    model.update();
+    //if we're very very close to our target, no need to update the model
+    //updating the model is expensive and should be done sparingly
+    if( abs( animationPos - targetAnimationPos ) > 0.01){
+        model.setPositionForAllAnimations(animationPos);
+        model.update();
+    }
+    
+    
     
     
     //tag button stuff

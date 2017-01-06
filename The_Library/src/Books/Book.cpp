@@ -178,25 +178,8 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     //Get a texture for the spine that has the width/height we need
     //but remapped from the texture. To do this, we'll get a subsection
     //of the texture as a mesh, create an FBO, draw the mesh into the FBO then steal THAT texture.
-    ofVboMesh spineMesh;
-    spineMesh = tex -> getMeshForSubsection(0, 0, 0, thickness, height, spineTexCoordX, spineTexCoordY, spineTexWidth, spineTexHeight, false, OF_RECTMODE_CORNER);
+    spineMesh = tex -> getMeshForSubsection(0, -height, -1, thickness, height, spineTexCoordX, spineTexCoordY, spineTexWidth, spineTexHeight, false, OF_RECTMODE_CORNER);
 
-    ofFbo spineFbo;
-    spineFbo.allocate(thickness, height);
-    
-    //draw the subsection mesh into the FBO
-    spineFbo.begin();
-    ofClear(0, 0, 0, 0);
-    
-    tex -> bind();
-    ofSetColor(255);
-    spineMesh.draw();
-    tex -> unbind();
-    
-    spineFbo.end();
-    
-    //get the FBO texture and store it into a global var
-    spineTex = spineFbo.getTexture();
     
     
     
@@ -1047,8 +1030,11 @@ void Book::draw(){
         //with the bottom left corner of the spine at pos
         ofTranslate(pos);
 
+        if(tex -> isAllocated()) tex -> bind();
+        
         ofSetColor(255, spineTrans);
-        spineTex.draw(0, -height, -1);
+        spineMesh.draw();
+        if(tex -> isAllocated()) tex -> unbind();
         
         
         // ----- Draw Taglet -----

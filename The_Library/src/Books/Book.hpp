@@ -99,7 +99,7 @@ public:
     ofFbo textureFBO;
     ofMaterial material;
     ofTexture *tex;
-    ofTexture spineTex;
+    ofVboMesh spineMesh;
     
     //position and dimensions of spine in texture map
     const float spineTexCoordX = 118.397;

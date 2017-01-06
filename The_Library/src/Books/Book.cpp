@@ -175,14 +175,29 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     textureFBO.end();
     
     
-    //create a mesh from the texture to make the
-    //spine placeholder for when the book is inactive
-    //Texture dimensions: 512px x 512px
-    float texCoordX = 118.397; //position of spine in texture map
-    float texCoordY = 13.254;
-    float texWidth = 22.125;
-    float texHeight = 189.917;
-    spineMesh = tex -> getMeshForSubsection(0, -height, -1, thickness, height, texCoordX, texCoordY, texWidth, texHeight, true, OF_RECTMODE_CORNER);
+    //Get a texture for the spine that has the width/height we need
+    //but remapped from the texture. To do this, we'll get a subsection
+    //of the texture as a mesh, create an FBO, draw the mesh into the FBO then steal THAT texture.
+    ofVboMesh spineMesh;
+    spineMesh = tex -> getMeshForSubsection(0, 0, 0, thickness, height, spineTexCoordX, spineTexCoordY, spineTexWidth, spineTexHeight, false, OF_RECTMODE_CORNER);
+
+    ofFbo spineFbo;
+    spineFbo.allocate(thickness, height);
+    
+    //draw the subsection mesh into the FBO
+    spineFbo.begin();
+    ofClear(0, 0, 0, 0);
+    
+    tex -> bind();
+    ofSetColor(255);
+    spineMesh.draw();
+    tex -> unbind();
+    
+    spineFbo.end();
+    
+    //get the FBO texture and store it into a global var
+    spineTex = spineFbo.getTexture();
+    
     
     
     //--------------------Book Text and Page Layouts--------------------
@@ -610,14 +625,8 @@ void Book::update(){
             
         } else {
             
-            
-            model.update();
-            
-            model.setPositionForAllAnimations(animPos);
-            
             //Book is not in the shelf so it's a new book coming in.
             //animate the book into the scene
-            
 
             double now = ofGetElapsedTimef();
             
@@ -643,12 +652,13 @@ void Book::update(){
                 float animPct = ofxeasing::map_clamp(now, animStartTime, animationEndTime, 0.0, 1.0, &ofxeasing::linear::easeOut);
                 animPos = ofLerp(animationSpread3, animationStart, animPct);
                 
-                
-                
-                
                 //force the book forward so it clears the shelf while animating
                 pos.z = -200;
 
+                
+//                model.update();
+//                model.setPositionForAllAnimations(animPos);
+                
                 
             } else {
                 
@@ -665,6 +675,10 @@ void Book::update(){
                 
                 
             }
+            
+            
+
+
             
         }
         
@@ -1032,15 +1046,12 @@ void Book::draw(){
         //translate the book to the position on the shelf
         //with the bottom left corner of the spine at pos
         ofTranslate(pos);
-        
-        if(tex -> isAllocated()) tex -> bind();
+
         ofSetColor(255, spineTrans);
-        spineMesh.draw();
-        if(tex -> isAllocated()) tex -> unbind();
+        spineTex.draw(0, -height, -1);
         
         
-        
-        
+        // ----- Draw Taglet -----
         //only draw if we're showing if intentionally
         //or it is being faded out
         if(bShowTaglet || bFadeOutTaglet){

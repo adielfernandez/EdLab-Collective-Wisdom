@@ -3,8 +3,8 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
+    ofSetFrameRate(600);
     ofSetVerticalSync(false);
-    ofSetFrameRate(200);
 //    ofSetLogLevel(OF_LOG_VERBOSE);
     
     
@@ -28,7 +28,7 @@ void ofApp::setup(){
     
     //----------Scene Setup----------
     
-    currentView = 1;
+    currentView = 0;
     numViews = 4;
     
     

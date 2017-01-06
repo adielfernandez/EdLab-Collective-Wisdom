@@ -16,8 +16,8 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 8;
-    numShelves = 1;
+    numBooksPerShelf = 16;
+    numShelves = 6;
     
     int numBooks = numBooksPerShelf * numShelves;
     
@@ -178,7 +178,7 @@ void BookController::setup(vector<Contribution> *cList){
     
     availableBooks = 0;
     lastNewBookEvent = 0;
-    newBookInterval = 0.5f;
+    newBookInterval = 1.0f;
     lastRecycleTime = 0.0f;
     
     //bring a book back from the archive every two minutes
@@ -361,8 +361,9 @@ void BookController::checkMouseEvents(int x, int y){
     //Check all books for mouse presence
     for(int i = 0; i < books.size(); i++){
      
-        //if we're not active AND the touch is true, check for book triggers
-        if(!books[i].bIsActive && ofGetMousePressed()){
+        //if we're not active AND we're not in a new book event AND
+        //the touch is true, check for book triggers
+        if(!books[i].bIsActive && !books[i].bIsNewBookEvt && ofGetMousePressed()){
             
             //only check books that are not on active shelves
             if(shelfOverlays[books[i].shelfNum].bIsInUse == false){
@@ -426,14 +427,20 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
 
 void BookController::onNewContribution( Contribution& c ){
     
-    //check if it has been long enough since the last event.
+    //if we don't find a book in the end, we'll
+    //add it to the queue to be added later
+    bool availableBookFound = false;
+    
+    int availableBookIndex;
+    
+    //check if it has been long enough since the last event or if there
+    //is an available bookshelves to add a book to.
     //if not, add the contribution to the queue and wait
+    
     if(ofGetElapsedTimef() - lastNewBookEvent > newBookInterval){
         
         //go through the book vector, if we have any unused books available,
         //trigger those, if not, recycle an existing one
-        int bookIndex = 0;
-        
         
         //See if any unused books are available
         if( availableBooks > 0 ){
@@ -447,10 +454,7 @@ void BookController::onNewContribution( Contribution& c ){
                     availableBooks--;
                     
                     //jot it down so we can reset it below
-                    bookIndex = i;
-                    
-//                    cout << "Initializing unused book: " << bookIndex << endl;
-//                    cout << "Num books left available: " << availableBooks << endl;
+                    availableBookIndex = i;
                     
                     //we found a book, don't keep looking
                     break;
@@ -465,23 +469,26 @@ void BookController::onNewContribution( Contribution& c ){
             //pick a random number and find a book that is available
             //doing it this way instead of using a for loop
             //prevents reusing the same few books at the beginning of the vector
-            bool foundBook = false;
+            
+            int timesChecked = 0;
             
             do {
                 
                 int checkIndex = floor( ofRandom(books.size()) );
                 
-//                cout << "Checking book: " << checkIndex << endl;
-                
                 //look for a book that is available (not active or spawning)
-                if( !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
+                //and look for a shelf that is not active so it doesn't interrupt
+                //someone reading a book
+                int thisBookShelf = books[checkIndex].shelfNum;
+                
+                bool shelfInUse = shelfOverlays[thisBookShelf].bIsInUse;
+                
+                if( !shelfInUse && !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
                     
-                    foundBook = true;
+                    availableBookFound = true;
                     
                     //jot it down so we can reset it below
-                    bookIndex = checkIndex;
-                    
-//                    cout << "Recycling book: " << bookIndex << endl;
+                    availableBookIndex = checkIndex;
                     
                     //if we're recycling a used book, we need to mark the
                     //contribution that it currently has as archived before replacing it
@@ -490,10 +497,10 @@ void BookController::onNewContribution( Contribution& c ){
                     //message then mark it
                     for(int i = 0; i < contributionList -> size(); i++){
                         
-                        if( (*contributionList)[i].ID == books[bookIndex].userContribution.ID ){
+                        if( (*contributionList)[i].ID == books[availableBookIndex].userContribution.ID ){
                             
                             (*contributionList)[i].bIsArchived = true;
-//                            cout << "Marking " << (*contributionList)[i].ID << " as archived" << endl;
+                            
                             break;
                             
                         }
@@ -503,11 +510,18 @@ void BookController::onNewContribution( Contribution& c ){
                     
                 }
                 
+                timesChecked++;
                 
-            } while ( !foundBook );
+                
+            } while ( !availableBookFound && timesChecked < 30 );
             
         }
         
+    }
+    
+    
+    
+    if( availableBookFound ){
         
         //if we've gotten this far,
         //get tag number and color from the tagList in scholar data to set up the book
@@ -523,7 +537,7 @@ void BookController::onNewContribution( Contribution& c ){
         tagCol = scholarData -> tagColorList[tagNum];
         
         //set up the content
-        books[bookIndex].setupContent( c , tagNum, tagCol);
+        books[availableBookIndex].setupContent( c , tagNum, tagCol);
         
         //Find the message in the contributionList and mark as NOT archived since
         //the message is in a book. We need to do this since the book's user
@@ -533,7 +547,6 @@ void BookController::onNewContribution( Contribution& c ){
             if( (*contributionList)[i].ID == c.ID ){
                 
                 (*contributionList)[i].bIsArchived = false;
-//                cout << "Marking " << (*contributionList)[i].ID << " as UNarchived" << endl;
                 break;
                 
             }
@@ -541,7 +554,7 @@ void BookController::onNewContribution( Contribution& c ){
         }
         
         
-        books[bookIndex].triggerNewBookEvt();
+        books[availableBookIndex].triggerNewBookEvt();
         
         lastNewBookEvent = ofGetElapsedTimef();
     

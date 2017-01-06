@@ -99,7 +99,13 @@ public:
     ofFbo textureFBO;
     ofMaterial material;
     ofTexture *tex;
-    ofVboMesh spineMesh;
+    ofTexture spineTex;
+    
+    //position and dimensions of spine in texture map
+    const float spineTexCoordX = 118.397;
+    const float spineTexCoordY = 13.254;
+    const float spineTexWidth = 22.125;
+    const float spineTexHeight = 189.917;
     
     //get a pointer to the font we'll be using
     //but also store the font list so we

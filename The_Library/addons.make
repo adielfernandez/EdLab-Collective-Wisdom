@@ -6,3 +6,4 @@ ofxGui
 ofxLibwebsockets
 ofxOpenCv
 ofxOrbbecAstra
+ofxOsc

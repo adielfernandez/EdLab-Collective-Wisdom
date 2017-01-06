@@ -13,7 +13,7 @@ void ofApp::setup(){
     
     if(connectToServer){
 //        client.connect("localhost", 8081);
-        client.connect("35.165.1.38", 8081);
+        client.connect("35.165.1.38", 8081);  //"collectivewisdom.cc" also works
         client.addListener(this);
         bSendHeartbeat = true;
     }
@@ -220,7 +220,8 @@ void ofApp::draw(){
     
     centerBook.draw();
     
-    bookController.draw();
+    
+    ofDisableDepthTest();    bookController.draw();
     
     
     

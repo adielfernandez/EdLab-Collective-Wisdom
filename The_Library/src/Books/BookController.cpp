@@ -63,7 +63,7 @@ void BookController::loadModels(){
         } else {
             
             //New book grouping, make new properties
-            numInThisGroup = round(ofRandom(2,5));
+            numInThisGroup = round(ofRandom(2,4));
             
             groupBookType = floor(ofRandom(numBookTypes));
             groupTexType = floor(ofRandom(numTexTypes));
@@ -182,7 +182,7 @@ void BookController::setup(vector<Contribution> *cList){
     lastRecycleTime = 0.0f;
     
     //bring a book back from the archive every two minutes
-    recycleInterval = 120.0f;
+    recycleInterval = 10.0f;
     
     ofVec3f shelfStart, shelfEnd;
     ofVec3f dirToShelfEnd;
@@ -628,12 +628,9 @@ void BookController::update(){
             
             vector<int> archivedIndices;
             
-//            cout << "Found the following indices archived: " << endl;
             for(int i = 0; i < contributionList -> size(); i++){
                 if( (*contributionList)[i].bIsArchived ){
                     archivedIndices.push_back(i);
-                    
-                    cout << i << endl;
                 }
             }
             
@@ -641,8 +638,6 @@ void BookController::update(){
                 
                 int randIndex = floor( ofRandom(archivedIndices.size()) );
                 int indexToRecycle = archivedIndices[randIndex];
-                
-//                cout << "Bringing back index number: " << indexToRecycle << ", ID: " << (*contributionList)[indexToRecycle].ID << endl;
                 
                 //send to get recycled, this method will take care of
                 //switching the archival stats of the old/new messages

@@ -63,7 +63,7 @@ void BookController::loadModels(){
         } else {
             
             //New book grouping, make new properties
-            numInThisGroup = round(ofRandom(2,5));
+            numInThisGroup = round(ofRandom(2,4));
             
             groupBookType = floor(ofRandom(numBookTypes));
             groupTexType = floor(ofRandom(numTexTypes));
@@ -176,7 +176,6 @@ void BookController::setup(vector<Contribution> *cList){
     availableBooks = 0;
     lastNewBookEvent = 0;
     lastRecycleTime = 0.0f;
-    
     
     //SETUP THE GUI
     setupGui();

@@ -1,28 +1,29 @@
 <bookController>
 	<__LIBRARY_SETTINGS/>
 	<Archive_Interval>5.485</Archive_Interval>
-	<New_Book_Interval>3.189</New_Book_Interval>
+	<New_Book_Interval>1.572</New_Book_Interval>
 	<__BOOK_SETTINGS/>
 <bookController/>
 <Update_Spawn_Vars>1</Update_Spawn_Vars>
 	<__SPAWN_EFFECT/>
-	<Orbit_speed>1.981</Orbit_speed>
-	<Ribbon_length>151</Ribbon_length>
+    <Num_ribbons>5</Num_ribbons>
+    <Orbit_speed>1.9315</Orbit_speed>
+	<Ribbon_length>190</Ribbon_length>
 	<Ribbon_width>28</Ribbon_width>
 	<Ribbon_taper>0</Ribbon_taper>
 	<Num_segments>33</Num_segments>
-	<Base_radius>88</Base_radius>
-	<Radius_amplitude>0.1227</Radius_amplitude>
-	<Noise_speed>2.08005</Noise_speed>
-	<Noise_scale>0.075085</Noise_scale>
-	<Color_range>26</Color_range>
-<Num_ribbons>4</Num_ribbons>
-<Spawn_duration>9.145</Spawn_duration>
+	<Base_radius>78</Base_radius>
+    <Noise_amplitude>23.4</Noise_amplitude>
+    <Noise_speed>1.46006</Noise_speed>
+	<Noise_scale>0.060088</Noise_scale>
+	<Color_range>20</Color_range>
 <__SPAWN_SETTINGS/>
-	<Pos_Back_Ease>0.72</Pos_Back_Ease>
+    <Spawn_duration>5.2975</Spawn_duration>
+    <Pos_Back_Ease>0.72</Pos_Back_Ease>
 	<__RIBBON_SETTINGS/>
-<Update_Book_Vars>1</Update_Book_Vars>
-	<Tag_duration>6</Tag_duration>
+    <Update_Book_Vars>1</Update_Book_Vars>
+	<Tag_duration>3.92</Tag_duration>
 <Shrink_time>1.2</Shrink_time>
 <Use_Noise>1</Use_Noise>
+
 </bookController>

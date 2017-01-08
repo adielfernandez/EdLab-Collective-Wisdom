@@ -706,7 +706,7 @@ void BookController::setBookVarsFromGui(){
         books[i].spawnEffect.ribbonWidth = ribbonWidthSlider;
         books[i].spawnEffect.ribbonTaper = ribbonTaperSlider;
         books[i].spawnEffect.baseRad = baseRadSlider;
-        books[i].spawnEffect.radAmp = radiusAmplitudeSlider;
+        books[i].spawnEffect.noiseAmp = noiseAmplitudeSlider;
         books[i].spawnEffect.noiseSpeed = noiseSpeedSlider;
         books[i].spawnEffect.nScale = noiseScaleSlider;
         books[i].spawnEffect.colorRange = colorRangeSlider;
@@ -752,7 +752,7 @@ void BookController::setupGui(){
     gui.add(shrinkTimeSlider.setup("Shrink time", 0.5f, 0.0f, 5.0f));
     
     gui.add(useNoiseToggle.setup("Use Noise", true));
-    gui.add(radiusAmplitudeSlider.setup("Radius amplitude", 0.2f, 0.01f, 0.5f));
+    gui.add(noiseAmplitudeSlider.setup("Noise amplitude", 10.0f, 0.0f, 30));
     gui.add(noiseSpeedSlider.setup("Noise speed", 0.01f, 0.0001f, 4.0f));
     gui.add(noiseScaleSlider.setup("Noise scale", 0.01f, 0.0001f, 0.5f));
     

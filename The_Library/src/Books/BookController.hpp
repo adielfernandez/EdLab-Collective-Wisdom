@@ -126,7 +126,7 @@ public:
     ofxFloatSlider shrinkTimeSlider;
 
     ofxToggle useNoiseToggle;
-    ofxFloatSlider radiusAmplitudeSlider;
+    ofxFloatSlider noiseAmplitudeSlider;
     ofxFloatSlider noiseSpeedSlider;
     ofxFloatSlider noiseScaleSlider;
     

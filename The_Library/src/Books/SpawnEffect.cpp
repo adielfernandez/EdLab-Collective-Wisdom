@@ -50,7 +50,7 @@ void SpawnEffect::setup(ofColor tagCol){
     baseRad = 100;
     
     //amplitude of radial variation (normalized)
-    radAmp = 0.2;
+    noiseAmp = 0.2;
     noiseSpeed = 0.1;
     nScale = 0.01;
     colorRange = 20;
@@ -78,10 +78,7 @@ void SpawnEffect::update(float timeLeft){
     double orbitPos = ofGetElapsedTimef() * orbitSpeed + timeOffset;
 
     
-    float thisLength;
-    float thisAmp;
-    float rad1, rad2;
-    float pos;
+
     
     for(int j = 0; j < numRibbonsToDraw; j++){
         
@@ -93,25 +90,29 @@ void SpawnEffect::update(float timeLeft){
         
         for(int i = 0; i < numSegments; i++){
             
-            float amp = radAmp * baseRad;
+            float thisLength;
+            float pos;
+            float thisAmp = noiseAmp;
+            float thisRad;
             
-            if( timeLeft < shrinkTime ){
-                thisLength = ofMap(timeLeft, 0.0f, shrinkTime, 0, totalLength);
-                thisAmp = ofMap(timeLeft, 0.0f, shrinkTime, 0, amp);
+            //add 0.1 seconds of padding at the end so the ribbons
+            //fully have time to go away before the book stops drawing them
+            float timePadding = 0.5;
+            if( timeLeft < shrinkTime + timePadding ){
+                thisLength = ofClamp( ofMap(timeLeft, timePadding, shrinkTime + timePadding , 0, totalLength), 0, totalLength);
+                thisAmp = ofClamp( ofMap(timeLeft, timePadding, shrinkTime + timePadding, 0, noiseAmp), 0, noiseAmp);
+                thisRad = ofClamp( ofMap(timeLeft, 0, shrinkTime, 0, baseRad), 0, baseRad);
             } else {
                 thisLength = totalLength;
-                thisAmp = amp;
+                thisRad = baseRad;
             }
             
-
+            
+            float shift = 0;
             if(useNoise){
-                rad1 = baseRad + thisAmp * ofSignedNoise(nTime + nScale * i, 0);
-                rad2 = baseRad + thisAmp * ofSignedNoise(nTime + nScale * i, ribbonWidth);
-            } else {
-                rad1 = baseRad + thisAmp;
-                rad2 = baseRad + thisAmp;
+                shift = thisAmp * ofSignedNoise(nTime + nScale * i, 0);
             }
-            
+
             
             //number of degrees between segments
             float segmentOffset = ofDegToRad(thisLength / (float)numSegments ) * i;
@@ -128,8 +129,8 @@ void SpawnEffect::update(float timeLeft){
             float w = ofMap(i, 0, numSegments - 1, 1.0, ribbonTaper) * ribbonWidth;
             
             //set verts for this segment
-            ofVec3f v1( rad1 * cos(pos + dt), rad1 * sin(pos + dt),   w/2);
-            ofVec3f v2( rad1 * cos(pos     ), rad1 * sin(pos     ),  -w/2);
+            ofVec3f v1( thisRad * cos(pos + dt), thisRad * sin(pos + dt),   w/2 + shift);
+            ofVec3f v2( thisRad * cos(pos     ), thisRad * sin(pos     ),  -w/2 + shift);
             
             ribbons[j].mesh.addVertex( v1 );
             ribbons[j].mesh.addVertex( v2 );

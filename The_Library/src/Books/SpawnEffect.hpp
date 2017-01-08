@@ -51,7 +51,7 @@ public:
     float ribbonWidth;
     float ribbonTaper;
     float baseRad;
-    float radAmp;
+    float noiseAmp;
     float noiseSpeed;
     float nScale;
     float colorRange;

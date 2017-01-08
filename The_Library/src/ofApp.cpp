@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    ofSetFrameRate(600);
+    ofSetFrameRate(200);
     ofSetVerticalSync(false);
 //    ofSetLogLevel(OF_LOG_VERBOSE);
     
@@ -28,8 +28,14 @@ void ofApp::setup(){
     
     //----------Scene Setup----------
     
-    currentView = 0;
-    numViews = 4;
+    currentView = 4;
+    
+    //0 = Presentation (no debug)
+    //1 = Centerbook
+    //2 = Frame
+    //3 = Bookcases
+    //4 = Book Controller
+    numViews = 5;
     
     
     //set up objects without loading image data
@@ -51,8 +57,7 @@ void ofApp::setup(){
     leftBookcase.loadMedia();
     rightBookcase.loadMedia();
     
-    //Trinkets too
-//    globe.setup( (rightBookcase.shelfCorners[0][0] + rightBookcase.shelfCorners[0][1])/2.0f );
+    
     
     //pass scholar data down the chain to where it is needed
     frame.setScholarData(&scholarData);
@@ -77,12 +82,7 @@ void ofApp::setup(){
     
     bgEdgeMask.load("assets/interface/bgMask.png");
     
-    
-    
-    //----------Depth Camera Setup----------
-    
-    
-    
+
     
     //----------Lighting/Material/Camera Setup----------
     camera.enableOrtho();
@@ -102,12 +102,16 @@ void ofApp::setup(){
     lastChangeTime = 0;
     waitTime = 30000;
 
+
+    
+    
+    
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    ofSetWindowTitle(ofToString(ofGetFrameRate(), 2));
 
     
     wallpaper.update();
@@ -119,7 +123,6 @@ void ofApp::update(){
     
     centerBook.update();
     
-//    globe.update();
     
     
     
@@ -172,17 +175,7 @@ void ofApp::update(){
 //        lastChangeTime = ofGetElapsedTimeMillis();
 //    }
     
-    
-    //print messages and their archival status
-//    string s = "";
-//    
-//    for(int i = 0; i < contributionManager.contributionList.size(); i++){
-//        
-//        s += contributionManager.contributionList[i].name + ": " + ofToString(contributionManager.contributionList[i].bIsArchived) + ", ";
-//        
-//    }
-//    
-//    cout << s << endl;
+
     
     
 }
@@ -213,10 +206,7 @@ void ofApp::draw(){
     
     leftBookcase.draw();
     rightBookcase.draw();
-    
-//    globe.draw();
-    
-    
+
     
     centerBook.draw();
     
@@ -228,14 +218,6 @@ void ofApp::draw(){
     //camera inverts textures so draw the edge mask upside down
     ofSetColor(255);
     bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
-    
-    
-    
-
-    
-    
-    
-    
     
     
     if(currentView == 1){
@@ -268,8 +250,17 @@ void ofApp::draw(){
         rightBookcase.drawDebug();
         rightBookcase.drawGui();
         
+    } else if(currentView == 4){
+        
+        
+        ofDisableDepthTest();
+        
+        //Bookcases debug
+        bookController.drawGui();
+        
     }
     
+
     
     camera.end();
     
@@ -280,6 +271,15 @@ void ofApp::draw(){
         string s = ofToString(mouseX) + ", " + ofToString(mouseY);
         ofDrawBitmapStringHighlight(s, mouseX + 10, mouseY - 10);
     }
+    
+    
+    
+    
+    if(currentView != 0){
+        ofSetColor(255);
+        ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate(), 2), 20, 1120);
+    }
+    
     
 }
 
@@ -321,6 +321,8 @@ void ofApp::keyPressed(int key){
         currentView = 2;
     } else if(key == '3'){
         currentView = 3;
+    } else if(key == '4'){
+        currentView = 4;
     }
     
     
@@ -353,7 +355,7 @@ void ofApp::keyPressed(int key){
             contributionManager.logNewContribution(name, s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
             
             
-            cout << "New manual contribution with tag: " << s << endl;
+//            cout << "New manual contribution with tag: " << s << endl;
         }
     }
     

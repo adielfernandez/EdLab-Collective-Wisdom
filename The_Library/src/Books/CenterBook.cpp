@@ -496,7 +496,7 @@ void CenterBook::update(){
                     //set frame to show this scholar
                     frame -> changeScholar(currentScholar);
                     
-                    cout << "Changing scholar to: " << currentScholar << endl;
+//                    cout << "Changing scholar to: " << currentScholar << endl;
                     
                     //set the tag button to the current scholar's data
                     string t = scholarData -> scholarList[currentScholar].tag;

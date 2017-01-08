@@ -15,6 +15,7 @@
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
+#include "ofxGui.h"
 #include "Book.hpp"
 #include "ShelfOverlay.hpp"
 #include "../Furniture/Bookcase.hpp"
@@ -54,7 +55,12 @@ public:
     
     list<Contribution> incomingQueue;
     double lastNewBookEvent;
-    float newBookInterval;
+    
+    int availableBooks;
+    double lastRecycleTime;
+    
+    
+    
     
     void onButtonClickEvt(ButtonEvent &b);
     
@@ -71,21 +77,61 @@ public:
     ofTrueTypeFont UIFont;
     vector<ofImage> buttonIcons;
     
-    vector<Contribution> archive;
-    
     //Book placement and arrangment
     int numBooksPerShelf;
     int numShelves;
     
-    int availableBooks;
-    
-    double lastRecycleTime;
-    float recycleInterval;
+
     
     
     //-----SHELF OVERLAYS AND TRACKING
     //for keeping track of which shelves are in use
     vector<ShelfOverlay> shelfOverlays;
+    
+    //GUI setup
+    //-----GUI SETUP-----
+    void setupGui();
+    void drawGui();
+    void drawGui(int x, int y);
+    void saveSettings();
+    void loadSettings();
+    void setBookVarsFromGui();
+    bool bIsGuiActive;
+    
+    ofxPanel gui;
+    string guiName;
+    string filePath;
+    
+    ofxLabel settingsLabel;
+    ofxFloatSlider archiveRecycleSlider;
+    ofxFloatSlider newBookIntervalSlider;
+    
+    ofxLabel booksLabel;
+    ofxToggle updateBooksToggle;
+    ofxFloatSlider tagletDurationSlider;
+
+    ofxLabel spawnSettingsLabel;
+    ofxFloatSlider spawnDurationSlider;
+    ofxFloatSlider spawnPosBackEaseSlider;
+    
+    ofxLabel ribbonSettingsLabel;
+    ofxIntSlider numRibbonsSlider;
+    ofxFloatSlider orbitSpeedSlider;
+    ofxIntSlider numSegmentsSlider;
+    ofxIntSlider ribbonLengthSlider;
+    ofxIntSlider ribbonWidthSlider;
+    ofxFloatSlider ribbonTaperSlider;
+    ofxIntSlider baseRadSlider;
+    ofxIntSlider colorRangeSlider;
+    ofxFloatSlider shrinkTimeSlider;
+
+    ofxToggle useNoiseToggle;
+    ofxFloatSlider radiusAmplitudeSlider;
+    ofxFloatSlider noiseSpeedSlider;
+    ofxFloatSlider noiseScaleSlider;
+    
+    double lastBookSettingsUpdate;
+    
     
 };
 

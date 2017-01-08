@@ -18,6 +18,7 @@
 #include "ofxEasing.h"
 #include "../Content/Contribution.hpp"
 #include "BookUIButton.hpp"
+#include "SpawnEffect.hpp"
 
 
 #pragma once
@@ -132,6 +133,7 @@ public:
     bool bFadeOutTaglet;
     float tagTrans;
     double tagletStartTime;
+    float tagletDuration;
     
     vector<string> pageText;
     int pageSpreadsAvailable;
@@ -167,6 +169,13 @@ public:
     const float animationSpread3 = 0.77;
     const float animationEnd = 0.94;
     
+    //X, Y and Z we'll use to center the
+    //book on the axis so it spins nicer
+    //during spawning
+    ofVec3f toCenter;
+    
+    
+    
     //for user selection between pages
     int currentOpenPage;
     float pageLerpSpeed;
@@ -186,8 +195,11 @@ public:
     //dimensions of the closed book
     float thickness, depth, height;
 
-
     
+    //-----Spawn Flourish Effect-----
+    SpawnEffect spawnEffect;
+    float spawnDuration;
+    float spawnPosBackEasing;
     
     
 };

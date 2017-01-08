@@ -52,6 +52,7 @@ public:
     //we'll draw when the bookcase tiles
     //are not actively flipping
     void setStaticBookcase();
+    void recordStaticTexture();
     ofVboMesh staticBookcase;
     ofTexture staticBookcaseTex;
     bool bStaticCaseNeedsUpdate;

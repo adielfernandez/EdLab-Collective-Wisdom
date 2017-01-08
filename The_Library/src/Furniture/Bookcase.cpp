@@ -96,6 +96,7 @@ void Bookcase::loadMedia(){
     
     //after the mesh has been mapped and all the tiles set up (with images loaded),
     //set up the static bookcase mesh and texture
+    recordStaticTexture();
     setStaticBookcase();
     bStaticCaseNeedsUpdate = false;
     
@@ -159,6 +160,7 @@ void Bookcase::update(){
             tiles.clear();
             
             mapMesh();
+            recordStaticTexture();
             setStaticBookcase();
             
             lastMapTime = ofGetElapsedTimeMillis();
@@ -182,10 +184,10 @@ void Bookcase::update(){
     
     //update the static bookcase if we're JUST finished animating
     if( !bIsAnimating && bStaticCaseNeedsUpdate ){
-        setStaticBookcase();
+        
+        recordStaticTexture();
         bStaticCaseNeedsUpdate = false;
         
-        cout << "Static bookcase updated" << endl;
     }
 
     
@@ -216,7 +218,7 @@ void Bookcase::draw(){
         
         TiledObject::draw();
         
-        cout << "Drawing Bookcase tiles" << endl;
+//        cout << "Drawing Bookcase tiles" << endl;
         
     } else {
         
@@ -227,10 +229,10 @@ void Bookcase::draw(){
         
         staticBookcaseTex.unbind();
 
-        cout << "Drawing static mesh" << endl; 
+//        cout << "Drawing static mesh" << endl;
         
     }
-    
+
     ofPopMatrix();
     
     
@@ -285,7 +287,7 @@ void Bookcase::drawDebug(){
     
     //if we're drawing the gui, then it's active so
     //we'll update all the values in update()
-    bIsGuiActive = true;
+
     
 }
 
@@ -302,12 +304,13 @@ void Bookcase::drawDebug(){
 void Bookcase::drawGui(){
 
     gui.draw();
-    
+    bIsGuiActive = true;
 }
 
 void Bookcase::drawGui(int x, int y){
     gui.setPosition(x, y);
     gui.draw();
+    bIsGuiActive = true;
 }
 
 void Bookcase::setupGui(){
@@ -1293,13 +1296,7 @@ void Bookcase::mapMesh(){
     
 }
 
-void Bookcase::setStaticBookcase(){
-    
-    //Now the bookcase tiles are all properly mapped and positioned
-    //To get a properly warped bookcase as a static image we'll draw the
-    //tiles into an FBO, then steal the texture and wrap it around a mesh
-    //made from the corners of the bookcase
-    //(only 4 verts instead of the 920 verts from all the tiles!)
+void Bookcase::recordStaticTexture(){
     
     ofFbo sceneFbo;
     sceneFbo.allocate(1920, 1200);
@@ -1312,6 +1309,16 @@ void Bookcase::setStaticBookcase(){
     sceneFbo.end();
     
     staticBookcaseTex = sceneFbo.getTexture();
+    
+}
+
+void Bookcase::setStaticBookcase(){
+    
+    //Now the bookcase tiles are all properly mapped and positioned
+    //To get a properly warped bookcase as a static image we'll draw the
+    //tiles into an FBO, then steal the texture and wrap it around a mesh
+    //made from the corners of the bookcase
+    //(only 4 verts instead of the 920 verts from all the tiles!)
     
     staticBookcase.clear();
     staticBookcase.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
@@ -1329,6 +1336,7 @@ void Bookcase::setStaticBookcase(){
     staticBookcase.addTexCoord(bookcaseCorners[2]);
     staticBookcase.addTexCoord(bookcaseCorners[3]);
     
+
 }
 
 

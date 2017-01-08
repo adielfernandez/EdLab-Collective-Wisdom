@@ -64,7 +64,7 @@ void Globe::update(){
     modelScale = 1.0f;
 
     
-    cout << x << endl;
+//    cout << x << endl;
     
 }
 

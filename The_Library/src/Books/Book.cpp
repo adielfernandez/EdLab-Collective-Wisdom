@@ -148,18 +148,27 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     
     
     //depth is almost arbitrary since camera ortho is disabled
-    //just pick a usable number so book pulls out of shelf properly
-    depth = 100;
+    //But this number was aquired visually as well
+    depth = 77.0833;
 
     
-    //model positioned at bottom left corner of spine
-    //values acquired visually since AssImp model does not give reliable size/scaling
+    //model positioning (intrinsic to AssImp model) to make bottom
+    //left corner of spine the model's origin. Values acquired visually
+    //since AssImp model does not give reliable size/scaling.
+    const float modelX = -0.0477083;
+    const float modelY = -0.0147917;
+    
+    //3 Book models have different heights
+    const float shortModelZ = -0.0682016;
+    const float mediumModelZ = -0.0757602;
+    const float tallModelZ = -0.0833189;
+    
     if(bookType == 0){
-        model.setPosition(-0.0477083, -0.0147917, -0.0682016);
+        model.setPosition(modelX, modelY, shortModelZ);
     } else if(bookType == 1){
-        model.setPosition(-0.0477083, -0.0147917, -0.0757602);
+        model.setPosition(modelX, modelY, mediumModelZ);
     } else {
-        model.setPosition(-0.0477083, -0.0147917, -0.0833189);
+        model.setPosition(modelX, modelY, tallModelZ);
     }
 
     
@@ -220,13 +229,18 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     bShowTaglet = false;
     bFadeOutTaglet = true;
     tagTrans = 0;
-    
+    tagletDuration = 6.0f;
     spineTrans = 0;
 
     
     //--------------------ANIMATION--------------------
     model.setLoopStateForAllAnimations(OF_LOOP_NONE);
     model.setPausedForAllAnimations(true);
+    
+    //disable the model textures so we can use our own
+    model.disableTextures();
+    
+
     
     //don't play, we'll manually scrub through the animation
     //    model.playAllAnimations();
@@ -263,9 +277,10 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     //start flatness out as 1.0
     flattenAmt = 1.0;
     
-    //setup the buttons
-    //nevermind, this is called from the book controller
-//    setupUI();
+
+    //spawning effect
+    spawnDuration = 4.0f;
+    spawnPosBackEasing = 1.0f;
     
 }
 
@@ -360,6 +375,9 @@ void Book::setupContent(Contribution c, int _tagNum, ofColor _tagCol){
     
     formatTextForDisplay();
     drawContentToTexture();
+    
+    //set up the spawning effect now that we have a color
+    spawnEffect.setup(tagCol);
     
 }
 
@@ -563,6 +581,9 @@ void Book::triggerNewBookEvt(){
     //we can animate it to the beginning
     animPos = animationSpread3;
     
+    //reset the spawn effect ribbons
+    spawnEffect.reset();
+    
 }
 
 void Book::update(){
@@ -570,7 +591,6 @@ void Book::update(){
 
 
     if( bIsNewBookEvt ){
-        
         
         //if the book is already in the shelf we need to fade it out
         //then animate it in, otherwise the book is bIsUnused=true and ready to be used
@@ -600,9 +620,17 @@ void Book::update(){
                 
                 pos = spawnPos;
                 
+                //this will center the book on it's axis so it rotates
+                //nicer during the animation
+                toCenter.set(depth/2, thickness/2, height/2);
+                
                 //reset the animation start time to now so
                 //the next step animates correctly
                 animStartTime = ofGetElapsedTimef();
+                
+                //setup the SpawnEffect
+                
+                
 
             }
             
@@ -610,36 +638,45 @@ void Book::update(){
             
             //Book is not in the shelf so it's a new book coming in.
             //animate the book into the scene
+            
 
             double now = ofGetElapsedTimef();
             
             //The time we'll get from spawn position to the pulled out position
-            float pulledOutPosTime = animStartTime + 4.0f;
+            float spawnEndTime = animStartTime + spawnDuration;
+
+            //update the spawn effect and send it a countdown
+            //until the effect is over
+            spawnEffect.update( spawnEndTime - now );
 
             
-            if(now < pulledOutPosTime){
+            if(now < spawnEndTime){
                 
                 
                 //book is now closed, animate back to pulled out position
-                float backEasePct = ofxeasing::map_clamp(now, animStartTime, pulledOutPosTime, 0.0, 1.0, &ofxeasing::back::easeOut_s, 1.0);
+                float backEasePct = ofxeasing::map_clamp(now, animStartTime, spawnEndTime, 0.0, 1.0, &ofxeasing::back::easeOut_s, spawnPosBackEasing);
                 
-                pos = spawnPos.getInterpolated(storedPos, backEasePct);
+                //interpolate to the stored position but compensate for the book center shift
+                ofVec3f backToCenter(thickness/2, -height/2, depth/2);
+                
+                pos = spawnPos.getInterpolated(storedPos + backToCenter, backEasePct);
                 
                 //start at a large rot angle so the book spins into position on the way down
-                float anglePct = ofxeasing::map_clamp(now, animStartTime, pulledOutPosTime, 0.0, 1.0, &ofxeasing::linear::easeOut);
+                float anglePct = ofxeasing::map_clamp(now, animStartTime, spawnEndTime, 0.0, 1.0, &ofxeasing::cubic::easeOut);
                 currentRotZ = ofLerp(spawnAngleZ, storedRotZ, anglePct);
                 currentRotX = ofLerp(spawnAngleX, storedRotX, anglePct);
 
-                //animation needs to end a tad earlier so book is closed when it goes into the shelf
-                double animationEndTime = pulledOutPosTime - 0.5f;
-                float animPct = ofxeasing::map_clamp(now, animStartTime, animationEndTime, 0.0, 1.0, &ofxeasing::linear::easeOut);
-                animPos = ofLerp(animationSpread3, animationStart, animPct);
                 
                 //force the book forward so it clears the shelf while animating
                 pos.z = -200;
-
                 
-                //if we want to open the book during the fly in
+                
+                //if we want to open the book during the fly in:
+//                //animation needs to end a tad earlier so book is closed when it goes into the shelf
+//                double animationEndTime = pulledOutPosTime - 0.5f;
+//                float animPct = ofxeasing::map_clamp(now, animStartTime, animationEndTime, 0.0, 1.0, &ofxeasing::linear::easeOut);
+//                animPos = ofLerp(animationSpread3, animationStart, animPct);
+//                
 //                model.update();
 //                model.setPositionForAllAnimations(animPos);
                 
@@ -647,7 +684,7 @@ void Book::update(){
             } else {
                 
                 //put the book back at the correct Z
-                pos.z = storedPos.z;
+                pos = storedPos;
                 
                 //animation is finished
                 bIsNewBookEvt = false;
@@ -935,9 +972,6 @@ void Book::update(){
         if( bNeedsUpdate ){
             model.setPositionForAllAnimations(animPos);
             model.update();
-            cout << "Updating Model" << endl;
-        } else {
-            cout << "NOT Updating" << endl;
         }
         
         
@@ -954,7 +988,7 @@ void Book::update(){
             tagTrans = ofLerp(tagTrans, 255, 0.075);
             
             //if enough time has passed put the taglet away
-            if(ofGetElapsedTimef() - tagletStartTime > 6.0f){
+            if(ofGetElapsedTimef() - tagletStartTime > tagletDuration){
                 
                 bShowTaglet = false;
 
@@ -1008,33 +1042,45 @@ void Book::draw(){
         //also push it forward so it clears the rotating wallpaper tiles
         ofTranslate(pos);
         
-        
-        //        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -90, 90);
-        //        float z = ofMap(ofGetMouseY(), 0, ofGetHeight(), -90, 90);
-        //        cout << "XZ: " << x << ", " << z << endl;
+        //debug tools using the mouse
         
         
-        //now rotate and translate book so that it has the lower left corner of the spine
-        //as its origin and is oriented properly: book stored in shelf
+        //now rotate book to orient it properly depending on the state
+        //See constants: displayRotX, storedRotX, etc.
         ofRotateX(currentRotX);
         ofRotateZ(currentRotZ);
         
         
+        //if we're in the book spawning sequence, move the book so that
+        //it draws from it's center to make the rotations look less awkward
+        if(bIsNewBookEvt){
+            spawnEffect.draw();
+            
+            ofPushMatrix();
+            ofTranslate(toCenter);
+            
+        }
         
         //scale the model up (with a little extra in the X to add more viewable reading area.
         //Also, squash the book down to minimize the curvature
         //making text close to the spine easier to read
         ofScale(currentScale * widthScale, currentScale * flattenAmt, currentScale);
         
-        //disable the model textures so we can use our own
-        model.disableTextures();
-        ofDisableArbTex();
+        
         if(textureFBO.isAllocated()) textureFBO.getTexture().bind();
         
         ofSetColor(255);
         model.drawFaces();
         
         if(textureFBO.isAllocated()) textureFBO.getTexture().unbind();
+        
+        //close out the spawning event translation
+        if( bIsNewBookEvt ) ofPopMatrix();
+        
+        //draw an axis for debugging
+//        ofSetLineWidth(2);
+//        ofDrawAxis(100);
+        
         
         ofPopMatrix();
         

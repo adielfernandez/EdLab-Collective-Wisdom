@@ -43,13 +43,11 @@ public:
         bIsInUse = true;
         triggerTime = ofGetElapsedTimef();
         
-        cout << "Activating shelf" << endl;
-        
     }
+    
     void deactivate(){
         bIsActive = false;
         triggerTime = ofGetElapsedTimef();
-        cout << "DEactivating shelf" << endl;
     }
     
     void update(){

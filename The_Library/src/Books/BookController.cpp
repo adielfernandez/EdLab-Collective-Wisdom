@@ -135,11 +135,8 @@ void BookController::setup(vector<Contribution> *cList){
     
     for(int i = 0; i < (int)texDir.size(); i++){
         
-        ofImage img;
-        img.load(texDir.getPath(i));
-        
         ofTexture t;
-        t = img.getTexture();
+        ofLoadImage(t, texDir.getPath(i));
         
         textures.push_back(t);
         
@@ -178,11 +175,13 @@ void BookController::setup(vector<Contribution> *cList){
     
     availableBooks = 0;
     lastNewBookEvent = 0;
-    newBookInterval = 1.0f;
     lastRecycleTime = 0.0f;
     
-    //bring a book back from the archive every two minutes
-    recycleInterval = 120.0f;
+    
+    //SETUP THE GUI
+    setupGui();
+    lastBookSettingsUpdate = 0;
+
     
     ofVec3f shelfStart, shelfEnd;
     ofVec3f dirToShelfEnd;
@@ -344,15 +343,6 @@ void BookController::setup(vector<Contribution> *cList){
 
 
     
-    //now we need to take any left over messages and put them into the archive
-    
-
-    
-    
-    
-    
-
-    
 }
 
 void BookController::checkMouseEvents(int x, int y){
@@ -437,7 +427,7 @@ void BookController::onNewContribution( Contribution& c ){
     //is an available bookshelves to add a book to.
     //if not, add the contribution to the queue and wait
     
-    if(ofGetElapsedTimef() - lastNewBookEvent > newBookInterval){
+    if(ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider){
         
         //go through the book vector, if we have any unused books available,
         //trigger those, if not, recycle an existing one
@@ -561,7 +551,8 @@ void BookController::onNewContribution( Contribution& c ){
     
     } else {
         
-        //it hasn't been long enough, store the index of the book in the queue
+        //if no available books found (coming in too fast or all shelves
+        //are occupied), store the index of the book in the queue
         incomingQueue.push_back( c );
         
         
@@ -579,6 +570,18 @@ void BookController::onNewContribution( Contribution& c ){
 
 
 void BookController::update(){
+    
+    //If we're pressing the gui button to update books, update them all
+    //but only do it a few times per second
+    if( bIsGuiActive && updateBooksToggle && ofGetElapsedTimef() - lastBookSettingsUpdate > 0.2f){
+        
+        setBookVarsFromGui();
+        
+        lastBookSettingsUpdate = ofGetElapsedTimef();
+    }
+    
+    //set this to false, the drawGui() method will set it to true later
+    bIsGuiActive = false;
     
     
     //update all books
@@ -600,7 +603,7 @@ void BookController::update(){
     
     //if theres anything in the incoming queue AND
     //it's been long enough, trigger a new contribution event
-    if( !incomingQueue.empty() && ofGetElapsedTimef() - lastNewBookEvent > newBookInterval ){
+    if( !incomingQueue.empty() && ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider ){
         
         //trigger a new book event with the oldest
         onNewContribution( *incomingQueue.begin() );
@@ -614,7 +617,7 @@ void BookController::update(){
     if( contributionList -> size() > books.size() ){
     
         //AND it's been long enough...
-        if( ofGetElapsedTimef() - lastRecycleTime > recycleInterval){
+        if( ofGetElapsedTimef() - lastRecycleTime > archiveRecycleSlider){
 
 //            cout << "Triggering recycle event" << endl;
             
@@ -628,12 +631,9 @@ void BookController::update(){
             
             vector<int> archivedIndices;
             
-//            cout << "Found the following indices archived: " << endl;
             for(int i = 0; i < contributionList -> size(); i++){
                 if( (*contributionList)[i].bIsArchived ){
                     archivedIndices.push_back(i);
-                    
-                    cout << i << endl;
                 }
             }
             
@@ -641,8 +641,6 @@ void BookController::update(){
                 
                 int randIndex = floor( ofRandom(archivedIndices.size()) );
                 int indexToRecycle = archivedIndices[randIndex];
-                
-//                cout << "Bringing back index number: " << indexToRecycle << ", ID: " << (*contributionList)[indexToRecycle].ID << endl;
                 
                 //send to get recycled, this method will take care of
                 //switching the archival stats of the old/new messages
@@ -663,10 +661,13 @@ void BookController::update(){
 
 void BookController::draw(){
     
+    //disable arbitrary textures for all the books
+    ofDisableArbTex();
 
-    
     ofEnableDepthTest();
     
+    ofPushMatrix();
+    ofTranslate(0, 0, -30);
     
     for(int i = 0; i < books.size(); i++){
         if(books[i].bIsUnused == false){
@@ -678,9 +679,126 @@ void BookController::draw(){
         shelfOverlays[i].draw();
     }
 
+    ofPopMatrix();
+    
     ofDisableDepthTest();
     
     
+    ofEnableArbTex();
+    
+}
+
+
+
+
+void BookController::setBookVarsFromGui(){
+    
+    //go through each book and give them the right settings
+    for(int i = 0; i < books.size(); i++){
+        
+        books[i].spawnDuration = spawnDurationSlider;
+        books[i].spawnPosBackEasing = spawnPosBackEaseSlider;
+        books[i].tagletDuration = tagletDurationSlider;
+        
+        books[i].spawnEffect.numRibbonsToDraw = numRibbonsSlider;
+        books[i].spawnEffect.orbitSpeed = orbitSpeedSlider;
+        books[i].spawnEffect.numSegments = numSegmentsSlider;
+        books[i].spawnEffect.totalLength = ribbonLengthSlider;
+        books[i].spawnEffect.ribbonWidth = ribbonWidthSlider;
+        books[i].spawnEffect.ribbonTaper = ribbonTaperSlider;
+        books[i].spawnEffect.baseRad = baseRadSlider;
+        books[i].spawnEffect.radAmp = radiusAmplitudeSlider;
+        books[i].spawnEffect.noiseSpeed = noiseSpeedSlider;
+        books[i].spawnEffect.nScale = noiseScaleSlider;
+        books[i].spawnEffect.colorRange = colorRangeSlider;
+        books[i].spawnEffect.shrinkTime = shrinkTimeSlider;
+        books[i].spawnEffect.useNoise = useNoiseToggle;
+    }
+
+    
+}
+
+void BookController::setupGui(){
     
     
+    guiName = "bookController";
+    
+    
+    filePath = "settings/";
+    gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
+    
+    gui.add(settingsLabel.setup("  LIBRARY SETTINGS", ""));
+    
+    gui.add(archiveRecycleSlider.setup("Archive Interval", 60.0f, 1.0f, 300.0f));
+    gui.add(newBookIntervalSlider.setup("New Book Interval", 2.0f, 0.2f, 10.0f));
+    
+    gui.add(booksLabel.setup("  BOOK SETTINGS", ""));
+    gui.add(updateBooksToggle.setup("Update Book Vars", false));
+    gui.add(tagletDurationSlider.setup("Tag duration", 6.0f, 2.0f, 10.0f));
+    
+    gui.add(spawnSettingsLabel.setup("  SPAWN SETTINGS", ""));
+    gui.add(spawnDurationSlider.setup("Spawn duration", 4.0f, 0.5f, 10.0f));
+    gui.add(spawnPosBackEaseSlider.setup("Pos Back Ease", 1.0f, 0.0f, 3.0f));
+    
+    gui.add(ribbonSettingsLabel.setup("  RIBBON SETTINGS", ""));
+    gui.add(numRibbonsSlider.setup("Num ribbons", 5, 1, 10));
+    gui.add(orbitSpeedSlider.setup("Orbit speed", 2.0f, 0.1f, 10.0f));
+    gui.add(ribbonLengthSlider.setup("Ribbon length", 135, 10, 360));
+    gui.add(ribbonWidthSlider.setup("Ribbon width", 20, 5, 60));
+    gui.add(ribbonTaperSlider.setup("Ribbon taper", 0.2f, 0.0f, 1.0f));
+    
+    gui.add(numSegmentsSlider.setup("Num segments", 15, 2, 40));
+    gui.add(colorRangeSlider.setup("Color range", 20, 0, 50));
+    gui.add(baseRadSlider.setup("Base radius", 100, 0, 200));
+    gui.add(shrinkTimeSlider.setup("Shrink time", 0.5f, 0.0f, 5.0f));
+    
+    gui.add(useNoiseToggle.setup("Use Noise", true));
+    gui.add(radiusAmplitudeSlider.setup("Radius amplitude", 0.2f, 0.01f, 0.5f));
+    gui.add(noiseSpeedSlider.setup("Noise speed", 0.01f, 0.0001f, 4.0f));
+    gui.add(noiseScaleSlider.setup("Noise scale", 0.01f, 0.0001f, 0.5f));
+    
+    gui.setHeaderBackgroundColor(ofColor(255));
+    
+    //color applies to gui title only
+    gui.setTextColor(ofColor(0));
+    
+    settingsLabel.setBackgroundColor(ofColor(255));
+    booksLabel.setBackgroundColor(ofColor(255));
+    spawnSettingsLabel.setBackgroundColor(ofColor(255));
+    ribbonSettingsLabel.setBackgroundColor(ofColor(255));
+    
+    //this changes the color of all the labels
+    settingsLabel.setDefaultTextColor(ofColor(0));
+    
+    gui.setPosition(ofGetWidth()/2 - gui.getWidth()/2, 30);
+    
+    bIsGuiActive = true;
+    
+    loadSettings();
+    
+}
+
+void BookController::loadSettings(){
+    
+    gui.loadFromFile( filePath + guiName + ".xml");
+    
+    
+}
+
+void BookController::saveSettings(){
+    
+    gui.saveToFile(filePath + guiName + ".xml");
+    
+}
+
+
+void BookController::drawGui(){
+    gui.draw();
+    bIsGuiActive = true;
+}
+
+void BookController::drawGui(int x, int y){
+    gui.setPosition(x, y);
+    gui.draw();
+    bIsGuiActive = true;
 }

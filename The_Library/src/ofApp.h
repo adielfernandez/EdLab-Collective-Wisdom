@@ -3,14 +3,17 @@
 #include "ofMain.h"
 #include "ofxLibwebsockets.h"
 #include "ofxAssimpModelLoader.h"
+
 #include "Furniture/Wallpaper.hpp"
 #include "Furniture/Frame.hpp"
 #include "Furniture/Bookcase.hpp"
+
 #include "Books/BookController.hpp"
+#include "Books/CenterBook.hpp"
+#include "Books/SpawnEffect.hpp"
+
 #include "Content/Contribution.hpp"
 #include "Content/ContributionManager.hpp"
-#include "Books/CenterBook.hpp"
-
 #include "Content/ScholarData.hpp"
 
 #include "Trinkets/Globe.hpp"
@@ -104,6 +107,7 @@ class ofApp : public ofBaseApp{
     //Trinkets on shelves
 //    Globe globe;
     
+
 
 };
 

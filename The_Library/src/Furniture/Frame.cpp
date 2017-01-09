@@ -59,8 +59,7 @@ void Frame::setup(string name){
 //    controlPtPct5 = controlPointPcts[5];
 //    controlPtPct6 = controlPointPcts[6];
 //    controlPtPct7 = controlPointPcts[7];
-    
-    loadSettings();
+
     
     
     
@@ -95,6 +94,7 @@ void Frame::loadMedia(){
         images.push_back(img);
         
     }
+    
     
     currentImg = round(ofRandom( images.size() - 1 ));
     
@@ -557,8 +557,11 @@ void Frame::setupGui(){
     
     mappingLabel.setBackgroundColor(ofColor(255));
     
+    loadSettings();
     
-    gui.setPosition(frameCorners[0].x - 240 , frameCorners[0].y - 120 );
+    //now that we've loaded, move the gui to where we last had it
+    gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
+    gui.minimizeAll();
     
     //if we're drawing the gui, then it's active so
     //we'll update all the values in update()

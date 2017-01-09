@@ -46,6 +46,11 @@ void TiledObject::setupCommonGui(){
     filePath = "settings/";
     gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
     
+    ofVec2f min(0, 0);
+    ofVec2f max(1920, 1200);
+    
+    gui.add(guiPosSlider.setup("Gui Position", min, min, max));
+    
     gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
     gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 6.0f));
     gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
@@ -61,10 +66,13 @@ void TiledObject::setupCommonGui(){
     //this changes the color of all the labels
     settingsLabel.setDefaultTextColor(ofColor(0));
 
+
     
 }
 
 void TiledObject::updateCommonGui(){
+    
+    guiPosSlider = gui.getPosition();
     
     //Distribute GUI values to where they belong
     waveSpeed = waveSpeedSlider;

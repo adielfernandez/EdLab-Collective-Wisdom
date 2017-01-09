@@ -197,8 +197,7 @@ void CenterBook::setup(ScholarData *sData, Frame *f){
     //not needed after first XML population
     //saveSettings();
     
-    loadSettings();
-    setVariablesFromGui();
+
     
     mapMesh();
     
@@ -1040,6 +1039,12 @@ void CenterBook::setupGui(){
     filePath = "settings/";
     gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
     
+    
+    ofVec2f min(0, 0);
+    ofVec2f max(1920, 1200);
+    
+    gui.add(guiPosSlider.setup("Gui Position", min, min, max));
+    
     gui.add(positioningLabel.setup("  POSITIONING", ""));
     
     float maxRangeX = 100;
@@ -1102,7 +1107,19 @@ void CenterBook::setupGui(){
     
     gui.setPosition(meshPoints[0].x - 300, meshPoints[0].y - 160);
     
+    gui.minimizeAll();
+    
+    
+    loadSettings();
+    setVariablesFromGui();
+    
+    //now that we've loaded, move the gui to where we last had it
+    gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
+    
     bIsGuiActive = true;
+    
+    
+    
     
 }
 
@@ -1141,6 +1158,8 @@ void CenterBook::setVariablesFromGui(){
     page1LeftMargin = page1LeftMarginSlider;
     page2LeftMargin = page2LeftMarginSlider;
     pageTopMargin = pageTopMarginSlider;
+    
+    guiPosSlider = gui.getPosition();
 }
 
 

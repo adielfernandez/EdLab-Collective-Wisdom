@@ -1,7 +1,7 @@
 <bookController>
 	<__LIBRARY_SETTINGS/>
-	<Archive_Interval>5.485</Archive_Interval>
-	<New_Book_Interval>1.572</New_Book_Interval>
+	<Archive_Interval>149.005</Archive_Interval>
+	<New_Book_Interval>5.59</New_Book_Interval>
 	<__BOOK_SETTINGS/>
 <bookController/>
 <Update_Spawn_Vars>1</Update_Spawn_Vars>
@@ -30,4 +30,5 @@
 	<Book_Open_Time>4.2</Book_Open_Time>
 	<Book_Close_Time>4.2</Book_Close_Time>
 	<Button_Speed>0.08</Button_Speed>
+<Gui_Position>857, 79</Gui_Position>
 </bookController>

@@ -102,6 +102,8 @@ public:
     string guiName;
     string filePath;
     
+    ofxVec2Slider guiPosSlider;
+    
     ofxLabel settingsLabel;
     ofxFloatSlider archiveRecycleSlider;
     ofxFloatSlider newBookIntervalSlider;

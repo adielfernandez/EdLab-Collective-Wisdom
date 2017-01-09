@@ -116,6 +116,8 @@ public:
     string guiName;
     string filePath;
     
+    ofxVec2Slider guiPosSlider;
+    
     ofxLabel positioningLabel;
     ofxVec2Slider bookPosSlider;
     ofxFloatSlider bulkScaleSlider;

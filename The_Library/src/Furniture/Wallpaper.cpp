@@ -45,9 +45,7 @@ void Wallpaper::setup(){
     
     //not needed after first XML population
 //    saveSettings();
-    
-    loadSettings();
-    
+
     
     tileRes = getResFromSlider(tileResSlider);
     tileResSlider.setName(tileResSliderName + ofToString(tileRes));
@@ -259,7 +257,11 @@ void Wallpaper::setupGui(){
     
     gui.setPosition(10, 10);
     
+    loadSettings();
     
+    //now that we've loaded, move the gui to where we last had it
+    gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
+    gui.minimizeAll();
 
 }
 

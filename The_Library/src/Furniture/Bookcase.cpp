@@ -33,13 +33,11 @@ void Bookcase::setup(string name, bool _leftCase){
 
     guiName = name;
     
+    
+    
     setupGui();
-    
-    loadSettings();
-    
-    mapMesh();
-    
-    //Set GUI values to these (Only needed for first population of GUI XML)
+
+//    //Set GUI values to these (Only needed for first population of GUI XML)
 //    frameCorner0 = bookcaseCorners[0];
 //    frameCorner1 = bookcaseCorners[1];
 //    frameCorner2 = bookcaseCorners[2];
@@ -62,6 +60,14 @@ void Bookcase::setup(string name, bool _leftCase){
 //    controlPtPct15 = controlPointPcts[15];
 //    saveSettings();
     
+    loadSettings();
+    
+    //now that we've loaded, move the gui to where we last had it
+    gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
+    
+    mapMesh();
+
+    
     
     //Setup the parent class TiledObject with all th info set above
     TiledObject::setupTiledObject(true);   //TRUE, this is a bookcase
@@ -71,6 +77,7 @@ void Bookcase::setup(string name, bool _leftCase){
     
 }
 
+
 void Bookcase::loadMedia(){
     
     //load all the images from file
@@ -78,8 +85,6 @@ void Bookcase::loadMedia(){
     dir.listDir("assets/bookcases/");
     dir.sort();
     
-    //load images with manual file names
-    //loading with ofDirectory conflicts with ofxAssimp
     for(int i = 0; i < (int)dir.size(); i++){
         
         ofImage img;
@@ -88,6 +93,13 @@ void Bookcase::loadMedia(){
         images.push_back(img);
         
     }
+    
+    
+    //shuffle the images so they arent in order
+    std::random_shuffle(images.begin(), images.end());
+    //shuffle again for good measure
+    std::random_shuffle(images.begin(), images.end());
+    
     
     //    currentImg = round(ofRandom( images.size() - 1 ));
     currentImg = 0;
@@ -156,14 +168,46 @@ void Bookcase::update(){
         controlPoints[14] = bookcaseCorners[0].getInterpolated(bookcaseCorners[3], controlPointPcts[14]);
         controlPoints[15] = bookcaseCorners[0].getInterpolated(bookcaseCorners[3], controlPointPcts[15]);
         
-        if(reMapMeshButton && ofGetElapsedTimeMillis() - lastMapTime > 1000){
+        if(reMapMeshButton && ofGetElapsedTimeMillis() - lastButtonPressTime > 1000){
             tiles.clear();
             
             mapMesh();
             recordStaticTexture();
             setStaticBookcase();
             
-            lastMapTime = ofGetElapsedTimeMillis();
+            lastButtonPressTime = ofGetElapsedTimeMillis();
+        }
+        
+        //if we need to reset the bookcase, use the original prepareMesh() method
+        //then set the gui to those original values
+        if( resetBookcaseButton && ofGetElapsedTimeMillis() - lastButtonPressTime > 1000 ){
+            
+            prepareMesh();
+            
+            //Set GUI values to the original un-mapped values
+            frameCorner0 = bookcaseCorners[0];
+            frameCorner1 = bookcaseCorners[1];
+            frameCorner2 = bookcaseCorners[2];
+            frameCorner3 = bookcaseCorners[3];
+            controlPtPct0 = controlPointPcts[0];
+            controlPtPct1 = controlPointPcts[1];
+            controlPtPct2 = controlPointPcts[2];
+            controlPtPct3 = controlPointPcts[3];
+            controlPtPct4 = controlPointPcts[4];
+            controlPtPct5 = controlPointPcts[5];
+            controlPtPct6 = controlPointPcts[6];
+            controlPtPct7 = controlPointPcts[7];
+            controlPtPct8 = controlPointPcts[8];
+            controlPtPct9 = controlPointPcts[9];
+            controlPtPct10 = controlPointPcts[10];
+            controlPtPct11 = controlPointPcts[11];
+            controlPtPct12 = controlPointPcts[12];
+            controlPtPct13 = controlPointPcts[13];
+            controlPtPct14 = controlPointPcts[14];
+            controlPtPct15 = controlPointPcts[15];
+            
+            lastButtonPressTime = ofGetElapsedTimeMillis();
+            
         }
         
     }
@@ -325,8 +369,12 @@ void Bookcase::setupGui(){
     
     TiledObject::setupCommonGui();
     
-    gui.add(mappingLabel.setup("  Mapping Points", ""));
+    gui.add(mappingLabel.setup("  MAPPING OPTIONS", ""));
+    gui.add(useShadowToggle.setup("Draw Shadow", true));
     gui.add(reMapMeshButton.setup("Re-Map Mesh"));
+    gui.add(resetBookcaseButton.setup("Reset Bookcase"));
+    
+    gui.add(controlPointsLabel.setup("  CONTROL POINTS", ""));
     
     //slider bounds for frame corner
     float maxRange = 50;
@@ -362,7 +410,7 @@ void Bookcase::setupGui(){
     gui.add(controlPtPct14.setup("Control Pt 14", controlPointPcts[14], start, midStep));
     gui.add(controlPtPct15.setup("Control Pt 15", controlPointPcts[15], start, midStep));
     
-    gui.add(useShadowToggle.setup("Draw Shadow", true));
+
     
     gui.setHeaderBackgroundColor(ofColor(255));
     
@@ -370,10 +418,10 @@ void Bookcase::setupGui(){
     gui.setTextColor(ofColor(0));
     
     mappingLabel.setBackgroundColor(ofColor(255));
+    controlPointsLabel.setBackgroundColor(ofColor(255));
     
-    float x = bLeftCase ? bookcaseCorners[1].x + 20 : bookcaseCorners[0].x - 240;
-    gui.setPosition(x, 50);
-    
+    gui.minimizeAll();
+
     
 }
 
@@ -432,7 +480,7 @@ void Bookcase::prepareMesh(){
     shelfTileHeight     = 0.0143f;
     bottomTileHeight    = 0.0477f;
     
-    float fudge = 50;
+    float fudge = 0;
     float heightFromTop = ofGetWindowHeight() - bookcaseHeight - fudge;
     float leftMargin;
     

@@ -1,16 +1,16 @@
 <rightBookcase>
 	<__GENERAL_SETTINGS/>
-	<Wave_Speed>1</Wave_Speed>
-	<Effect_Duration>1.8</Effect_Duration>
+	<Wave_Speed>0.454</Wave_Speed>
+	<Effect_Duration>1.472</Effect_Duration>
 	<Easing_Bounce_Amt>1</Easing_Bounce_Amt>
 	<__Mapping_Points/>
-	<Corner_0>1242, 124</Corner_0>
-	<Corner_1>1737, 124</Corner_1>
-	<Corner_2>1737, 1200</Corner_2>
-	<Corner_3>1242, 1200</Corner_3>
+	<Corner_0>1241.99, 74</Corner_0>
+	<Corner_1>1737, 74</Corner_1>
+	<Corner_2>1737, 1150</Corner_2>
+	<Corner_3>1242, 1150</Corner_3>
 	<Control_Pt_0>0.0991</Control_Pt_0>
 	<Control_Pt_1>0.9009</Control_Pt_1>
-	<Control_Pt_2>0.0912</Control_Pt_2>
+	<Control_Pt_2>0.096</Control_Pt_2>
 	<Control_Pt_3>0.2259</Control_Pt_3>
 	<Control_Pt_4>0.2402</Control_Pt_4>
 	<Control_Pt_5>0.3749</Control_Pt_5>
@@ -25,6 +25,7 @@
 	<Control_Pt_14>0.2259</Control_Pt_14>
 	<Control_Pt_15>0.0912</Control_Pt_15>
 <rightBookcase/>
-<Draw_Shadow>1</Draw_Shadow>
-<Gui_Position>1024, 121</Gui_Position>
+<Draw_Shadow>0</Draw_Shadow>
+<Gui_Position>998, 69</Gui_Position>
+<group/>
 </rightBookcase>

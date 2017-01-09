@@ -576,6 +576,9 @@ void BookController::update(){
         
         setBookVarsFromGui();
         
+        guiPosSlider = gui.getPosition();
+        
+        
         lastBookSettingsUpdate = ofGetElapsedTimef();
     }
     
@@ -730,6 +733,12 @@ void BookController::setupGui(){
     filePath = "settings/";
     gui.setup(guiName, filePath + guiName + ".xml", 0, 0);
     
+    ofVec2f min(0, 0);
+    ofVec2f max(1920, 1200);
+    
+    gui.add(guiPosSlider.setup("Gui Position", min, min, max));
+
+    
     gui.add(settingsLabel.setup("  LIBRARY SETTINGS", ""));
     
     gui.add(archiveRecycleSlider.setup("Archive Interval", 60.0f, 1.0f, 300.0f));
@@ -781,7 +790,12 @@ void BookController::setupGui(){
     
     bIsGuiActive = true;
     
+    gui.minimizeAll();
+    
     loadSettings();
+    
+    //now that we've loaded, move the gui to where we last had it
+    gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
     
 }
 

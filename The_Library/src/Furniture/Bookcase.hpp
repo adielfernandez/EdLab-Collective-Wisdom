@@ -92,8 +92,9 @@ public:
     
     ofxLabel mappingLabel;
     ofxButton reMapMeshButton;
-    unsigned long long lastMapTime;
-    
+    unsigned long long lastButtonPressTime;
+
+    ofxLabel controlPointsLabel;
     ofxVec2Slider frameCorner0;
     ofxVec2Slider frameCorner1;
     ofxVec2Slider frameCorner2;
@@ -116,6 +117,7 @@ public:
     ofxFloatSlider controlPtPct15;
     ofxToggle useShadowToggle;
 
+    ofxButton resetBookcaseButton;
     
     
 };

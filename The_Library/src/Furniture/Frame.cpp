@@ -392,6 +392,12 @@ void Frame::drawShadow(){
 
 void Frame::draw(){
     
+    //draw the shadow first
+    if(useShadowToggle){
+        drawShadow();
+    }
+        
+    
     //draw into the portrait FBO
     portraitFbo.begin();
     ofSetColor(255);
@@ -541,6 +547,8 @@ void Frame::setupGui(){
     gui.add(controlPtPct5.setup("Control Pt 5", defaultVal, start, firstStep));
     gui.add(controlPtPct6.setup("Control Pt 6", defaultVal, lastStep, end));
     gui.add(controlPtPct7.setup("Control Pt 7", defaultVal, start, firstStep));
+    
+    gui.add(useShadowToggle.setup("Draw Shadow", true));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     

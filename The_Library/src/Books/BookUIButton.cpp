@@ -49,7 +49,7 @@ void BookUIButton::setup(int _type, ofVec3f bookPos ){
     bookNum = -1;
     shelfNum = -1;
     
-    
+    buttonLerpSpeed = 0.08;
 }
 
 void BookUIButton::setLibraryInfo(vector<ofVec3f> shelf, int _shelfNum, int _bookNum){
@@ -286,7 +286,7 @@ void BookUIButton::update(){
     if(!bIsDisplayed){
     
         
-        currentPos.interpolate(hiddenPos, 0.08);
+        currentPos.interpolate(hiddenPos, buttonLerpSpeed);
         tagHelpTrans = ofLerp(tagHelpTrans, 0.0f, 0.06);
         tagHelpScale = ofLerp(tagHelpScale, 0.0f, 0.1);
         
@@ -298,7 +298,7 @@ void BookUIButton::update(){
         
     } else {
         
-        currentPos.interpolate(displayedPos, 0.08);
+        currentPos.interpolate(displayedPos, buttonLerpSpeed);
         bIsHidden = false;
         
         //nav buttons get logic for hovering

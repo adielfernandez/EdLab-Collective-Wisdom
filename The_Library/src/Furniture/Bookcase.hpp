@@ -114,7 +114,7 @@ public:
     ofxFloatSlider controlPtPct13;
     ofxFloatSlider controlPtPct14;
     ofxFloatSlider controlPtPct15;
-    
+    ofxToggle useShadowToggle;
 
     
     

@@ -16,7 +16,7 @@ BookController::BookController(){
 void BookController::loadModels(){
     
     //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 16;
+    numBooksPerShelf = 1;
     numShelves = 6;
     
     int numBooks = numBooksPerShelf * numShelves;
@@ -698,6 +698,10 @@ void BookController::setBookVarsFromGui(){
         books[i].spawnDuration = spawnDurationSlider;
         books[i].spawnPosBackEasing = spawnPosBackEaseSlider;
         books[i].tagletDuration = tagletDurationSlider;
+        books[i].pageLerpSpeed = pageFlipSpeedSlider;
+        books[i].totalBookOpenTime = bookOpenTimeSlider;
+        books[i].totalBookCloseTime = bookCloseTimeSlider;
+        books[i].setButtonSpeeds(buttonLerpSpeedSlider);
         
         books[i].spawnEffect.numRibbonsToDraw = numRibbonsSlider;
         books[i].spawnEffect.orbitSpeed = orbitSpeedSlider;
@@ -734,6 +738,10 @@ void BookController::setupGui(){
     gui.add(booksLabel.setup("  BOOK SETTINGS", ""));
     gui.add(updateBooksToggle.setup("Update Book Vars", false));
     gui.add(tagletDurationSlider.setup("Tag duration", 6.0f, 2.0f, 10.0f));
+    gui.add(pageFlipSpeedSlider.setup("Page Flip Speed", 0.05, 0.001f, 0.5f));
+    gui.add(bookOpenTimeSlider.setup("Book Open Time", 4.2, 1.0f, 8.0f));
+    gui.add(bookCloseTimeSlider.setup("Book Close Time", 4.2, 1.0f, 8.0f));
+    gui.add(buttonLerpSpeedSlider.setup("Button Speed", 0.08, 0.005f, 0.3f));
     
     gui.add(spawnSettingsLabel.setup("  SPAWN SETTINGS", ""));
     gui.add(spawnDurationSlider.setup("Spawn duration", 4.0f, 0.5f, 10.0f));

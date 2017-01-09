@@ -1,9 +1,8 @@
 <wallpaper>
 	<__GENERAL_SETTINGS/>
-	<Wave_Speed>0.5425</Wave_Speed>
-	<Effect_Duration>1.227</Effect_Duration>
-<wallpaper/>
-<Easing_Bounce_Amt>1.34</Easing_Bounce_Amt>
-<__Mapping_Points/>
+	<Wave_Speed>1</Wave_Speed>
+	<Effect_Duration>1.8</Effect_Duration>
+	<Easing_Bounce_Amt>1</Easing_Bounce_Amt>
+	<__Mapping_Points/>
 	<Tile_Res:_80>7</Tile_Res:_80>
 </wallpaper>

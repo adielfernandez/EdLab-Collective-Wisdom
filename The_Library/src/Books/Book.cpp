@@ -350,6 +350,15 @@ void Book::hideButtons(){
     
 }
 
+void Book::setButtonSpeeds(float lerpSpeed){
+    
+    nextButton.buttonLerpSpeed = lerpSpeed;
+    prevButton.buttonLerpSpeed = lerpSpeed;
+    exitButton.buttonLerpSpeed = lerpSpeed;
+    tagButton.buttonLerpSpeed = lerpSpeed;
+    
+}
+
 bool Book::checkButtonsForClicks(int x, int y, bool touchState){
     
     nextButton.checkForClicks(x, y, touchState);
@@ -728,14 +737,21 @@ void Book::update(){
             //ANIMATION TO PULL BOOK OUT
             double now = ofGetElapsedTimef();
 
+            //set up the timing of each segment as a percentage
+            //of one value: total open time. These all add up to 1.0
+            //(numbers found experimentally)
+            float pullOutPct = 0.166666667;
+            float displayPct = 0.357142857;
+            float firstPagePct = 0.476190476;
+            
             //book is pulled out of shelf
-            float pullOutTime = animStartTime + 0.7f;
+            float pullOutTime = animStartTime + pullOutPct * totalBookOpenTime;
 
             //book is in flat display position
-            float displayReadyTime = pullOutTime + 1.5f;
+            float displayReadyTime = pullOutTime + displayPct * totalBookOpenTime;
 
             //Book is flipped to first open pages
-            float firstPageTime = displayReadyTime + 2.0f;
+            float firstPageTime = displayReadyTime + firstPagePct * totalBookOpenTime;
 
             if(now < pullOutTime){
 
@@ -763,8 +779,6 @@ void Book::update(){
                 currentScale = ofLerp(modelScale, displayScale, pct);
                 
 
-                
-
             } else if(now < firstPageTime){
 
                 //do a linear mapping of the animation and clamp it
@@ -774,13 +788,15 @@ void Book::update(){
                 //close to the spine easier to read
                 flattenAmt = ofMap(now, displayReadyTime, firstPageTime, 1.0, flatScale);
                 
-                //no more timers/animations to set, just do these last things before
-                //going to the book displayed state
-                
-                bIsDisplayed = true;
-                
                 //bring out the buttons
                 showButtons();
+                
+            } else {
+                
+                //no more timers/animations to set, just do these last things before
+                //going to the book displayed state
+                bIsDisplayed = true;
+                
                 
                 //prepare the NEXT state to pick up where this one leaves off
                 targetAnimPos = animPos;
@@ -860,39 +876,35 @@ void Book::update(){
                         targetAnimPos = animationSpread3;
                     }
                     
+                    
+                    //This is the page flipping segment. Only update if
+                    //we're not at our desired page
+                    if( abs( animPos - targetAnimPos ) > 0.01){
+                        
+                        bNeedsUpdate = true;
+                        
+                        //then lerp to that position
+                        animPos = ofLerp(animPos, targetAnimPos, pageLerpSpeed);
+                        
+                    } else {
+                        bNeedsUpdate = false;
+                    }
+                    
+                    
                 } else {
                     
-                    //close book by going backwards to the beginning
-                    targetAnimPos = animationStart;
+                    //we're exiting, tell the book to close
+                    bIsClosing = true;
                     
-                    //if we're at the end (more or less)
-                    if(targetAnimPos < 0.001){
-                        
-                        targetAnimPos = 0;
-                        
-                        bIsClosing = true;
-                        closingStartTime = ofGetElapsedTimef();
-                        
-                        
-                    }
+                    //note the start time of the closing animation
+                    closingStartTime = ofGetElapsedTimef();
                     
                     //put away the buttons
                     hideButtons();
                     
                 }
                 
-                //This is the page flipping segment. Only update if
-                //we're not at our desired page
-                if( abs( animPos - targetAnimPos ) > 0.01){
-                   
-                    bNeedsUpdate = true;
-                    
-                    //then lerp to that position
-                    animPos = ofLerp(animPos, targetAnimPos, pageLerpSpeed);
-                    
-                } else {
-                    bNeedsUpdate = false;
-                }
+
                 
                 
                 
@@ -901,15 +913,20 @@ void Book::update(){
                 //we're closing, go through the animation of putting the book back
                 double now = ofGetElapsedTimef();
                 
+                //animation segments defined as percentage of
+                //total book close time. these all add up to 1.0
+                float closeTimePct = 0.404761905;
+                float backToPulledPct = 0.357142857;
+                float putBackPct = 0.238095238;
                 
                 //Book snaps closed
-                float closeBookTime = closingStartTime + 1.7f;
+                float closeBookTime = closingStartTime + closeTimePct * totalBookCloseTime;
                 
                 //book goes back to pulled out position
-                float backToPulledOutTime = closeBookTime + 1.5f;
+                float backToPulledOutTime = closeBookTime + backToPulledPct * totalBookCloseTime;
                 
                 //Book is inserted back into shelf
-                float putBackTime = backToPulledOutTime + 1.0f;
+                float putBackTime = backToPulledOutTime + putBackPct * totalBookCloseTime;
                 
                 //update the model for each of the animation steps to close the book
                 bNeedsUpdate = true;

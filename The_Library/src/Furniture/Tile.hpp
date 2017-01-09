@@ -40,7 +40,6 @@ public:
     
     ofVec3f positionOnWall, tileCenter;
     
-    ofVboMesh darkBacking;
     
     //key to allow sorting a vector of tiles
     //by distance (for wave effects)
@@ -68,12 +67,12 @@ public:
         
     };
     
-    bool bRotating;
     bool bFlipAxis;
     bool bFlipHoriz, bFlipVert;
     bool bFlipInOut;
     bool bIsBackward;
-    bool bDrawDarkBacking;
+
+    bool bIsAnimating;
     
     float flipSpeed;
 

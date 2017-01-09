@@ -41,21 +41,15 @@ void Tile::setup(vector<ofVec3f> verts, vector<ofVec2f> texCoords){
         
     }
     
+
     
-    darkBacking = mesh;
-    darkBacking.clearColors();
 
-    for(int i = 0; i < darkBacking.getNumVertices(); i++){
-        darkBacking.addColor(ofFloatColor(0.0, 1.0, 0.0));
-    }
-
-    bRotating = false;
+    bIsAnimating = false;
     
     bFlipAxis = false;
     bFlipHoriz = false;
     bFlipVert = false;
     bFlipInOut = false;
-    bDrawDarkBacking = false;
     bIsBackward = true;
     flipSpeed = 0.02;
 
@@ -127,7 +121,6 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
             rotAxis.set(0, 1, 0);
             
             bFlipHoriz = true;
-            bDrawDarkBacking = false;
             
             break;
 
@@ -139,7 +132,6 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
             rotAxis.set(1, 0, 0);
             
             bFlipVert = true;
-            bDrawDarkBacking = false;
             
             break;
             
@@ -151,7 +143,6 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
             rotAxis = flipAxis;
             
             bFlipAxis = true;
-            bDrawDarkBacking = false;
             
             
             break;
@@ -164,7 +155,6 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
             rotAxis.set(0, 1, 0); // flip horizontally
             
             bFlipInOut = true;
-            bDrawDarkBacking = true;
             
             break;
             
@@ -176,7 +166,6 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
             rotAxis.set(0, 1, 0); // flip horizontally
             
             bFlipInOut = true;
-            bDrawDarkBacking = true;
 
             
             break;
@@ -190,6 +179,7 @@ void Tile::triggerEffect(Tile::Effect e, float stagger, ofVec3f flipAxis){
     effectStartTime = ofGetElapsedTimef() + effectStagger;
     effectEndTime = effectStartTime + effectDuration;
     
+    bIsAnimating = true;
     
 }
 
@@ -250,7 +240,7 @@ void Tile::update(){
             
             }
             
-            
+            bIsAnimating = false;
         }
         
     }
@@ -274,52 +264,27 @@ void Tile::draw(){
         
         ofRotate(currentAngle, rotAxis.x, rotAxis.y, rotAxis.z);
 
-        images -> at(activeTexNum).bind();
+        //stop drawing the front tile if we're in the flipping sequence
+        //and we've turned half way so we don't see the tile on the reverse side
+        if(!bIsAnimating || currentAngle < 90 ){
         
-        ofSetColor(255);
-        mesh.draw();
-        
-        images -> at(activeTexNum).unbind();
-        
-        //debug draw points and lines
-        //draw corners
-        //    for(int i = 0; i < 4; i++){
-        //
-        //        ofSetColor(255, 200, 0);
-        //        ofDrawCircle(mesh.getVertex(i), 10);
-        //        ofDrawBitmapStringHighlight(ofToString(i), mesh.getVertex(i).x + 10, mesh.getVertex(i).y - 10);
-        //
-        //    }
-        //
-        //    ofPolyline corners;
-        //    corners.addVertex(mesh.getVertex(0));
-        //    corners.addVertex(mesh.getVertex(1));
-        //    corners.addVertex(mesh.getVertex(2));
-        //    corners.addVertex(mesh.getVertex(3));
-        //    corners.close();
-        //    corners.draw();
+            images -> at(activeTexNum).bind();
+            
+            ofSetColor(255);
+            mesh.draw();
+            
+            images -> at(activeTexNum).unbind();
+            
+        }
         
         
-        
-        
-        
-        //draw an opaque black square on the flip side of it
-        //    if(bDrawDarkBacking){
-        //
-        //        ofPushMatrix();
-        //        ofTranslate(0, 0, -0.1);
-        //
-        //        darkBacking.draw();
-        //
-        //        ofPopMatrix();
-        //
-        //    }
+
         
         //draw secondary texture on the flip side of it during transitions
         //we need to rotate it into place so that it is properly oriented
         //when it faces front
         
-        if(bFlipHoriz || bFlipVert || bFlipAxis){
+        if(bIsAnimating){
             
             
             ofPushMatrix();

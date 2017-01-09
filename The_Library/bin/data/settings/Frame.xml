@@ -19,4 +19,5 @@
 	<__CONTROL_POINTS/>
 <__Mapping_Points/>
 <Easing_Bounce_Amt>1</Easing_Bounce_Amt>
+<Draw_Shadow>1</Draw_Shadow>
 </frame>

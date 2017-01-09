@@ -208,6 +208,14 @@ void Bookcase::drawShadow(){
 
 void Bookcase::draw(){
     
+    //draw shadow first so it lands behind
+    if(useShadowToggle){
+        drawShadow();
+    }
+    
+    
+    
+    
     //bring forward so it draws clear of the wallpaper tiles
     ofPushMatrix();
     ofTranslate(0, 0, -50);
@@ -353,6 +361,8 @@ void Bookcase::setupGui(){
     gui.add(controlPtPct13.setup("Control Pt 13", controlPointPcts[13], start, midStep));
     gui.add(controlPtPct14.setup("Control Pt 14", controlPointPcts[14], start, midStep));
     gui.add(controlPtPct15.setup("Control Pt 15", controlPointPcts[15], start, midStep));
+    
+    gui.add(useShadowToggle.setup("Draw Shadow", true));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     

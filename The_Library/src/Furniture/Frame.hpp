@@ -105,7 +105,7 @@ public:
     ofxFloatSlider controlPtPct5;
     ofxFloatSlider controlPtPct6;
     ofxFloatSlider controlPtPct7;
-    
+    ofxToggle useShadowToggle;
 
     //portrait animation and fact sheet stuff
     ofTrueTypeFont boldFont;

@@ -56,7 +56,7 @@ class ofApp : public ofBaseApp{
     ofEasyCam camera;
     
     
-    bool bShowGUIs;
+    bool bShowFrameRate;
     
     //----------Scholar Setup----------
     ScholarData scholarData;
@@ -78,6 +78,8 @@ class ofApp : public ofBaseApp{
     //help place things on screen
     bool bShowMouseCoords;
 
+    double lastSaveTime, lastLoadTime;
+    
 
     // WebSocket Connection
     bool connectToServer;
@@ -103,9 +105,7 @@ class ofApp : public ofBaseApp{
     unsigned long long lastChangeTime;
     int waitTime;
     
-    
-    //Trinkets on shelves
-//    Globe globe;
+
     
 
 

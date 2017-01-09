@@ -129,6 +129,7 @@ public:
     
     //Taglet animation
     void showTaglet();
+    void setButtonSpeeds(float lerpSpeed);
     bool bShowTaglet;
     bool bFadeOutTaglet;
     float tagTrans;
@@ -161,6 +162,8 @@ public:
     float animPos;
     float targetAnimPos;
     
+    float totalBookOpenTime = 4.2;
+    float totalBookCloseTime = 4.2;
     
     //animation key frames (normalized)
     const float animationStart = 0.0;

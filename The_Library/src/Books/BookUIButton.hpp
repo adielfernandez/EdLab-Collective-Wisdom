@@ -87,6 +87,8 @@ public:
     //positioning
     ofVec3f hiddenPos, displayedPos, currentPos;
     
+    float buttonLerpSpeed;
+    
     //corners of the shelf the buttons are in
     vector<ofVec3f> shelfCorners;
     ofVec3f bookDisplayPos;

@@ -4,7 +4,7 @@
 void ofApp::setup(){
 
     ofSetFrameRate(200);
-    ofSetVerticalSync(false);
+    ofSetVerticalSync(true);
 //    ofSetLogLevel(OF_LOG_VERBOSE);
     
     
@@ -95,15 +95,17 @@ void ofApp::setup(){
     
     
     //----------Debug Tools----------
-    bShowGUIs = false;
+    bShowFrameRate = false;
     bShowMouseCoords = false;
     
-    
+    //for making randomized texture changes
     lastChangeTime = 0;
     waitTime = 30000;
 
-
-    
+    //time of the last save/load event
+    //start them out earlier so they dont draw on startup
+    lastLoadTime = -10.0f;
+    lastSaveTime = -10.0f;
     
     
     
@@ -195,14 +197,11 @@ void ofApp::draw(){
     
     wallpaper.draw();
 
-    
-    //draw object shadows before we enable depth testing again
-    frame.drawShadow();
     frame.draw();
     
     
-    leftBookcase.drawShadow();
-    rightBookcase.drawShadow();
+//    leftBookcase.drawShadow();
+//    rightBookcase.drawShadow();
     
     leftBookcase.draw();
     rightBookcase.draw();
@@ -276,11 +275,31 @@ void ofApp::draw(){
     
     
     
-    if(currentView != 0){
+    if(bShowFrameRate){
         ofSetColor(255);
-        ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate(), 2), 20, 1120);
+        ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate(), 2), ofGetWidth()/2, 20);
     }
     
+    
+    ofVec2f textPos(ofGetWidth() - 175, 20);
+    
+    if(ofGetElapsedTimef() - lastSaveTime < 2.0f){
+        ofSetColor(100, 0, 0);
+        ofDrawRectangle(textPos.x, textPos.y, 125, 25);
+        
+        ofSetColor(255);
+        ofDrawBitmapString("Settings Saved", textPos.x + 5, textPos.y + 18);
+        
+        
+    }
+    
+    if(ofGetElapsedTimef() - lastLoadTime < 2.0f){
+        ofSetColor(0, 100, 0);
+        ofDrawRectangle(textPos.x, textPos.y, 130, 25);
+        
+        ofSetColor(255);
+        ofDrawBitmapString("Settings loaded", textPos.x + 5, textPos.y + 18);
+    }
     
 }
 
@@ -326,6 +345,10 @@ void ofApp::keyPressed(int key){
         currentView = 4;
     }
     
+    if(key == 'f'){
+        bShowFrameRate = !bShowFrameRate;
+    }
+    
     
     if(key == 'h'){
         bSendHeartbeat = !bSendHeartbeat;
@@ -339,9 +362,33 @@ void ofApp::keyPressed(int key){
         
         centerBook.resetCamera();
         
-        
-        
     }
+    
+    
+    if(key == 's'){
+        
+        //go through all the GUIs and save all their settings
+        frame.saveSettings();
+        leftBookcase.saveSettings();
+        rightBookcase.saveSettings();
+        wallpaper.saveSettings();
+        bookController.saveSettings();
+        
+        lastSaveTime = ofGetElapsedTimef();
+    }
+
+    if(key == 'l'){
+        
+        //go through all the GUIs and save all their settings
+        frame.loadSettings();
+        leftBookcase.loadSettings();
+        rightBookcase.loadSettings();
+        wallpaper.loadSettings();
+        bookController.loadSettings();
+        
+        lastLoadTime = ofGetElapsedTimef();
+    }
+    
     
     if(key == 'm'){
         

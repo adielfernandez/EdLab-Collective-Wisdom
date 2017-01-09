@@ -109,6 +109,10 @@ public:
     ofxLabel booksLabel;
     ofxToggle updateBooksToggle;
     ofxFloatSlider tagletDurationSlider;
+    ofxFloatSlider pageFlipSpeedSlider;
+    ofxFloatSlider bookOpenTimeSlider;
+    ofxFloatSlider bookCloseTimeSlider;
+    ofxFloatSlider buttonLerpSpeedSlider;
 
     ofxLabel spawnSettingsLabel;
     ofxFloatSlider spawnDurationSlider;

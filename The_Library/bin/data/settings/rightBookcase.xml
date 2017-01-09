@@ -1,6 +1,6 @@
 <rightBookcase>
 	<__GENERAL_SETTINGS/>
-	<Wave_Speed>0.6015</Wave_Speed>
+	<Wave_Speed>0.69</Wave_Speed>
 	<Effect_Duration>2.011</Effect_Duration>
 	<Easing_Bounce_Amt>1</Easing_Bounce_Amt>
 	<__Mapping_Points/>
@@ -25,4 +25,5 @@
 	<Control_Pt_14>0.2259</Control_Pt_14>
 	<Control_Pt_15>0.0912</Control_Pt_15>
 <rightBookcase/>
+<Draw_Shadow>0</Draw_Shadow>
 </rightBookcase>

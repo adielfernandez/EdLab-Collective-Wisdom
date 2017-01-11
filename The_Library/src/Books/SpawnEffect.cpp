@@ -62,7 +62,11 @@ void SpawnEffect::setup(ofColor tagCol){
     shrink = false;
     shrinkTime = 0.5;
     
+    staggerAmt = 10;
+    
     useNoise = true;
+    
+    bDrawWireframe = false;
 }
 
 void SpawnEffect::reset(){
@@ -107,6 +111,7 @@ void SpawnEffect::update(float timeLeft){
                 thisRad = baseRad;
             }
             
+            thisRad += staggerAmt * j;
             
             float shift = 0;
             if(useNoise){
@@ -168,7 +173,12 @@ void SpawnEffect::draw(){
         ofPushMatrix();
         ofRotate(ribbons[i].angle, ribbons[i].axis.x, ribbons[i].axis.y, ribbons[i].axis.z);
         
-        ribbons[i].mesh.draw();
+        if(bDrawWireframe){
+            ribbons[i].mesh.drawWireframe();
+        } else {
+            ribbons[i].mesh.draw();
+        }
+        
         
         ofPopMatrix();
         

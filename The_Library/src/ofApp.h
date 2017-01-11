@@ -16,8 +16,6 @@
 #include "Content/ContributionManager.hpp"
 #include "Content/ScholarData.hpp"
 
-#include "Trinkets/Globe.hpp"
-
 #include "ofxOsc.h"
 
 class ofApp : public ofBaseApp{

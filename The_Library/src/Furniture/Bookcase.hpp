@@ -61,6 +61,7 @@ public:
     //LEFT or RIGHT
     bool bLeftCase;
     
+    
     //Shelf corners
     //Corners defined counter-clockwise
     //from bottom left

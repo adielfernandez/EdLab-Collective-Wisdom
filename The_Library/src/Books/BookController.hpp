@@ -25,6 +25,7 @@
 
 #include "../Content/ScholarData.hpp"
 
+#include "../Ornaments/Ornament.hpp"
 
 #pragma once
 
@@ -78,9 +79,12 @@ public:
     vector<ofImage> buttonIcons;
     
     //Book placement and arrangment
-    int numBooksPerShelf;
     int numShelves;
-    
+    const float bookWidth = 24.2906;
+    const int maxNumBooks = 96;
+    const int maxBooksPerShelf = 16;
+
+    vector<Ornament> ornaments;
 
     
     
@@ -130,11 +134,20 @@ public:
     ofxIntSlider baseRadSlider;
     ofxIntSlider colorRangeSlider;
     ofxFloatSlider shrinkTimeSlider;
-
+    ofxFloatSlider staggerAmountSlider;
+    ofxToggle drawWireframeToggle;
+    
+    ofxLabel noiseLabel;
     ofxToggle useNoiseToggle;
     ofxFloatSlider noiseAmplitudeSlider;
     ofxFloatSlider noiseSpeedSlider;
     ofxFloatSlider noiseScaleSlider;
+    
+    ofxLabel shelfOverlayLabel;
+    ofxFloatSlider openDelaySlider;
+    ofxFloatSlider openDurationSlider;
+    ofxFloatSlider closeDelaySlider;
+    ofxFloatSlider closeDurationSlider;
     
     double lastBookSettingsUpdate;
     

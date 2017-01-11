@@ -15,12 +15,33 @@ BookController::BookController(){
 
 void BookController::loadModels(){
     
-    //Maximum number of books that can be held by all 6 shelves is ...
-    numBooksPerShelf = 1;
+    //create the ornaments first so we
+    //know how many books need to fit around them
+    
+    int numOrnaments = 6;
+    int totalOrnamentBookWidths = 0;
+    
+    for(int i = 0; i < numOrnaments; i++){
+        Ornament o;
+        
+        //4 different ornament types
+        o.setup(i);
+        
+        totalOrnamentBookWidths += o.numBooksWide;
+        
+        ornaments.push_back(o);
+    }
+    
+    
+    //Number of shelves we'll create
     numShelves = 6;
     
-    int numBooks = numBooksPerShelf * numShelves;
+    //Find this number experimentally after setting
+    //ornaments on the shelf and seeing how many books fit
+    int numBooks = maxNumBooks - totalOrnamentBookWidths;
     
+    cout << "Total books taken up by ornaments: " << totalOrnamentBookWidths << endl;
+    cout << "Total number of books: " << numBooks << endl;
     
 //    ofDirectory texDir;
 //    texDir.listDir("books/textures");
@@ -98,14 +119,8 @@ void BookController::loadModels(){
         
         Book b;
         b.loadModel(thisBookType, thisTexType, thisFontType);
-
-        
         books.push_back(b);
         
-        //book type
-//        thisBookType++;
-//        if(thisBookType == 3) thisBookType = 0;
-//        
         placeInThisGroup++;
         
     }
@@ -195,6 +210,21 @@ void BookController::setup(vector<Contribution> *cList){
     int bookCounter = 0;
     int booksThisShelf = 0;
     
+    //convenience vector of flags for
+    //if the shelf has an item or not
+    vector<bool> shelfHasItem;
+    shelfHasItem.assign(6, false);
+
+    for(int i = 0; i < ornaments.size(); i++){
+        shelfHasItem[ ornaments[i].shelfNum ] = true;
+    }
+    
+
+    
+    int ornamentToPlace = 0;
+    
+    float maxShelfWidth = bookWidth * 16;
+    
     //set up books on both bookcases
     for(int j = 0; j < numShelves; j++){
         
@@ -241,18 +271,63 @@ void BookController::setup(vector<Contribution> *cList){
         //add a little padding between the left-most book and the left bookcase wall
         shelfStart += dirToShelfEnd * leftPadding;
         
-        //move to the next shelf on the next loop
-        booksThisShelf += numBooksPerShelf;
+        //Figure out how many books to place on this shelf
+//        booksThisShelf += numBooksPerShelf;
+        
+        if( shelfHasItem[j] ){
+            booksThisShelf += (maxBooksPerShelf - ornaments[ornamentToPlace].numBooksWide);
+            
+        } else {
+            booksThisShelf += maxBooksPerShelf;
+        }
+        
         
         ofVec2f currentShelfPos = shelfStart;
         
-        for(int i = bookCounter; i < booksThisShelf; i++){
+        int thisShelfStart = bookCounter;
+        
+        cout << "Books on shelf[" << j << "]: " << booksThisShelf - thisShelfStart << endl;
+        
+        
+        //TRICKY: This loop goes one PAST how many books on the current shelf
+        //So we'll check at the end of every row to see if there's an ornament there
+        //If there is, place it. If not, do nothing.
+        //Either way, continue without incrementing bookCounter
+        for(int i = bookCounter; i < booksThisShelf + 1; i++){
+            
+            //place the ornament on the shelf if we're at that place
+            int placeThisShelf = i - thisShelfStart;
+            
+            cout << "This spot on the shelf: " << placeThisShelf << endl;
+            
+            if( shelfHasItem[j] && placeThisShelf == ornaments[ornamentToPlace].placeOnShelf ){
+                
+                ornaments[ornamentToPlace].setShelfPosition(currentShelfPos);
+                
+                //push the current shelf pos past the ornament
+                currentShelfPos.x += ornaments[ornamentToPlace].gapWidth;
+                
+                cout << "Placing Ornament " << ornamentToPlace << endl;
+                
+                //this ornament has been placed,
+                //get ready to place the next one
+                ornamentToPlace++;
+                
+                //mark this shelf as not having an ornament
+                shelfHasItem[j] = false;
+                
+            }
+            
+            //If we're after the last book on the shelf and we've checked for/set up any ornaments
+            //skip across the rest of the loop
+            if(i == booksThisShelf){
+                continue;
+            }
+            
+            cout << "   Setting up book number: " << i << endl;
             
             //now that all the positions and defaults have been set, set it up
             books[i].setup(&textures[ books[i].texType ], &fonts[ books[i].fontType ], &UIFont );
-            
-            //get the place of the current book on its own shelf
-            int bookNumThisShelf = i % numBooksPerShelf;
             
             ofVec3f stored;
             ofVec3f display;
@@ -451,6 +526,7 @@ void BookController::onNewContribution( Contribution& c ){
                 }
             }
             
+            availableBookFound = true;
             
         } else {
             
@@ -603,6 +679,11 @@ void BookController::update(){
         shelfOverlays[i].update();
     }
     
+    //update the ornaments
+    for(int i = 0; i < ornaments.size(); i++) {
+        ornaments[i].update();
+    }
+    
     //if theres anything in the incoming queue AND
     //it's been long enough, trigger a new contribution event
     if( !incomingQueue.empty() && ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider ){
@@ -612,6 +693,9 @@ void BookController::update(){
         
         //remove the first element of the vector
         incomingQueue.pop_front();
+    
+    
+    
     }
     
     //if there are more contributions than there are books
@@ -667,24 +751,34 @@ void BookController::draw(){
     ofDisableArbTex();
 
     ofEnableDepthTest();
+    ofEnableAlphaBlending();
     
     ofPushMatrix();
     ofTranslate(0, 0, -30);
     
+
+    //draw the books
     for(int i = 0; i < books.size(); i++){
         if(books[i].bIsUnused == false){
             books[i].draw();
         }
     }
     
+    
+    //draw the shelf overlays
     for(int i = 0; i < shelfOverlays.size(); i++){
         shelfOverlays[i].draw();
+    }
+
+    //draw the ornaments
+    for(int i = 0; i < ornaments.size(); i++) {
+        ornaments[i].draw();
     }
 
     ofPopMatrix();
     
     ofDisableDepthTest();
-    
+//    ofDisableAlphaBlending();
     
     ofEnableArbTex();
     
@@ -719,8 +813,19 @@ void BookController::setBookVarsFromGui(){
         books[i].spawnEffect.colorRange = colorRangeSlider;
         books[i].spawnEffect.shrinkTime = shrinkTimeSlider;
         books[i].spawnEffect.useNoise = useNoiseToggle;
+        books[i].spawnEffect.staggerAmt = staggerAmountSlider;
+        books[i].spawnEffect.bDrawWireframe = drawWireframeToggle;
     }
 
+    for(int i = 0; i < shelfOverlays.size(); i++){
+        
+        shelfOverlays[i].openDelay = openDelaySlider;
+        shelfOverlays[i].closeDelay = closeDelaySlider;
+        shelfOverlays[i].openDuration = openDurationSlider;
+        shelfOverlays[i].closeDuration = closeDurationSlider;
+        
+    }
+    
     
 }
 
@@ -767,11 +872,21 @@ void BookController::setupGui(){
     gui.add(colorRangeSlider.setup("Color range", 20, 0, 50));
     gui.add(baseRadSlider.setup("Base radius", 100, 0, 200));
     gui.add(shrinkTimeSlider.setup("Shrink time", 0.5f, 0.0f, 5.0f));
+    gui.add(staggerAmountSlider.setup("Stagger radii", 10.0f, 0.0f, 40.0f));
+    gui.add(drawWireframeToggle.setup("Draw wireframe", false));
     
+    gui.add(noiseLabel.setup("  RIBBON NOISE", ""));
     gui.add(useNoiseToggle.setup("Use Noise", true));
     gui.add(noiseAmplitudeSlider.setup("Noise amplitude", 10.0f, 0.0f, 30));
     gui.add(noiseSpeedSlider.setup("Noise speed", 0.01f, 0.0001f, 4.0f));
     gui.add(noiseScaleSlider.setup("Noise scale", 0.01f, 0.0001f, 0.5f));
+    
+    gui.add(shelfOverlayLabel.setup("  SHELF OVERLAYS", ""));
+    
+    gui.add(openDelaySlider.setup("Open delay", 0.5f, 0.0f, 3.0f));
+    gui.add(openDurationSlider.setup("Open duration", 2.0f, 0.001f, 4.0f));
+    gui.add(closeDelaySlider.setup("Close delay", 0.5f, 0.0f, 3.0f));
+    gui.add(closeDurationSlider.setup("Close duration", 2.0f, 0.001f, 4.0f));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     
@@ -782,6 +897,7 @@ void BookController::setupGui(){
     booksLabel.setBackgroundColor(ofColor(255));
     spawnSettingsLabel.setBackgroundColor(ofColor(255));
     ribbonSettingsLabel.setBackgroundColor(ofColor(255));
+    noiseLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels
     settingsLabel.setDefaultTextColor(ofColor(0));
@@ -803,6 +919,7 @@ void BookController::loadSettings(){
     
     gui.loadFromFile( filePath + guiName + ".xml");
     
+    setBookVarsFromGui();
     
 }
 

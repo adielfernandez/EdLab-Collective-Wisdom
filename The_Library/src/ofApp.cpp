@@ -148,8 +148,8 @@ void ofApp::update(){
 //    cout << "XY: " << x << ", " << y << endl;
 //    camera.setOrientation(ofVec3f(x, y, 0));
     
-    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
-    camera.setOrientation(ofVec3f(180, 0, 0));
+//    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+//    camera.setOrientation(ofVec3f(180, 0, 0));
 
     
     
@@ -210,7 +210,8 @@ void ofApp::draw(){
     centerBook.draw();
     
     
-    ofDisableDepthTest();    bookController.draw();
+
+    bookController.draw();
     
     
     
@@ -284,7 +285,7 @@ void ofApp::draw(){
     ofVec2f textPos(ofGetWidth() - 175, 20);
     
     if(ofGetElapsedTimef() - lastSaveTime < 2.0f){
-        ofSetColor(100, 0, 0);
+        ofSetColor(180, 0, 0);
         ofDrawRectangle(textPos.x, textPos.y, 125, 25);
         
         ofSetColor(255);
@@ -294,7 +295,7 @@ void ofApp::draw(){
     }
     
     if(ofGetElapsedTimef() - lastLoadTime < 2.0f){
-        ofSetColor(0, 100, 0);
+        ofSetColor(0, 150, 0);
         ofDrawRectangle(textPos.x, textPos.y, 130, 25);
         
         ofSetColor(255);

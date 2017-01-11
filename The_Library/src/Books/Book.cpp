@@ -24,9 +24,11 @@ void Book::loadModel(int bType, int tType, int fType){
         model.loadModel("books/bookShort.fbx", false);
     } else if(bookType == 1){
         model.loadModel("books/bookMedium.fbx", false);
-    } else {
-        model.loadModel("books/bookTall.fbx", false);
     }
+    
+//    else {
+//        model.loadModel("books/bookTall.fbx", false);
+//    }
 
     
 

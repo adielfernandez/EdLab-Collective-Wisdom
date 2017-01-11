@@ -27,14 +27,20 @@ public:
     
     float trans = 0.0;
     float maxTrans = 255;
+    float currentHeight = 0;
     
-    //how long to wait after trigger to start action
-    //in seconds
-    float delay;
+
     
     bool bIsActive = false;
     bool bFadeOut = false;
     bool bIsInUse = false;
+    
+    //how long to wait after trigger to start action
+    //in seconds
+    float openDelay = 0.5f;
+    float openDuration = 2.0f;
+    float closeDelay = 0.5f;
+    float closeDuration = 1.0f;
     
     double triggerTime;
     
@@ -54,32 +60,29 @@ public:
     
         if(bIsActive){
             //wait a second before bringing the overlay down
-            delay = 0.5f;
             
-            if(ofGetElapsedTimeMillis() - triggerTime > delay){
+            if(ofGetElapsedTimeMillis() - triggerTime > openDelay){
                 
-                double now = ofGetElapsedTimef() - delay;
+                double now = ofGetElapsedTimef() - closeDelay;
                 
-                float pct = ofxeasing::map_clamp(now, triggerTime, triggerTime + 1.5f, 0.0, 1.0, &ofxeasing::linear::easeOut);
+                float pct = ofxeasing::map_clamp(now, triggerTime, triggerTime + openDuration, 0.0, 1.0, &ofxeasing::cubic::easeIn);
                 
-                trans = ofMap(pct, 0.0f, 1.0f, 0.0f, maxTrans);
+                currentHeight = ofMap(pct, 0.0f, 1.0f, 0.0f, height);
                 
                 //set to true so to be ready for fade out
                 //when we become inactive
                 bFadeOut = true;
             }
         } else {
-
-            delay = 1.0f;
             
-            if(ofGetElapsedTimeMillis() - triggerTime > delay){
+            if(ofGetElapsedTimeMillis() - triggerTime > closeDelay){
 
                 if(bFadeOut){
-                    double now = ofGetElapsedTimef() - delay;
+                    double now = ofGetElapsedTimef() - closeDelay;
                     
-                    float pct = ofxeasing::map_clamp(now, triggerTime, triggerTime + 1.0f, 0.0f, 1.0f, &ofxeasing::linear::easeOut);
+                    float pct = ofxeasing::map_clamp(now, triggerTime, triggerTime + closeDuration, 0.0f, 1.0f, &ofxeasing::cubic::easeOut);
                     
-                    trans = ofMap(pct, 0.0f, 1.0f, maxTrans, 0.0f);
+                    currentHeight = ofMap(pct, 0.0f, 1.0f, height, 0.0f);
                     
                     if(pct == 1.0f){
                         bFadeOut = false;
@@ -95,8 +98,8 @@ public:
     void draw(){
         
         if(bIsActive || bFadeOut){
-            ofSetColor(0, 0, 0, trans);
-            ofDrawRectangle(pos.x, pos.y, -55, width, height);
+            ofSetColor(0);
+            ofDrawRectangle(pos.x, pos.y, -56, width, currentHeight);
         }
         
     }

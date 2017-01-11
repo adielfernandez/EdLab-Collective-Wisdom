@@ -95,6 +95,8 @@ void TiledObject::triggerWave(ofVec2f epicenter){
     //bookcase increments by one, everything else picks a random number
     if(bIsBookcase){
         nextImg = currentImg + 1;
+        
+        
         if(nextImg == images.size()) nextImg = 0;
         
     } else {

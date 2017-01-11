@@ -25,6 +25,7 @@ struct Ribbon{
     ofVec3f axis;
     float angle;
     float baseRad;
+
     
 };
 
@@ -57,6 +58,7 @@ public:
     float colorRange;
     float orbitSpeed;
     float shrinkTime;
+    float staggerAmt;
     
     bool useNoise;
     
@@ -64,7 +66,7 @@ public:
     const int numRibbons = 10;
     
     bool shrink;
-    
+    bool bDrawWireframe;
     
 };
 

@@ -24,8 +24,6 @@ void Bookcase::setup(string name, bool _leftCase){
     bLeftCase = _leftCase;
     
     
-    
-    
     //ALL THE BUSINESS HAPPENS IN HERE
     //This will need to be called whenever the mesh is altered by GUI/mouse
     prepareMesh();
@@ -95,10 +93,6 @@ void Bookcase::loadMedia(){
     }
     
     
-    //shuffle the images so they arent in order
-    std::random_shuffle(images.begin(), images.end());
-    //shuffle again for good measure
-    std::random_shuffle(images.begin(), images.end());
     
     
     //    currentImg = round(ofRandom( images.size() - 1 ));

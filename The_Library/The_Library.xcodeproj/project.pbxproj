@@ -51,9 +51,9 @@
 		D72C74751DEBCD7A00D770C8 /* Contribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74731DEBCD7A00D770C8 /* Contribution.cpp */; };
 		D72C74781DEBCD8A00D770C8 /* ContributionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74761DEBCD8A00D770C8 /* ContributionManager.cpp */; };
 		D72C74831DED442B00D770C8 /* BookUIButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74811DED442B00D770C8 /* BookUIButton.cpp */; };
+		D7AB7C401E2423D800E5EE36 /* Ornament.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7AB7C3E1E2423D800E5EE36 /* Ornament.cpp */; };
 		D7E190BD1DFDFBFA00D52145 /* CenterBook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E190BB1DFDFBFA00D52145 /* CenterBook.cpp */; };
 		D7E2DC9A1E1C5D6700AEB632 /* ScholarData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */; };
-		D7E2DCA31E1D99FA00AEB632 /* Globe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DCA11E1D99FA00AEB632 /* Globe.cpp */; };
 		D7E2DCA71E21A3A800AEB632 /* SpawnEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DCA51E21A3A800AEB632 /* SpawnEffect.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
@@ -431,12 +431,12 @@
 		D72C74821DED442B00D770C8 /* BookUIButton.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BookUIButton.hpp; sourceTree = "<group>"; };
 		D75B5B9E1E1476360027C98E /* ShelfOverlay.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ShelfOverlay.hpp; sourceTree = "<group>"; };
 		D76A59E7B3601E76351C9BDB /* cvaux.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvaux.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cvaux.h; sourceTree = SOURCE_ROOT; };
+		D7AB7C3E1E2423D800E5EE36 /* Ornament.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ornament.cpp; sourceTree = "<group>"; };
+		D7AB7C3F1E2423D800E5EE36 /* Ornament.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ornament.hpp; sourceTree = "<group>"; };
 		D7E190BB1DFDFBFA00D52145 /* CenterBook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CenterBook.cpp; sourceTree = "<group>"; };
 		D7E190BC1DFDFBFA00D52145 /* CenterBook.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CenterBook.hpp; sourceTree = "<group>"; };
 		D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScholarData.cpp; sourceTree = "<group>"; };
 		D7E2DC991E1C5D6700AEB632 /* ScholarData.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScholarData.hpp; sourceTree = "<group>"; };
-		D7E2DCA11E1D99FA00AEB632 /* Globe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Globe.cpp; sourceTree = "<group>"; };
-		D7E2DCA21E1D99FA00AEB632 /* Globe.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Globe.hpp; sourceTree = "<group>"; };
 		D7E2DCA51E21A3A800AEB632 /* SpawnEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpawnEffect.cpp; sourceTree = "<group>"; };
 		D7E2DCA61E21A3A800AEB632 /* SpawnEffect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SpawnEffect.hpp; sourceTree = "<group>"; };
 		D825FF1F1EA48B305BB428B7 /* scene.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = scene.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/scene.h; sourceTree = SOURCE_ROOT; };
@@ -1520,6 +1520,15 @@
 			path = Content;
 			sourceTree = "<group>";
 		};
+		D7AB7C3D1E2423D800E5EE36 /* Ornaments */ = {
+			isa = PBXGroup;
+			children = (
+				D7AB7C3F1E2423D800E5EE36 /* Ornament.hpp */,
+				D7AB7C3E1E2423D800E5EE36 /* Ornament.cpp */,
+			);
+			path = Ornaments;
+			sourceTree = "<group>";
+		};
 		D7E2DC5D1E17308A00AEB632 /* ofxOsc */ = {
 			isa = PBXGroup;
 			children = (
@@ -1594,16 +1603,6 @@
 			path = osc;
 			sourceTree = "<group>";
 		};
-		D7E2DCA01E1D99FA00AEB632 /* Trinkets */ = {
-			isa = PBXGroup;
-			children = (
-				D7E2DCA21E1D99FA00AEB632 /* Globe.hpp */,
-				D7E2DCA11E1D99FA00AEB632 /* Globe.cpp */,
-			);
-			name = Trinkets;
-			path = src/Trinkets;
-			sourceTree = SOURCE_ROOT;
-		};
 		DCC60D6724B56635AE867535 /* libs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1653,9 +1652,9 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				D72C74721DEBCD7A00D770C8 /* Content */,
+				D7AB7C3D1E2423D800E5EE36 /* Ornaments */,
 				D72C745A1DEBCB2C00D770C8 /* Books */,
 				D72C745F1DEBCB2C00D770C8 /* Furniture */,
-				D7E2DCA01E1D99FA00AEB632 /* Trinkets */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1863,7 +1862,6 @@
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
 				D72C74701DEBCB2C00D770C8 /* Wallpaper.cpp in Sources */,
-				D7E2DCA31E1D99FA00AEB632 /* Globe.cpp in Sources */,
 				EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */,
 				6AABAB39E82AF5CFEA23A205 /* ContourFinder.cpp in Sources */,
 				D72C74831DED442B00D770C8 /* BookUIButton.cpp in Sources */,
@@ -1884,6 +1882,7 @@
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				F28059E31E1EE2FF00CEB7B8 /* ofxOscSender.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
+				D7AB7C401E2423D800E5EE36 /* Ornament.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
 				D7E2DCA71E21A3A800AEB632 /* SpawnEffect.cpp in Sources */,
 				D7E2DC9A1E1C5D6700AEB632 /* ScholarData.cpp in Sources */,

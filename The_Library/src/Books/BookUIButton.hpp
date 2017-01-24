@@ -25,6 +25,8 @@ struct ButtonEvent{
     int shelfNum;
     string tag;
     int tagNum;
+    ofColor tagCol;
+    bool bIsCenterBookButton;
     
 };
 
@@ -52,14 +54,14 @@ public:
     
     
     //0 = exit, 1 = prev, 2 = next
-    //3 = tag button
+    //3 = tag button, 4 = centerbook 
     int type;
     int bookNum;
     int shelfNum;
     
     //for the one off button we draw
     //in the central book
-    bool centerBookButton;
+    bool bIsCenterBookButton = false;
     
     ofTrueTypeFont *font;
     ofColor tagCol, tagOutlineCol;

@@ -28,7 +28,7 @@ void ofApp::setup(){
     
     //----------Scene Setup----------
     
-    currentView = 4;
+    currentView = 0;
     
     //0 = Presentation (no debug)
     //1 = Centerbook
@@ -148,8 +148,8 @@ void ofApp::update(){
 //    cout << "XY: " << x << ", " << y << endl;
 //    camera.setOrientation(ofVec3f(x, y, 0));
     
-//    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
-//    camera.setOrientation(ofVec3f(180, 0, 0));
+    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+    camera.setOrientation(ofVec3f(180, 0, 0));
 
     
     
@@ -198,10 +198,6 @@ void ofApp::draw(){
     wallpaper.draw();
 
     frame.draw();
-    
-    
-//    leftBookcase.drawShadow();
-//    rightBookcase.drawShadow();
     
     leftBookcase.draw();
     rightBookcase.draw();

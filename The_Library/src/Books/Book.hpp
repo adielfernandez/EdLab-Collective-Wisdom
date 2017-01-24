@@ -18,7 +18,7 @@
 #include "ofxEasing.h"
 #include "../Content/Contribution.hpp"
 #include "BookUIButton.hpp"
-#include "SpawnEffect.hpp"
+#include "SpawnRibbon.hpp"
 
 
 #pragma once
@@ -62,7 +62,7 @@ public:
     //shelf numbers left 0,1,2 and right 3,4,5
     int shelfNum;
     //unique id for this book
-    int bookID;
+    int bookNum;
     
     //for books that have no message and
     //not needed in the library
@@ -200,7 +200,7 @@ public:
 
     
     //-----Spawn Flourish Effect-----
-    SpawnEffect spawnEffect;
+    SpawnRibbon spawnRibbons;
     float spawnDuration;
     float spawnPosBackEasing;
     

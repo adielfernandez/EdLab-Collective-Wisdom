@@ -1,43 +1,52 @@
 <bookController>
 	<__LIBRARY_SETTINGS/>
-	<Archive_Interval>1</Archive_Interval>
-	<New_Book_Interval>5.59</New_Book_Interval>
+	<Archive_Interval>157.975</Archive_Interval>
+	<New_Book_Interval>0.935</New_Book_Interval>
 	<__BOOK_SETTINGS/>
 <bookController/>
 <Update_Spawn_Vars>1</Update_Spawn_Vars>
 	<__SPAWN_EFFECT/>
-    <Num_ribbons>6</Num_ribbons>
+    <Num_ribbons>5</Num_ribbons>
     <Orbit_speed>1.9315</Orbit_speed>
-	<Ribbon_length>190</Ribbon_length>
-	<Ribbon_width>28</Ribbon_width>
+	<Ribbon_length>136</Ribbon_length>
+	<Ribbon_width>25.19</Ribbon_width>
 	<Ribbon_taper>0</Ribbon_taper>
 	<Num_segments>33</Num_segments>
-	<Base_radius>63</Base_radius>
-    <Noise_amplitude>9.9</Noise_amplitude>
+	<Base_radius>66</Base_radius>
+    <Noise_amplitude>0.75</Noise_amplitude>
     <Noise_speed>1.46006</Noise_speed>
 	<Noise_scale>0.060088</Noise_scale>
-	<Color_range>25</Color_range>
+	<Color_range>24.5</Color_range>
 <__SPAWN_SETTINGS/>
-    <Spawn_duration>5.2975</Spawn_duration>
+    <Spawn_duration>3.3025</Spawn_duration>
     <Pos_Back_Ease>0.72</Pos_Back_Ease>
 	<__RIBBON_SETTINGS/>
     <Update_Book_Vars>1</Update_Book_Vars>
 	<Tag_duration>3.92</Tag_duration>
 <Shrink_time>1.4</Shrink_time>
-<Use_Noise>1</Use_Noise>
+<Use_Noise>0</Use_Noise>
 
 <Page_Flip_Speed>0.05</Page_Flip_Speed>
 	<Book_Open_Time>4.2</Book_Open_Time>
 	<Book_Close_Time>4.2</Book_Close_Time>
 	<Button_Speed>0.08</Button_Speed>
-<Gui_Position>857, 79</Gui_Position>
+<Gui_Position>16, 100</Gui_Position>
 <Stagger_ribbons>10.75</Stagger_ribbons>
 	<__RIBBON_NOISE/>
-<Stagger_radii>12.2</Stagger_radii>
+<Stagger_radii>7.4</Stagger_radii>
 	<Draw_wireframe>0</Draw_wireframe>
 	<__SHELF_OVERLAYS/>
 	<Open_delay>0.5</Open_delay>
 	<Open_duration>2</Open_duration>
 	<Close_delay>0.5</Close_delay>
 	<Close_duration>2</Close_duration>
+<__TAG_RIBBONS/>
+	<Num_points>15</Num_points>
+	<Pct_dist_Apex>0.555</Pct_dist_Apex>
+	<Arc_height>211.5</Arc_height>
+	<Segment_dt>0.03097</Segment_dt>
+	<Duration>0.53395</Duration>
+<Tag_noise_amp>18.25</Tag_noise_amp>
+	<Tag_noise_speed>1.70006</Tag_noise_speed>
+	<Tag_noise_scale>0.205079</Tag_noise_scale>
 </bookController>

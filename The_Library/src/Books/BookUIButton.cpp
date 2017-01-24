@@ -20,6 +20,11 @@ void BookUIButton::setup(int _type, ofVec3f bookPos ){
     
     type = _type;
 
+//    if(type == 3){
+//        bIsCenterBookButton = true;
+//    } else {
+//        bIsCenterBookButton = false;
+//    }
     
     bookDisplayPos = bookPos;
     
@@ -44,11 +49,8 @@ void BookUIButton::setup(int _type, ofVec3f bookPos ){
     
     pushButtonScale = 1.0f;
     
-    centerBookButton = false;
-    
-    bookNum = -1;
-    shelfNum = -1;
-    
+
+        
     buttonLerpSpeed = 0.08;
 }
 
@@ -111,7 +113,7 @@ void BookUIButton::setFont(ofTrueTypeFont *f){
 
 void BookUIButton::setTag(string t, int _tagNum, ofColor c){
     
-    if(centerBookButton){
+    if(bIsCenterBookButton){
         buttonWidth = 210;
         buttonHeight = 100;
     } else {
@@ -161,7 +163,7 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c){
     float spacing = 5;
     
     //only set the positions if this button isn't in the center book
-    if(!centerBookButton){
+    if(!bIsCenterBookButton){
         hiddenPos.set(bookDisplayPos.x + 30, shelfCorners[3].y + spacing, -70);
         displayedPos.set(shelfCorners[3].x + spacing, shelfCorners[3].y + spacing, -70);
         currentPos = hiddenPos;
@@ -244,8 +246,13 @@ void BookUIButton::checkForClicks(int x, int y, bool touchState){
                     e.tagNum = tagNum;
                     e.bookNum = bookNum;
                     e.shelfNum = shelfNum;
+                    e.tagCol = tagCol;
+                    e.bIsCenterBookButton = bIsCenterBookButton;
                     
                     ofNotifyEvent(newButtonClickEvt, e, this);
+                    
+                    
+                    
                 }
 
             } else {
@@ -297,6 +304,7 @@ void BookUIButton::update(){
         }
         
     } else {
+        
         
         currentPos.interpolate(displayedPos, buttonLerpSpeed);
         bIsHidden = false;
@@ -400,7 +408,7 @@ void BookUIButton::draw(){
                 
                 ofPushMatrix();
                 ofTranslate(tagLine1Pos.x, tagLine1Pos.y, -5);
-                if(!centerBookButton) ofScale(1, -1);
+                if(!bIsCenterBookButton) ofScale(1, -1);
                 ofSetColor(tagOutlineCol, tagHelpTrans);
                 font -> drawString(tagLine1, 0, 0);
                 ofPopMatrix();
@@ -409,7 +417,7 @@ void BookUIButton::draw(){
                 if(linesInTag > 1){
                     ofPushMatrix();
                     ofTranslate(tagLine2Pos.x, tagLine2Pos.y, -5);
-                    if(!centerBookButton) ofScale(1, -1);
+                    if(!bIsCenterBookButton) ofScale(1, -1);
                     
                     font -> drawString(tagLine2, 0, 0);
                     
@@ -417,7 +425,7 @@ void BookUIButton::draw(){
                 }
                 
                 //draw tag help text
-                if(!centerBookButton){
+                if(!bIsCenterBookButton){
 
                     ofPushMatrix();
                     ofTranslate(tagHelpPos.x, tagHelpPos.y, -8);

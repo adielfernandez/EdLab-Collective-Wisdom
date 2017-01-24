@@ -1,21 +1,21 @@
 //
-//  SpawnEffect.cpp
+//  SpawnRibbon.cpp
 //  The_Library
 //
 //  Created by Adiel Fernandez on 1/7/17.
 //
 //
 
-#include "SpawnEffect.hpp"
+#include "SpawnRibbon.hpp"
 
 
-SpawnEffect::SpawnEffect(){
+SpawnRibbon::SpawnRibbon(){
     
     
     
 }
 
-void SpawnEffect::setup(ofColor tagCol){
+void SpawnRibbon::setup(ofColor tagCol){
     
     col = tagCol;
     
@@ -69,11 +69,11 @@ void SpawnEffect::setup(ofColor tagCol){
     bDrawWireframe = false;
 }
 
-void SpawnEffect::reset(){
+void SpawnRibbon::reset(){
     shrink = false;
 }
 
-void SpawnEffect::update(float timeLeft){
+void SpawnRibbon::update(float timeLeft){
     
     //noise time
     float nTime = -ofGetElapsedTimef() * noiseSpeed;
@@ -162,7 +162,7 @@ void SpawnEffect::update(float timeLeft){
     }    
 }
 
-void SpawnEffect::draw(){
+void SpawnRibbon::draw(){
     
     ofSetColor(255);
     

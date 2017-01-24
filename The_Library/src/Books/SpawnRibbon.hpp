@@ -1,17 +1,17 @@
 //
-//  SpawnEffect.hpp
+//  SpawnRibbon.hpp
 //  The_Library
 //
 //  Created by Adiel Fernandez on 1/7/17.
 //
 //
 
-#ifndef SpawnEffect_hpp
-#define SpawnEffect_hpp
+#ifndef SpawnRibbon_hpp
+#define SpawnRibbon_hpp
 
 #include <stdio.h>
 
-#endif /* SpawnEffect_hpp */
+#endif /* SpawnRibbon_hpp */
 
 #include "ofMain.h"
 #include "ofxEasing.h"
@@ -30,11 +30,11 @@ struct Ribbon{
 };
 
 
-class SpawnEffect{
+class SpawnRibbon{
     
 public:
     
-    SpawnEffect();
+    SpawnRibbon();
     
     void setup(ofColor tagCol);
     void update(float timeLeft);
@@ -51,11 +51,11 @@ public:
     float totalLength;
     float ribbonWidth;
     float ribbonTaper;
+    float colorRange;
     float baseRad;
     float noiseAmp;
     float noiseSpeed;
     float nScale;
-    float colorRange;
     float orbitSpeed;
     float shrinkTime;
     float staggerAmt;

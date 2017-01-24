@@ -68,7 +68,7 @@ void ContributionManager::loadContent(){
     
     //shuffle the vector so messages books dont
     //have the same order every time we run
-    std::random_shuffle(contributionList.begin(), contributionList.end());
+//    std::random_shuffle(contributionList.begin(), contributionList.end());
     
     
 }

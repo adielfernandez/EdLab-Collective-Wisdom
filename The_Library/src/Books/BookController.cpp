@@ -188,7 +188,6 @@ void BookController::setup(vector<Contribution> *cList){
     }
     
     
-    availableBooks = 0;
     lastNewBookEvent = 0;
     lastRecycleTime = 0.0f;
     
@@ -286,9 +285,6 @@ void BookController::setup(vector<Contribution> *cList){
         
         int thisShelfStart = bookCounter;
         
-        cout << "Books on shelf[" << j << "]: " << booksThisShelf - thisShelfStart << endl;
-        
-        
         //TRICKY: This loop goes one PAST how many books on the current shelf
         //So we'll check at the end of every row to see if there's an ornament there
         //If there is, place it. If not, do nothing.
@@ -298,16 +294,13 @@ void BookController::setup(vector<Contribution> *cList){
             //place the ornament on the shelf if we're at that place
             int placeThisShelf = i - thisShelfStart;
             
-            cout << "This spot on the shelf: " << placeThisShelf << endl;
-            
             if( shelfHasItem[j] && placeThisShelf == ornaments[ornamentToPlace].placeOnShelf ){
                 
                 ornaments[ornamentToPlace].setShelfPosition(currentShelfPos);
                 
                 //push the current shelf pos past the ornament
                 currentShelfPos.x += ornaments[ornamentToPlace].gapWidth;
-                
-                cout << "Placing Ornament " << ornamentToPlace << endl;
+
                 
                 //this ornament has been placed,
                 //get ready to place the next one
@@ -323,8 +316,6 @@ void BookController::setup(vector<Contribution> *cList){
             if(i == booksThisShelf){
                 continue;
             }
-            
-            cout << "   Setting up book number: " << i << endl;
             
             //now that all the positions and defaults have been set, set it up
             books[i].setup(&textures[ books[i].texType ], &fonts[ books[i].fontType ], &UIFont );
@@ -394,7 +385,6 @@ void BookController::setup(vector<Contribution> *cList){
                 
                 books[i].bIsUnused = true;
                 
-                availableBooks++;
                 
             }
             
@@ -471,14 +461,45 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
         shelfOverlays[b.shelfNum].deactivate();
         
     } else if(b.type == 3){
+
+        //source of the tag ribbons
+        ofVec3f src;
+
+        //first check if it was the centerBook tagButton
+        if(b.bIsCenterBookButton){
+            
+            //src based on centerbook button position (should make this a gui setting)
+            src = ofVec3f( 990, 960, -80);
+            
+            
+        } else {
+
+            //src position based on typical book button positions
+            BookUIButton *bttn = &books[b.bookNum].tagButton;
+            src = bttn -> displayedPos + ofVec3f(bttn -> buttonWidth/2, bttn -> buttonHeight/2, -80);
+        }
         
-        
-        //go through all the books and activate the tags
+        //go through all the books and trigger a ribbon from that
+        //book's tag button to all the books that share the same tag
         for(int i = 0; i < books.size(); i++){
             
-            if(books[i].tagNum == b.tagNum){
-                books[i].showTaglet();
-        
+            //check if the book has the same tag, but make sure
+            //it's not the same as the src book
+            if( b.bookNum != i && books[i].tagNum == b.tagNum){
+                
+                TagRibbon tr;
+                
+                ofVec3f dst = books[i].storedPos + ofVec3f(books[i].thickness/2.0f, - 135);
+
+                tr.setup(src, dst, numPointsSlider, b.tagCol);
+                tr.dstBookNum = i;
+                
+                //helper function to deliver all the gui
+                //settings to the ribbon before sending it off
+                giveSettingsToRibbon( &tr );
+                
+                tagRibbons.push_back(tr);
+                
             }
             
         }
@@ -489,140 +510,129 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
     
 }
 
-void BookController::onNewContribution( Contribution& c ){
+void BookController::addToLibrary( Contribution& c ){
+ 
+    int fillThisIndex;
     
-    //if we don't find a book in the end, we'll
-    //add it to the queue to be added later
-    bool availableBookFound = false;
+    //go through the book vector, if we have any unused books available,
+    //trigger those, if not, recycle an existing one
+    bool emptyBookAvailable = false;
     
-    int availableBookIndex;
+    for(int i = 0; i < books.size(); i++){
+        if(books[i].bIsUnused == true){
+            
+            emptyBookAvailable = true;
+            
+            //mark book as used
+            books[i].bIsUnused = false;
+            
+            fillThisIndex = i;
+            
+            break;
+        }
+    }
     
-    //check if it has been long enough since the last event or if there
-    //is an available bookshelves to add a book to.
-    //if not, add the contribution to the queue and wait
     
-    if(ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider){
+    //See if any unused books are available
+    if( emptyBookAvailable == false ){
         
-        //go through the book vector, if we have any unused books available,
-        //trigger those, if not, recycle an existing one
+        //no unused books available, recycle an existing one
+        //pick a random number and find a book that is available
+        //doing it this way instead of using a for loop
+        //prevents reusing the same few books at the beginning of the vector
         
-        //See if any unused books are available
-        if( availableBooks > 0 ){
+        int timesChecked = 0;
+        
+        do {
             
-            for(int i = 0; i < books.size(); i++){
+            int checkIndex = floor( ofRandom(books.size()) );
+            
+            //look for a book that is available (not active or spawning)
+            //and look for a shelf that is not active so it doesn't interrupt
+            //someone reading a book
+            int thisBookShelf = books[checkIndex].shelfNum;
+            
+            bool shelfInUse = shelfOverlays[thisBookShelf].bIsInUse;
+            
+            if( !shelfInUse && !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
                 
-                if(books[i].bIsUnused == true){
-                    
-                    //mark book as used
-                    books[i].bIsUnused = false;
-                    availableBooks--;
-                    
-                    //jot it down so we can reset it below
-                    availableBookIndex = i;
-                    
-                    //we found a book, don't keep looking
-                    break;
-                    
-                }
-            }
-            
-            availableBookFound = true;
-            
-        } else {
-            
-            //no unused books available, recycle an existing one
-            //pick a random number and find a book that is available
-            //doing it this way instead of using a for loop
-            //prevents reusing the same few books at the beginning of the vector
-            
-            int timesChecked = 0;
-            
-            do {
+                //if we're recycling a used book, we need to mark the
+                //contribution that it currently has as archived before replacing it
                 
-                int checkIndex = floor( ofRandom(books.size()) );
-                
-                //look for a book that is available (not active or spawning)
-                //and look for a shelf that is not active so it doesn't interrupt
-                //someone reading a book
-                int thisBookShelf = books[checkIndex].shelfNum;
-                
-                bool shelfInUse = shelfOverlays[thisBookShelf].bIsInUse;
-                
-                if( !shelfInUse && !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
+                //find the book in the contributionList that matches the ID of this
+                //message then mark it
+                for(int i = 0; i < contributionList -> size(); i++){
                     
-                    availableBookFound = true;
-                    
-                    //jot it down so we can reset it below
-                    availableBookIndex = checkIndex;
-                    
-                    //if we're recycling a used book, we need to mark the
-                    //contribution that it currently has as archived before replacing it
-                    
-                    //find the book in the contributionList that matches the ID of this
-                    //message then mark it
-                    for(int i = 0; i < contributionList -> size(); i++){
+                    if( (*contributionList)[i].ID == books[checkIndex].userContribution.ID ){
                         
-                        if( (*contributionList)[i].ID == books[availableBookIndex].userContribution.ID ){
-                            
-                            (*contributionList)[i].bIsArchived = true;
-                            
-                            break;
-                            
-                        }
+                        (*contributionList)[i].bIsArchived = true;
+                        
+                        break;
                         
                     }
                     
-                    
                 }
                 
-                timesChecked++;
                 
                 
-            } while ( !availableBookFound && timesChecked < 30 );
+                //jot it down so we can reset it below
+                fillThisIndex = checkIndex;
+                
+            }
+            
+            timesChecked++;
+            
+            
+        } while ( timesChecked < 30 );
+        
+    }
+
+    //if we've gotten this far,
+    //get tag number and color from the tagList in scholar data to set up the book
+    int tagNum;
+    ofColor tagCol;
+    
+    for(int i = 0; i < scholarData -> tagList.size(); i++){
+        if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
+            tagNum = i;
+        }
+    }
+    
+    tagCol = scholarData -> tagColorList[tagNum];
+    
+    //set up the content
+    books[fillThisIndex].setupContent( c , tagNum, tagCol);
+    
+    //Find the message in the contributionList and mark as NOT archived since
+    //the message is in a book. We need to do this since the book's user
+    //contribution is a copy, not the live message we're keeping track of
+    for(int i = 0; i < contributionList -> size(); i++){
+        
+        if( (*contributionList)[i].ID == c.ID ){
+            
+            (*contributionList)[i].bIsArchived = false;
+            break;
             
         }
         
     }
     
     
+    books[fillThisIndex].triggerNewBookEvt();
     
-    if( availableBookFound ){
-        
-        //if we've gotten this far,
-        //get tag number and color from the tagList in scholar data to set up the book
-        int tagNum;
-        ofColor tagCol;
-        
-        for(int i = 0; i < scholarData -> tagList.size(); i++){
-            if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
-                tagNum = i;
-            }
-        }
-        
-        tagCol = scholarData -> tagColorList[tagNum];
-        
-        //set up the content
-        books[availableBookIndex].setupContent( c , tagNum, tagCol);
-        
-        //Find the message in the contributionList and mark as NOT archived since
-        //the message is in a book. We need to do this since the book's user
-        //contribution is a copy, not the live message we're keeping track of
-        for(int i = 0; i < contributionList -> size(); i++){
-            
-            if( (*contributionList)[i].ID == c.ID ){
-                
-                (*contributionList)[i].bIsArchived = false;
-                break;
-                
-            }
-            
-        }
-        
-        
-        books[availableBookIndex].triggerNewBookEvt();
-        
-        lastNewBookEvent = ofGetElapsedTimef();
+    lastNewBookEvent = ofGetElapsedTimef();
     
+}
+
+void BookController::onNewContribution( Contribution& c ){
+    
+    
+    //check if it has been long enough since the last event or if there
+    //is an available bookshelves to add a book to.
+    //if not, add the contribution to the queue and wait
+    if(ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider){
+        
+        addToLibrary( c );
     
     } else {
         
@@ -630,17 +640,8 @@ void BookController::onNewContribution( Contribution& c ){
         //are occupied), store the index of the book in the queue
         incomingQueue.push_back( c );
         
-        
-        
     }
-    
-    
-    
-    
-    
-
-    
-    
+        
 }
 
 
@@ -684,62 +685,90 @@ void BookController::update(){
         ornaments[i].update();
     }
     
-    //if theres anything in the incoming queue AND
-    //it's been long enough, trigger a new contribution event
-    if( !incomingQueue.empty() && ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider ){
+    //it's been long enough...
+    if( ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider ){
+       
+        //check if there's anything in the queue
+        if( !incomingQueue.empty() ){
+            
+            //trigger a new book event with the oldest one
+            addToLibrary( *incomingQueue.begin() );
+            
+            //then remove the oldest one (the first element in the vector)
+            incomingQueue.pop_front();
         
-        //trigger a new book event with the oldest
-        onNewContribution( *incomingQueue.begin() );
-        
-        //remove the first element of the vector
-        incomingQueue.pop_front();
-    
-    
-    
-    }
-    
-    //if there are more contributions than there are books
-    //we'll cycle in one of the old books every now and then
-    if( contributionList -> size() > books.size() ){
-    
-        //AND it's been long enough...
-        if( ofGetElapsedTimef() - lastRecycleTime > archiveRecycleSlider){
-
-//            cout << "Triggering recycle event" << endl;
+        } else {
             
-            //-----BRING ONE BACK FROM THE DEAD/ARCHIVE-----
-            //Go through all the contributions and compile a short list of all the
-            //archived messages into a vector. Then go through that vector
-            //and randomly pick one (It's the easiest way to randomly pick from the
-            //archived ones without having to sort the contribution list)
-            //Then send that message to the onNewContribution()
-            //method to assign it to a new book
-            
-            vector<int> archivedIndices;
-            
-            for(int i = 0; i < contributionList -> size(); i++){
-                if( (*contributionList)[i].bIsArchived ){
-                    archivedIndices.push_back(i);
+            //the queue is empty, so check if there are books in the archive
+            //and if it's been long enough for a recycling event
+            if( contributionList -> size() > books.size() ){
+                
+                //AND it's been long enough...
+                if( ofGetElapsedTimef() - lastRecycleTime > archiveRecycleSlider){
+                    
+                    //            cout << "Triggering recycle event" << endl;
+                    
+                    //-----BRING ONE BACK FROM THE DEAD/ARCHIVE-----
+                    //Go through all the contributions and compile a short list of all the
+                    //archived messages into a vector. Then go through that vector
+                    //and randomly pick one (It's the easiest way to randomly pick from the
+                    //archived ones without having to sort the contribution list)
+                    //Then send that message to the onNewContribution()
+                    //method to assign it to a new book
+                    
+                    vector<int> archivedIndices;
+                    
+                    for(int i = 0; i < contributionList -> size(); i++){
+                        if( (*contributionList)[i].bIsArchived ){
+                            archivedIndices.push_back(i);
+                        }
+                    }
+                    
+                    if( archivedIndices.size() > 0 ){
+                        
+                        int randIndex = floor( ofRandom(archivedIndices.size()) );
+                        int indexToRecycle = archivedIndices[randIndex];
+                        
+                        //send to get recycled, this method will take care of
+                        //switching the archival stats of the old/new messages
+                        addToLibrary( (*contributionList)[indexToRecycle] );
+                        
+                    }
+                    
+                    
+                    
+                    lastRecycleTime = ofGetElapsedTimef();
                 }
+                
             }
             
-            if( archivedIndices.size() > 0 ){
-                
-                int randIndex = floor( ofRandom(archivedIndices.size()) );
-                int indexToRecycle = archivedIndices[randIndex];
-                
-                //send to get recycled, this method will take care of
-                //switching the archival stats of the old/new messages
-                onNewContribution( (*contributionList)[indexToRecycle] );
-            
-            }
-            
-            
-            
-            lastRecycleTime = ofGetElapsedTimef();
         }
-    
     }
+    
+    
+    
+    //update any tagRibbons we have. Iterate through it backwards
+    //so we don't cause any problems when we delete elements
+    for(int i = tagRibbons.size() - 1; i >= 0; i--){
+
+        if( !tagRibbons[i].bIsDead ){
+            
+            tagRibbons[i].update();
+            
+            if( tagRibbons[i].bTouchDown ){
+                books[ tagRibbons[i].dstBookNum ].showTaglet();
+            }
+            
+        } else {
+            
+            //if it's dead remove it
+            tagRibbons.erase(tagRibbons.begin() + i);
+            
+        }
+        
+        
+    }
+    
 
 
     
@@ -775,6 +804,13 @@ void BookController::draw(){
         ornaments[i].draw();
     }
 
+    
+    //draw any tagRibbons we have
+    for(int i = 0; i < tagRibbons.size(); i++){
+        tagRibbons[i].draw();
+    }
+    
+    
     ofPopMatrix();
     
     ofDisableDepthTest();
@@ -800,21 +836,21 @@ void BookController::setBookVarsFromGui(){
         books[i].totalBookCloseTime = bookCloseTimeSlider;
         books[i].setButtonSpeeds(buttonLerpSpeedSlider);
         
-        books[i].spawnEffect.numRibbonsToDraw = numRibbonsSlider;
-        books[i].spawnEffect.orbitSpeed = orbitSpeedSlider;
-        books[i].spawnEffect.numSegments = numSegmentsSlider;
-        books[i].spawnEffect.totalLength = ribbonLengthSlider;
-        books[i].spawnEffect.ribbonWidth = ribbonWidthSlider;
-        books[i].spawnEffect.ribbonTaper = ribbonTaperSlider;
-        books[i].spawnEffect.baseRad = baseRadSlider;
-        books[i].spawnEffect.noiseAmp = noiseAmplitudeSlider;
-        books[i].spawnEffect.noiseSpeed = noiseSpeedSlider;
-        books[i].spawnEffect.nScale = noiseScaleSlider;
-        books[i].spawnEffect.colorRange = colorRangeSlider;
-        books[i].spawnEffect.shrinkTime = shrinkTimeSlider;
-        books[i].spawnEffect.useNoise = useNoiseToggle;
-        books[i].spawnEffect.staggerAmt = staggerAmountSlider;
-        books[i].spawnEffect.bDrawWireframe = drawWireframeToggle;
+        books[i].spawnRibbons.numRibbonsToDraw = numRibbonsSlider;
+        books[i].spawnRibbons.orbitSpeed = orbitSpeedSlider;
+        books[i].spawnRibbons.numSegments = numSegmentsSlider;
+        books[i].spawnRibbons.totalLength = ribbonLengthSlider;
+        books[i].spawnRibbons.ribbonWidth = ribbonWidthSlider;
+        books[i].spawnRibbons.ribbonTaper = ribbonTaperSlider;
+        books[i].spawnRibbons.baseRad = baseRadSlider;
+        books[i].spawnRibbons.noiseAmp = noiseAmplitudeSlider;
+        books[i].spawnRibbons.noiseSpeed = noiseSpeedSlider;
+        books[i].spawnRibbons.nScale = noiseScaleSlider;
+        books[i].spawnRibbons.colorRange = colorRangeSlider;
+        books[i].spawnRibbons.shrinkTime = shrinkTimeSlider;
+        books[i].spawnRibbons.useNoise = useNoiseToggle;
+        books[i].spawnRibbons.staggerAmt = staggerAmountSlider;
+        books[i].spawnRibbons.bDrawWireframe = drawWireframeToggle;
     }
 
     for(int i = 0; i < shelfOverlays.size(); i++){
@@ -826,6 +862,25 @@ void BookController::setBookVarsFromGui(){
         
     }
     
+    
+}
+
+void BookController::giveSettingsToRibbon(TagRibbon *tr){
+    
+    tr -> pctApex = pctApexSlider;
+    tr -> dt = segmentDTSlider;
+    tr -> duration = tagRibbonDurationSlider;
+    tr -> arcHeight = arcHeightSlider;
+    
+    tr -> bDrawWireframe = tagRibbonWireframeToggle;
+    tr -> ribbonWidth = tagWidthSlider;
+    tr -> ribbonTaper = tagTaperSlider;
+    tr -> colorRange = tagColorRangeSlider;
+    
+    tr -> bUseNoise = tagUseNoiseToggle;
+    tr -> noiseAmp = tagNoiseAmplitudeSlider;
+    tr -> noiseSpeed = tagNoiseSpeedSlider;
+    tr -> noiseScale = tagNoiseScaleSlider;
     
 }
 
@@ -865,7 +920,7 @@ void BookController::setupGui(){
     gui.add(numRibbonsSlider.setup("Num ribbons", 5, 1, 10));
     gui.add(orbitSpeedSlider.setup("Orbit speed", 2.0f, 0.1f, 10.0f));
     gui.add(ribbonLengthSlider.setup("Ribbon length", 135, 10, 360));
-    gui.add(ribbonWidthSlider.setup("Ribbon width", 20, 5, 60));
+    gui.add(ribbonWidthSlider.setup("Ribbon width", 20, 1, 60));
     gui.add(ribbonTaperSlider.setup("Ribbon taper", 0.2f, 0.0f, 1.0f));
     
     gui.add(numSegmentsSlider.setup("Num segments", 15, 2, 40));
@@ -875,14 +930,27 @@ void BookController::setupGui(){
     gui.add(staggerAmountSlider.setup("Stagger radii", 10.0f, 0.0f, 40.0f));
     gui.add(drawWireframeToggle.setup("Draw wireframe", false));
     
-    gui.add(noiseLabel.setup("  RIBBON NOISE", ""));
     gui.add(useNoiseToggle.setup("Use Noise", true));
     gui.add(noiseAmplitudeSlider.setup("Noise amplitude", 10.0f, 0.0f, 30));
     gui.add(noiseSpeedSlider.setup("Noise speed", 0.01f, 0.0001f, 4.0f));
     gui.add(noiseScaleSlider.setup("Noise scale", 0.01f, 0.0001f, 0.5f));
     
-    gui.add(shelfOverlayLabel.setup("  SHELF OVERLAYS", ""));
+    gui.add(tagRibbonLabel.setup("  TAG RIBBONS", ""));
+    gui.add(tagRibbonWireframeToggle.setup("Draw wireframe", false));
+    gui.add(numPointsSlider.setup("Num points", 10, 2, 30));
+    gui.add(pctApexSlider.setup("Pct dist Apex", 0.5f, 0.0f, 1.0f));
+    gui.add(arcHeightSlider.setup("Arc height", 100.0f, 0.0f, 300.0f));
+    gui.add(segmentDTSlider.setup("Segment dt", 0.1f, 0.001f, 1.0f));
+    gui.add(tagRibbonDurationSlider.setup("Duration", 1.5f, 0.01f, 5.0f));
+    gui.add(tagWidthSlider.setup("Ribbon width", 40.0f, 1.0f, 60.0f));
+    gui.add(tagTaperSlider.setup("Ribbon taper", 0.1f, 0.0f, 1.0f));
+    gui.add(tagColorRangeSlider.setup("Color range", 25.0f, 0.00f, 50.0f));
+    gui.add(tagUseNoiseToggle.setup("Use Noise", true));
+    gui.add(tagNoiseAmplitudeSlider.setup("Tag noise amp", 10.0f, 0.0f, 50.0f));
+    gui.add(tagNoiseSpeedSlider.setup("Tag noise speed", 0.01f, 0.0001f, 4.0f));
+    gui.add(tagNoiseScaleSlider.setup("Tag noise scale", 0.01f, 0.0001f, 1.0f));
     
+    gui.add(shelfOverlayLabel.setup("  SHELF OVERLAYS", ""));
     gui.add(openDelaySlider.setup("Open delay", 0.5f, 0.0f, 3.0f));
     gui.add(openDurationSlider.setup("Open duration", 2.0f, 0.001f, 4.0f));
     gui.add(closeDelaySlider.setup("Close delay", 0.5f, 0.0f, 3.0f));
@@ -897,7 +965,8 @@ void BookController::setupGui(){
     booksLabel.setBackgroundColor(ofColor(255));
     spawnSettingsLabel.setBackgroundColor(ofColor(255));
     ribbonSettingsLabel.setBackgroundColor(ofColor(255));
-    noiseLabel.setBackgroundColor(ofColor(255));
+    tagRibbonLabel.setBackgroundColor(ofColor(255));
+    shelfOverlayLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels
     settingsLabel.setDefaultTextColor(ofColor(0));

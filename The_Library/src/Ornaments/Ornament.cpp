@@ -59,8 +59,8 @@ void Ornament::setup(int _type){
         img.load("assets/ornaments/ship.png");
         
         //full book space on either side
-        leftPadding = bookThickness;
-        rightPadding = bookThickness;
+        leftPadding = bookThickness * 0.5;
+        rightPadding = bookThickness * 0.5;
         
     } else if(type == 4){              //-----FIFTH SHELF-----
         numBooksWide = 3;

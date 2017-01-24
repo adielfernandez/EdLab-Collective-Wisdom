@@ -26,6 +26,7 @@
 #include "../Content/ScholarData.hpp"
 
 #include "../Ornaments/Ornament.hpp"
+#include "TagRibbon.hpp"
 
 #pragma once
 
@@ -53,11 +54,15 @@ public:
     //event triggered by Content Manager
     //when a new contribution is received
     void onNewContribution( Contribution& c );
+
+    //Method for adding a book, whether
+    //its a new contribution or archive recycle
+    void addToLibrary( Contribution& c );
+    
     
     list<Contribution> incomingQueue;
     double lastNewBookEvent;
     
-    int availableBooks;
     double lastRecycleTime;
     
     
@@ -85,8 +90,8 @@ public:
     const int maxBooksPerShelf = 16;
 
     vector<Ornament> ornaments;
+    vector<TagRibbon> tagRibbons;
 
-    
     
     //-----SHELF OVERLAYS AND TRACKING
     //for keeping track of which shelves are in use
@@ -137,17 +142,33 @@ public:
     ofxFloatSlider staggerAmountSlider;
     ofxToggle drawWireframeToggle;
     
-    ofxLabel noiseLabel;
     ofxToggle useNoiseToggle;
     ofxFloatSlider noiseAmplitudeSlider;
     ofxFloatSlider noiseSpeedSlider;
     ofxFloatSlider noiseScaleSlider;
+    
+    ofxLabel tagRibbonLabel;
+    ofxToggle tagRibbonWireframeToggle;
+    ofxIntSlider numPointsSlider;
+    ofxFloatSlider pctApexSlider;
+    ofxFloatSlider arcHeightSlider;
+    ofxFloatSlider segmentDTSlider;
+    ofxFloatSlider tagRibbonDurationSlider;
+    ofxFloatSlider tagWidthSlider;
+    ofxFloatSlider tagTaperSlider;
+    ofxFloatSlider tagColorRangeSlider;
+    ofxToggle tagUseNoiseToggle;
+    ofxFloatSlider tagNoiseAmplitudeSlider;
+    ofxFloatSlider tagNoiseSpeedSlider;
+    ofxFloatSlider tagNoiseScaleSlider;
     
     ofxLabel shelfOverlayLabel;
     ofxFloatSlider openDelaySlider;
     ofxFloatSlider openDurationSlider;
     ofxFloatSlider closeDelaySlider;
     ofxFloatSlider closeDurationSlider;
+    
+    void giveSettingsToRibbon(TagRibbon *tr);
     
     double lastBookSettingsUpdate;
     

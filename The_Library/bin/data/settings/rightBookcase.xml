@@ -1,7 +1,7 @@
 <rightBookcase>
 	<__GENERAL_SETTINGS/>
-	<Wave_Speed>1</Wave_Speed>
-	<Effect_Duration>1.8</Effect_Duration>
+	<Wave_Speed>0.395</Wave_Speed>
+	<Effect_Duration>1.57</Effect_Duration>
 	<Easing_Bounce_Amt>1</Easing_Bounce_Amt>
 	<__Mapping_Points/>
 	<Corner_0>1242, 124</Corner_0>

@@ -10,7 +10,7 @@
 
 #include "Books/BookController.hpp"
 #include "Books/CenterBook.hpp"
-#include "Books/SpawnEffect.hpp"
+#include "Books/SpawnRibbon.hpp"
 
 #include "Content/Contribution.hpp"
 #include "Content/ContributionManager.hpp"

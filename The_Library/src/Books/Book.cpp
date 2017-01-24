@@ -289,11 +289,12 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
 void Book::setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum){
     
     
+    
     storedPos = stored;
     displayPos = display;
     
     shelfNum = sNum;
-    bookID = bNum;
+    bookNum = bNum;
     
     float sideShift = -100;
     pulledOutPos = stored + ofVec3f(sideShift, 0, -depth);
@@ -318,10 +319,10 @@ void Book::setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelfPts){
     prevButton.setup( 1, displayPos);
     nextButton.setup( 2, displayPos);
     
-    exitButton.setLibraryInfo(shelfPts, shelfNum, bookID);
-    prevButton.setLibraryInfo(shelfPts, shelfNum, bookID);
-    nextButton.setLibraryInfo(shelfPts, shelfNum, bookID);
-    tagButton.setLibraryInfo(shelfPts, shelfNum, bookID);
+    exitButton.setLibraryInfo(shelfPts, shelfNum, bookNum);
+    prevButton.setLibraryInfo(shelfPts, shelfNum, bookNum);
+    nextButton.setLibraryInfo(shelfPts, shelfNum, bookNum);
+    tagButton.setLibraryInfo(shelfPts, shelfNum, bookNum);
     
     //set button icons
     exitButton.setIcons( &(*icons)[0], &(*icons)[1] );
@@ -388,7 +389,7 @@ void Book::setupContent(Contribution c, int _tagNum, ofColor _tagCol){
     drawContentToTexture();
     
     //set up the spawning effect now that we have a color
-    spawnEffect.setup(tagCol);
+    spawnRibbons.setup(tagCol);
     
 }
 
@@ -593,7 +594,7 @@ void Book::triggerNewBookEvt(){
     animPos = animationSpread3;
     
     //reset the spawn effect ribbons
-    spawnEffect.reset();
+    spawnRibbons.reset();
     
 }
 
@@ -639,7 +640,7 @@ void Book::update(){
                 //the next step animates correctly
                 animStartTime = ofGetElapsedTimef();
                 
-                //setup the SpawnEffect
+                //setup the spawnRibbons
                 
                 
 
@@ -658,7 +659,7 @@ void Book::update(){
 
             //update the spawn effect and send it a countdown
             //until the effect is over
-            spawnEffect.update( spawnEndTime - now );
+            spawnRibbons.update( spawnEndTime - now );
 
             
             if(now < spawnEndTime){
@@ -1073,7 +1074,7 @@ void Book::draw(){
         //if we're in the book spawning sequence, move the book so that
         //it draws from it's center to make the rotations look less awkward
         if(bIsNewBookEvt){
-            spawnEffect.draw();
+            spawnRibbons.draw();
             
             ofPushMatrix();
             ofTranslate(toCenter);

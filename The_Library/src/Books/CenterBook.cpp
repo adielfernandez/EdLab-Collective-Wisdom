@@ -269,7 +269,7 @@ void CenterBook::setup(ScholarData *sData, Frame *f){
     
     tagButton.setup(3, tagPos);
     tagButton.setFont(&tagButtonFont);
-    tagButton.centerBookButton = true;
+    tagButton.bIsCenterBookButton = true;
     tagButton.setTag("", 0, ofColor(0));
     tagButton.helpTextCol = textColor;
     tagButton.show();
@@ -526,7 +526,10 @@ void CenterBook::update(){
                         
                         //if we're inside the tag button, fake a button press
                         //to trigger the event to the book controller
-                        tagButton.checkForClicks(tagButton.currentPos.x + 10, tagButton.currentPos.y + 10, mouseTouches[i].bIsTouching);
+                        if(ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                            tagButton.checkForClicks(tagButton.currentPos.x + 10, tagButton.currentPos.y + 10, mouseTouches[i].bIsTouching);
+                            lastTouchTime = ofGetElapsedTimeMillis();
+                        }
                     }
                     
                     

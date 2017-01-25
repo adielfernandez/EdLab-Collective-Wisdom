@@ -4,18 +4,18 @@
 void ofApp::setup(){
 
     ofSetLogLevel(OF_LOG_VERBOSE);
-    ofSetFrameRate(200);
-    ofSetVerticalSync(false);
+    ofSetFrameRate(60);
+    ofSetVerticalSync(true);
     
     ofSetBackgroundColor(50);
     
     //----------CAMERAS----------
-//    leftCam.setup("LeftCam", "device/sensor0");
-//    rightCam.setup("RightCam", "device/sensor1");
-    centerCam.setup("CenterCam", "device/sensor0");
+    leftCam.setup("LeftCam", "device/sensor0");
+    rightCam.setup("RightCam", "device/sensor1");
+    centerCam.setup("CenterCam", "device/sensor2");
     
     numCams = 3;
-    currentCam = 2;
+    currentCam = 0;
     
 
     
@@ -26,8 +26,8 @@ void ofApp::update(){
 
     
     //----------CAMERAS----------
-//    leftCam.update();
-//    rightCam.update();
+    leftCam.update();
+    rightCam.update();
     centerCam.update();
     
 }
@@ -53,7 +53,8 @@ void ofApp::draw(){
     
     if(currentCam == 0 || currentCam == 1) {
         
-        WallCam *thisCam; //= currentCam == 0 ? &leftCam : &rightCam;
+//        WallCam *thisCam = &leftCam;
+        WallCam *thisCam = (currentCam == 0) ? &leftCam : &rightCam;
         
         if(thisCam -> isThreadRunning()){
             ofBackground(50);

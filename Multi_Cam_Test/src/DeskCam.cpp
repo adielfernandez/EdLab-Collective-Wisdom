@@ -254,7 +254,8 @@ void DeskCam::update(){
     for(int i = 0; i < maskPoints.size(); i++){
         if(maskPointMouseLock[i]){
           
-            maskPoints[i] = adjustedMouse;
+            maskPoints[i].x = ofClamp( adjustedMouse.x, 0, rawPix.getWidth() );
+            maskPoints[i].y = ofClamp( adjustedMouse.y, 0, rawPix.getHeight() );
             
             switch (i) {
                 case 0:

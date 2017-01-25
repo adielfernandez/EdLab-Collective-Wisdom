@@ -1,4 +1,4 @@
-//
+    //
 //  WallCam.cpp
 //  Multi_Cam_Test
 //
@@ -193,124 +193,129 @@ void WallCam::update(){
             //i.e. the closest point to the wall
             vector<ofPoint> points = contours.getPolyline(i).getVertices();
             
-            //go through all the vertices and find the point with the lowest y value
-            int yVal = 0;
-            int index = 0;
-            for(int j = 0; j < points.size(); j++){
-                //if we find a point lower than yVal, store it
-                if(points[j].y > yVal){
-                    yVal = points[j].y;
-   
-                    //also store this index;
-                    index = j;
-                }
-            }
-            
-            ofVec2f lowestPoint(points[index].x, points[index].y);
-            
-            //we now have the lowest point, we don't really need to store it except when
-            //calibrating the space and drawing it on the thresholded image.
-            //Can comment out later.
-            lowPoints.push_back( ofVec2f(lowestPoint.x, lowestPoint.y) );
-            
-            //since the depth at the edge pixel might not always be the true depth, look around the area
-            //just above the lowest point and pick the highest (closest) depth value as the depth reading
-            float camDepth = -1;
-            
-            //search pixels above and to the sides, wider area gives more stable touch data
-            int pixelArea = 20;
-            for(int x = lowestPoint.x - pixelArea; x < lowestPoint.x + pixelArea; x++){
-                for(int y = lowestPoint.y - pixelArea; y < lowestPoint.y; y++){
-                    
-                    //make sure the pixel is in bounds
-                    if(x > 0 && x < camWidth && y > 0 && y < roiDepthSlider){
-                        int thisIndex = rawPix.getPixelIndex(x, y + thresholdPos);
-                        if(rawPix[thisIndex] > camDepth) camDepth = rawPix[thisIndex];
-                    }
-                    
-                }
-            }
-            
-            //we have a position from left to right and a depth.
-            //Now we need to map them to wall space
-            
-            //these are the pixel brightness values at the close, middle and far end of the
-            //region of interest, i.e. the top, middle and bottom of bookshelf
-            int nearDepthVal = 246;
-            int middleDepthVal = 157;
-            int farDepthVal = 68;
-            
-            //these will eventually be defined by the bookcase dimensions (top of 1st shelf, bottom of 3rd shelf)
-            int nearScreenYval = 702;
-            int farScreenYval = 90;
-            
-            //Y is easy, as pixel brightness maps linearly to distance
-            float mappedY = ofMap(camDepth, nearDepthVal, farDepthVal, nearScreenYval, farScreenYval);
-            
-            //X is more difficult since travel perpendicular to the camera FOV changes with distance
-            //Basically we will map the X differently from left to right using control points
-            //at different depths. Control point: The x component of the left and right screen
-            //pixels that correspond to a touch at each control point
-            
-            //These will be defined by the camera's x value when touching 6 points around
-            //the far edges of the bookcase interaction area: top, middle and bottom
-            //of the left and right sides
-            
-            //TO DO: Diagram this out and place in documentation
-            
-            int nearLeft = 5;
-            int nearRight = 550;
-            int middleLeft = 105;
-            int middleRight = 473;
-            int farLeft = 158;
-            int farRight = 433;
-            
-            //map left and right distance from the centerline on each side
-            //depending on distance
-            float xLeftEdge, xRightEdge;
-            
-            //we're in the closer half to the camera
-            if(camDepth > middleDepthVal){
-                //closer to cam
-                xLeftEdge = ofMap(camDepth, nearDepthVal, middleDepthVal, nearLeft, middleLeft);
-                xRightEdge = ofMap(camDepth, nearDepthVal, middleDepthVal, nearRight, middleRight);
-            } else {
-                //farther from cam
-                xLeftEdge = ofMap(camDepth, middleDepthVal, farDepthVal, middleLeft, farLeft);
-                xRightEdge = ofMap(camDepth, middleDepthVal, farDepthVal, middleRight, farRight);
-            }
-            
-            //now we know the left and right bounds at any depth: xLeft and xRight
-            //so let's finally map them to the screen coordinates (eventually the bookcase width)
-
-            float interactionAreaLeft = 273;
-            float interactionAreaRight = 853;
-            
-            float mappedX = ofMap(lowestPoint.x, xLeftEdge, xRightEdge, interactionAreaRight, interactionAreaLeft);
-            
-            float distFromWall = threshPix.getHeight() - lowestPoint.y;
-            
-            //check if a touch exists with the ID, if it does, update it, if not add it.
-            bool touchExists = false;
-            int existingIndex;
-            
-            for(int i = 0; i < touches.size(); i++){
-                if(touches[i].id == contours.getLabel(i)){
-                    touchExists = true;
-                    existingIndex = i;
-                    break;
-                }
-            }
-            
-            if(touchExists){
-                //update the touch
-                touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), distFromWall);
+            //Contours occasionally returns a polyline with zero vertices
+            if(points.size() > 0){
                 
-            } else {
-                //add the new touch
-                WallTouch t;
-                t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), distFromWall);
-                touches.push_back(t);
+                //go through all the vertices and find the point with the lowest y value
+                int yVal = 0;
+                int index = 0;
+                for(int j = 0; j < points.size(); j++){
+                    //if we find a point lower than yVal, store it
+                    if(points[j].y > yVal){
+                        yVal = points[j].y;
+                        
+                        //also store this index;
+                        index = j;
+                    }
+                }
+                
+                ofVec2f lowestPoint(points[index].x, points[index].y);
+                
+                //we now have the lowest point, we don't really need to store it except when
+                //calibrating the space and drawing it on the thresholded image.
+                //Can comment out later.
+                lowPoints.push_back( ofVec2f(lowestPoint.x, lowestPoint.y) );
+                
+                //since the depth at the edge pixel might not always be the true depth, look around the area
+                //just above the lowest point and pick the highest (closest) depth value as the depth reading
+                float camDepth = -1;
+                
+                //search pixels above and to the sides, wider area gives more stable touch data
+                int pixelArea = 20;
+                for(int x = lowestPoint.x - pixelArea; x < lowestPoint.x + pixelArea; x++){
+                    for(int y = lowestPoint.y - pixelArea; y < lowestPoint.y; y++){
+                        
+                        //make sure the pixel is in bounds
+                        if(x > 0 && x < camWidth && y > 0 && y < roiDepthSlider){
+                            int thisIndex = rawPix.getPixelIndex(x, y + thresholdPos);
+                            if(rawPix[thisIndex] > camDepth) camDepth = rawPix[thisIndex];
+                        }
+                        
+                    }
+                }
+                
+                //we have a position from left to right and a depth.
+                //Now we need to map them to wall space
+                
+                //these are the pixel brightness values at the close, middle and far end of the
+                //region of interest, i.e. the top, middle and bottom of bookshelf
+                int nearDepthVal = 246;
+                int middleDepthVal = 157;
+                int farDepthVal = 68;
+                
+                //these will eventually be defined by the bookcase dimensions (top of 1st shelf, bottom of 3rd shelf)
+                int nearScreenYval = 702;
+                int farScreenYval = 90;
+                
+                //Y is easy, as pixel brightness maps linearly to distance
+                float mappedY = ofMap(camDepth, nearDepthVal, farDepthVal, nearScreenYval, farScreenYval);
+                
+                //X is more difficult since travel perpendicular to the camera FOV changes with distance
+                //Basically we will map the X differently from left to right using control points
+                //at different depths. Control point: The x component of the left and right screen
+                //pixels that correspond to a touch at each control point
+                
+                //These will be defined by the camera's x value when touching 6 points around
+                //the far edges of the bookcase interaction area: top, middle and bottom
+                //of the left and right sides
+                
+                //TO DO: Diagram this out and place in documentation
+                
+                int nearLeft = 5;
+                int nearRight = 550;
+                int middleLeft = 105;
+                int middleRight = 473;
+                int farLeft = 158;
+                int farRight = 433;
+                
+                //map left and right distance from the centerline on each side
+                //depending on distance
+                float xLeftEdge, xRightEdge;
+                
+                //we're in the closer half to the camera
+                if(camDepth > middleDepthVal){
+                    //closer to cam
+                    xLeftEdge = ofMap(camDepth, nearDepthVal, middleDepthVal, nearLeft, middleLeft);
+                    xRightEdge = ofMap(camDepth, nearDepthVal, middleDepthVal, nearRight, middleRight);
+                } else {
+                    //farther from cam
+                    xLeftEdge = ofMap(camDepth, middleDepthVal, farDepthVal, middleLeft, farLeft);
+                    xRightEdge = ofMap(camDepth, middleDepthVal, farDepthVal, middleRight, farRight);
+                }
+                
+                //now we know the left and right bounds at any depth: xLeft and xRight
+                //so let's finally map them to the screen coordinates (eventually the bookcase width)
+                
+                float interactionAreaLeft = 273;
+                float interactionAreaRight = 853;
+                
+                float mappedX = ofMap(lowestPoint.x, xLeftEdge, xRightEdge, interactionAreaRight, interactionAreaLeft);
+                
+                float distFromWall = threshPix.getHeight() - lowestPoint.y;
+                
+                //check if a touch exists with the ID, if it does, update it, if not add it.
+                bool touchExists = false;
+                int existingIndex;
+                
+                for(int i = 0; i < touches.size(); i++){
+                    if(touches[i].id == contours.getLabel(i)){
+                        touchExists = true;
+                        existingIndex = i;
+                        break;
+                    }
+                }
+                
+                if(touchExists){
+                    //update the touch
+                    touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), distFromWall);
+                    
+                } else {
+                    //add the new touch
+                    WallTouch t;
+                    t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), distFromWall);
+                    touches.push_back(t);
+                    
+                }
                 
             }
 

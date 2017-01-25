@@ -28,8 +28,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-//    WallCam leftCam;
-//    WallCam rightCam;
+    WallCam leftCam;
+    WallCam rightCam;
     DeskCam centerCam;
     
     

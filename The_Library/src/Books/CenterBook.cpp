@@ -1084,7 +1084,7 @@ void CenterBook::setupGui(){
     gui.add(touchWaitSlider.setup("Wait after touch", 500, 10, 2000));
     
     maxRangeX = 100;
-    maxRangeY = 250;
+    maxRangeY = 320;
     plus.set(maxRangeX, maxRangeY);
     minus.set(-maxRangeX, -maxRangeY);
     

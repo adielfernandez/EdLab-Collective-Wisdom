@@ -104,7 +104,7 @@ void Bookcase::loadMedia(){
     //set up the static bookcase mesh and texture
     recordStaticTexture();
     setStaticBookcase();
-    bStaticCaseNeedsUpdate = false;
+    bStaticCaseNeedsUpdate = true;
     
 }
 
@@ -289,7 +289,7 @@ void Bookcase::drawDebug(){
     
     ofPushStyle();
     ofNoFill();
-    ofSetLineWidth(2);
+    ofSetLineWidth(1);
     
     
     //draw corners
@@ -371,7 +371,7 @@ void Bookcase::setupGui(){
     gui.add(controlPointsLabel.setup("  CONTROL POINTS", ""));
     
     //slider bounds for frame corner
-    float maxRange = 50;
+    float maxRange = 150;
     ofVec2f plus(maxRange, maxRange);
     ofVec2f minus(-maxRange, -maxRange);
     

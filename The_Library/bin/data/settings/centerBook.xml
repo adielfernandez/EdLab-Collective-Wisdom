@@ -1,17 +1,17 @@
 <centerBook>
 	<__POSITIONING/>
-	<Book_Pos>109.184, 170.102</Book_Pos>
-	<Bulk_Scale>1.7265</Bulk_Scale>
+	<Book_Pos>111.224, 154.796</Book_Pos>
+	<Bulk_Scale>1.616</Bulk_Scale>
 	<Depth_Scale>0.6485</Depth_Scale>
-	<Height_Scale>0.7655</Height_Scale>
-	<Width_Scale>0.7655</Width_Scale>
+	<Height_Scale>0.759</Height_Scale>
+	<Width_Scale>0.8305</Width_Scale>
 	<__MAPPING/>
 	<Show_UnWarped>0</Show_UnWarped>
 	<Draw_Wireframe>0</Draw_Wireframe>
-	<Mesh_Pt_0>787.551, 700</Mesh_Pt_0>
-	<Mesh_Pt_1>1135.51, 700</Mesh_Pt_1>
-	<Mesh_Pt_2>1190.61, 1045.82</Mesh_Pt_2>
-	<Mesh_Pt_3>738.571, 1048.37</Mesh_Pt_3>
+	<Mesh_Pt_0>757.959, 700</Mesh_Pt_0>
+	<Mesh_Pt_1>1158.98, 696.735</Mesh_Pt_1>
+	<Mesh_Pt_2>1206.94, 1181.94</Mesh_Pt_2>
+	<Mesh_Pt_3>697.755, 1195</Mesh_Pt_3>
 <centerBook/>
 <__CONTENT_and_TEXTURING/>
 	<Show_Raw_Desk>1</Show_Raw_Desk>
@@ -25,4 +25,5 @@
 <Book_Top_Bound>0.025</Book_Top_Bound>
 	<Book_Bottom_Bound>0.96</Book_Bottom_Bound>
 <Wait_after_touch>500</Wait_after_touch>
+<Gui_Position>460, 540</Gui_Position>
 </centerBook>

@@ -1,0 +1,31 @@
+<CenterCam>
+	<___CAMERA_SETTINGS/>
+	<Cam_Near_Clip>760</Cam_Near_Clip>
+	<Cam_Far_Clip>1840</Cam_Far_Clip>
+	<___IMAGE_PROCESSING/>
+	<Near_Threshold>255</Near_Threshold>
+	<Far_Threshold>2</Far_Threshold>
+	<Blur>0</Blur>
+	<Number_of_erosions>0</Number_of_erosions>
+	<Number_of_dilations>0</Number_of_dilations>
+	<___ROI_SETTINGS/>
+	<Region_Depth>96</Region_Depth>
+	<Wall_Level_Cutoff>338</Wall_Level_Cutoff>
+	<Dist_for_touch>10</Dist_for_touch>
+	<___BG_SUBTRACTION/>
+	<Use_BG_Diff>1</Use_BG_Diff>
+	<Frames_to_learn_BG>180</Frames_to_learn_BG>
+	<___CONTOUR_FINDING/>
+	<Draw_Contours>1</Draw_Contours>
+	<Draw_Blob_info>1</Draw_Blob_info>
+	<Min_Blob_Area>1875</Min_Blob_Area>
+	<Max_Blob_Area>20000</Max_Blob_Area>
+	<Persistence>15</Persistence>
+	<Max_Distance>32</Max_Distance>
+<CenterCam/>
+<___MASK_SETTINGS/>
+	<Mask_Pt_0>258, 176</Mask_Pt_0>
+	<Mask_Pt_1>404, 163</Mask_Pt_1>
+	<Mask_Pt_2>417, 267</Mask_Pt_2>
+	<Mask_Pt_3>249, 268</Mask_Pt_3>
+</CenterCam>

@@ -213,8 +213,8 @@ void ofApp::draw(){
     
     
     //camera inverts textures so draw the edge mask upside down
-    ofSetColor(255);
-    bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
+//    ofSetColor(255);
+//    bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
     
     
     if(currentView == 1){
@@ -370,6 +370,7 @@ void ofApp::keyPressed(int key){
         rightBookcase.saveSettings();
         wallpaper.saveSettings();
         bookController.saveSettings();
+        centerBook.saveSettings();
         
         lastSaveTime = ofGetElapsedTimef();
     }

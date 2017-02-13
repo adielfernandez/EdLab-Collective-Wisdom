@@ -32,7 +32,7 @@ public:
     
     void loadModel(int bType, int tType, int fType);
     void setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UIFont);
-    void setupContent(Contribution c, int _tagNum, ofColor _tagCol);
+    void setupContent(Contribution c, string tagText1, string tagText2, int _tagNum, ofColor _tagCol);
     
     void setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelf);
     
@@ -63,6 +63,9 @@ public:
     int shelfNum;
     //unique id for this book
     int bookNum;
+    
+    bool bIsScholarBook;
+    int scholarNum;
     
     //for books that have no message and
     //not needed in the library

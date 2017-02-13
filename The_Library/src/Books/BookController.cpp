@@ -358,7 +358,7 @@ void BookController::setup(vector<Contribution> *cList){
                 books[i].bIsUnused = false;
                 
                 //get tag number and color from the tagList in scholar data to set up the book
-                int tagNum;
+                int tagNum = 0;
                 ofColor tagCol;
                 
                 string thisTag = (*contributionList)[i].tag;
@@ -366,7 +366,7 @@ void BookController::setup(vector<Contribution> *cList){
                 //go through the tagList and see which one this tag is
                 for(int i = 0; i < scholarData -> tagList.size(); i++){
                     if(thisTag.compare(scholarData -> tagList[i]) == 0){
-                        tagNum = i;
+                        tagNum = i;  
                     }
                 }
                 
@@ -375,7 +375,11 @@ void BookController::setup(vector<Contribution> *cList){
                 
                 //set up the content
                 //give a reference to the individual contribution in the list
-                books[i].setupContent( (*contributionList)[i] , tagNum, tagCol);
+                //as well as tag info for setting up UI stuff
+                string t1 = scholarData -> formattedTagList[tagNum][0];
+                string t2 = scholarData -> formattedTagList[tagNum][1];
+                
+                books[i].setupContent( (*contributionList)[i], t1, t2, tagNum, tagCol);
                 books[i].putInShelf();
                 
                 //also mark this message as no longer archived
@@ -462,47 +466,98 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
         
     } else if(b.type == 3){
 
-        //source of the tag ribbons
-        ofVec3f src;
-
-        //first check if it was the centerBook tagButton
-        if(b.bIsCenterBookButton){
+        //if it's a scholar button we need to find books per scholar
+        //any other event is found by tag
+        if( !b.bScholarButton ){
             
-            //src based on centerbook button position (should make this a gui setting)
-            src = ofVec3f( 990, 960, -80);
+            //---------------------
+            //-----FIND BY TAG-----
+            //---------------------
             
+            //source of the tag ribbons
+            ofVec3f src;
             
-        } else {
-
-            //src position based on typical book button positions
-            BookUIButton *bttn = &books[b.bookNum].tagButton;
-            src = bttn -> displayedPos + ofVec3f(bttn -> buttonWidth/2, bttn -> buttonHeight/2, -80);
-        }
-        
-        //go through all the books and trigger a ribbon from that
-        //book's tag button to all the books that share the same tag
-        for(int i = 0; i < books.size(); i++){
-            
-            //check if the book has the same tag, but make sure
-            //it's not the same as the src book
-            if( b.bookNum != i && books[i].tagNum == b.tagNum){
+            //first check if it was the centerBook tagButton
+            if(b.bIsCenterBookButton){
                 
-                TagRibbon tr;
+                //src based on centerbook button position (should make this a gui setting)
+                src = ofVec3f( 1094, 840, -80);
                 
-                ofVec3f dst = books[i].storedPos + ofVec3f(books[i].thickness/2.0f, - 135);
-
-                tr.setup(src, dst, numPointsSlider, b.tagCol);
-                tr.dstBookNum = i;
                 
-                //helper function to deliver all the gui
-                //settings to the ribbon before sending it off
-                giveSettingsToRibbon( &tr );
+            } else {
                 
-                tagRibbons.push_back(tr);
+                //src position based on typical book button positions
+                BookUIButton *bttn = &books[b.bookNum].tagButton;
+                src = bttn -> displayedPos + ofVec3f(bttn -> buttonWidth/2, bttn -> buttonHeight/2, -80);
+                
                 
             }
             
+            //go through all the books and trigger a ribbon from that
+            //book's tag button to all the books that share the same tag
+            for(int i = 0; i < books.size(); i++){
+                
+                //check if the book has the same tag, but make sure
+                //it's not the same as the src book
+                if( b.bookNum != i && books[i].tagNum == b.tagNum){
+                    
+                    TagRibbon tr;
+                    
+                    ofVec3f dst = books[i].storedPos + ofVec3f(books[i].thickness/2.0f, - 135);
+                    
+                    tr.setup(src, dst, numPointsSlider, b.tagCol, staggerTimeSlider * i);
+                    tr.dstBookNum = i;
+                    
+                    //helper function to deliver all the gui
+                    //settings to the ribbon before sending it off
+                    giveSettingsToRibbon( &tr );
+                    
+                    tagRibbons.push_back(tr);
+                    
+                }
+                
+            }
+            
+            
+            
+        } else {
+            
+            //-------------------------
+            //-----FIND BY SCHOLAR-----
+            //-------------------------
+            //for scholar events, the tagNumber IS the scholar number
+            
+            ofVec3f src = ofVec3f( 1094, 840, -80);
+            
+            for(int i = 0; i < books.size(); i++){
+                
+                //check if the book has the same tag, but make sure
+                //it's not the same as the src book
+                if( books[i].bIsScholarBook && books[i].scholarNum == b.tagNum){
+                    
+                    TagRibbon tr;
+                    
+                    ofVec3f dst = books[i].storedPos + ofVec3f(books[i].thickness/2.0f, - 135);
+                    
+                    tr.setup(src, dst, numPointsSlider, books[i].tagCol, staggerTimeSlider * i);
+                    tr.dstBookNum = i;
+                    
+                    //helper function to deliver all the gui
+                    //settings to the ribbon before sending it off
+                    giveSettingsToRibbon( &tr );
+                    
+                    tagRibbons.push_back(tr);
+                    
+                }
+                
+                
+            }
+            
+            
+            
+            
         }
+        
         
     }
     
@@ -600,8 +655,11 @@ void BookController::addToLibrary( Contribution& c ){
     
     tagCol = scholarData -> tagColorList[tagNum];
     
+    string tagLine1 = scholarData -> formattedTagList[tagNum][0];
+    string tagLine2 = scholarData -> formattedTagList[tagNum][1];
+    
     //set up the content
-    books[fillThisIndex].setupContent( c , tagNum, tagCol);
+    books[fillThisIndex].setupContent( c , tagLine1, tagLine2, tagNum, tagCol);
     
     //Find the message in the contributionList and mark as NOT archived since
     //the message is in a book. We need to do this since the book's user
@@ -937,10 +995,11 @@ void BookController::setupGui(){
     
     gui.add(tagRibbonLabel.setup("  TAG RIBBONS", ""));
     gui.add(tagRibbonWireframeToggle.setup("Draw wireframe", false));
+    gui.add(staggerTimeSlider.setup("Stagger Time", 0.02f, 0.0f, 0.2f));
     gui.add(numPointsSlider.setup("Num points", 10, 2, 30));
     gui.add(pctApexSlider.setup("Pct dist Apex", 0.5f, 0.0f, 1.0f));
     gui.add(arcHeightSlider.setup("Arc height", 100.0f, 0.0f, 300.0f));
-    gui.add(segmentDTSlider.setup("Segment dt", 0.1f, 0.001f, 1.0f));
+    gui.add(segmentDTSlider.setup("Segment dt", 0.1f, 0.001f, 0.2f));
     gui.add(tagRibbonDurationSlider.setup("Duration", 1.5f, 0.01f, 5.0f));
     gui.add(tagWidthSlider.setup("Ribbon width", 40.0f, 1.0f, 60.0f));
     gui.add(tagTaperSlider.setup("Ribbon taper", 0.1f, 0.0f, 1.0f));

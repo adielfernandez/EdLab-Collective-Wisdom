@@ -205,7 +205,7 @@ void DeskCam::update(){
         
         //get settings from gui
         vector<int> settings;
-        settings.resize(22);
+        settings.resize(23);
         
         settings[0] = nearClipSlider;
         settings[1] = farClipSlider;
@@ -232,6 +232,9 @@ void DeskCam::update(){
         settings[19] = maskPt2 -> y;
         settings[20] = maskPt3 -> x;
         settings[21] = maskPt3 -> y;
+        
+        settings[22] = flipImageToggle;
+
         
         settingsIn.send(settings);
         
@@ -280,6 +283,9 @@ void DeskCam::update(){
 }
 
 void DeskCam::drawRaw(int x, int y){
+    
+    ofSetColor(255);
+    ofDrawBitmapString("Raw Image (640 x 480)", x, y - 5);
     
     ofImage rawImg;
     rawImg.setFromPixels(rawPix);
@@ -402,7 +408,7 @@ void DeskCam::drawThresh(int x, int y){
     if(drawContoursToggle){
         
         //draw contours
-        ofSetLineWidth(1.0);
+        ofSetLineWidth(2.0);
         ofSetColor(255, 0, 0);
         contours.draw();
         
@@ -474,6 +480,7 @@ void DeskCam::setupGui(){
     gui.add(blurAmountSlider.setup("Blur", 1, 0, 40));
     gui.add(numErosionsSlider.setup("Number of erosions", 0, 0, 10));
     gui.add(numDilationsSlider.setup("Number of dilations", 0, 0, 10));
+    gui.add(flipImageToggle.setup("Flip Image", false));
     
     ofVec2f min(0, 0);
     ofVec2f max(camWidth, camHeight);
@@ -495,7 +502,7 @@ void DeskCam::setupGui(){
     gui.add(drawContoursToggle.setup("Draw Contours", true));
     gui.add(drawBlobInfoToggle.setup("Draw Blob info", true));
     gui.add(minBlobAreaSlider.setup("Min Blob Area", 0, 0, 5000));
-    gui.add(maxBlobAreaSlider.setup("Max Blob Area", 1000, 0, 20000));
+    gui.add(maxBlobAreaSlider.setup("Max Blob Area", 1000, 0, 100000));
     gui.add(persistenceSlider.setup("Persistence", 15, 0, 100));
     gui.add(maxDistanceSlider.setup("Max Distance", 32, 0, 100));
     
@@ -540,6 +547,9 @@ void DeskCam::threadedFunction(){
         
         if(rawShortPixIn.receive(rawShortPix_thread) && settingsIn.receive(settings_thread)){
             
+            int camWidth_thread = 640;
+            int camHeight_thread = 480;
+            
             //Local data inside thread
             ofPixels rawPix_thread;      
             ofPixels threshPix_thread, blurredPix_thread;
@@ -573,11 +583,12 @@ void DeskCam::threadedFunction(){
             meshPts[2] = ofVec2f(settings_thread[18], settings_thread[19]);
             meshPts[3] = ofVec2f(settings_thread[20], settings_thread[21]);
             
+            bool flipImage = settings_thread[22];
             
-            rawPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
-            mappedBlurredPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
-            blurredPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
-            threshPix_thread.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
+            rawPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
+            blurredPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
+            mappedBlurredPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
+            threshPix_thread.allocate(camWidth_thread/2, camHeight_thread/2, OF_IMAGE_GRAYSCALE);
             
             
             //Convert from ofShortPixels to ofPixels and put into rawPix_thread
@@ -591,17 +602,19 @@ void DeskCam::threadedFunction(){
                 
             }
             
-
+            if(flipImage){
+                rawPix_thread.mirror(true, false);
+            }
+            
             //blur the new raw image
             ofxCv::GaussianBlur(rawPix_thread, blurredPix_thread, blurAmount);
-
-            
             
             //take the rawPixels and get the bi-linear mapped subset from it
             getQuadSubPixels(blurredPix_thread, mappedBlurredPix_thread, meshPts);
 
-            
-            
+            //resize AFTER we get the subimage, so we don't lose data
+            //from the blurring operation
+            mappedBlurredPix_thread.resize(camWidth_thread/2, camHeight_thread/2, OF_INTERPOLATE_BICUBIC);
             
             //either use BG differencing or just straight up threshold it
             if(useBgDiff){

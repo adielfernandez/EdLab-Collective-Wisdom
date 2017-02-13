@@ -61,6 +61,8 @@ class ofApp : public ofBaseApp{
     
     //----------Scene Setup----------
     
+    bool bIsFullscreen;
+    
     Wallpaper wallpaper;
     
     Frame frame;
@@ -105,7 +107,8 @@ class ofApp : public ofBaseApp{
     
 
     
-
+    //DELETE ME
+    int messageTagNum = 0;
 
 };
 

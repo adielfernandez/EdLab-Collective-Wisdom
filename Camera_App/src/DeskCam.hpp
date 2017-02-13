@@ -108,6 +108,7 @@ public:
     ofxIntSlider blurAmountSlider;
     ofxIntSlider numErosionsSlider;
     ofxIntSlider numDilationsSlider;
+    ofxToggle flipImageToggle;
     
     ofxLabel maskingLabel;
     ofxVec2Slider maskPt0;

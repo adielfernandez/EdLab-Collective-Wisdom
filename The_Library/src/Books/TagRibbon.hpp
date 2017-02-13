@@ -24,7 +24,7 @@ public:
     
     TagRibbon();
     
-    void setup(ofVec3f src, ofVec3f dst, int nPts, ofColor col);
+    void setup(ofVec3f src, ofVec3f dst, int nPts, ofColor col, float stagger);
     void update();
     void draw();
     
@@ -43,6 +43,7 @@ public:
     bool bDrawWireframe;
     
     double startTime;
+    float staggerDelay;
     
     bool bIsDead;
     bool bTouchDown;

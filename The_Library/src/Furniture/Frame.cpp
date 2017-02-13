@@ -114,14 +114,15 @@ void Frame::loadMedia(){
     
 
 
-    divider.load("assets/interface/filigree/divider.png");
+    divider.load("assets/interface/filigree/divider2.png");
     divider.setAnchorPercent(0.5f, 0.5f);
     
     //scholar fact sheet setup and text layout
-    boldFont.load("assets/interface/Century-gothic-bold.ttf", 18);
+    boldFont.load("assets/interface/Century-gothic-bold.ttf", 17);
     regFont.load("bookFonts/Century-gothic.ttf", 11);
     
     regFont.setLineHeight(regFont.stringHeight("A") * 1.22);
+    regFont.setLetterSpacing(0.95);
     
     
     
@@ -136,6 +137,7 @@ void Frame::loadMedia(){
 
     
     bShowFactSheet = false;
+    bFactSheetAnimating = false;
     factSheetStartTime = 0;
     
     
@@ -146,8 +148,16 @@ void Frame::loadMedia(){
     factSheetEaseTime = 0.6f;
     
 
+    bShowWorksSheet = false;
+    bWorksSheetAnimating = false;
+    worksSheetStartTime = 0;
     
+    worksSheetDisplayed.set(0, 0);
+    worksSheetHidden.set(portraitWidth, 0);
+    worksSheetPos = worksSheetHidden;
     
+    factSheetEaseTime = 0.6f;
+    worksSheetEaseTime = 0.6f;
 }
 
 void Frame::setScholarData(ScholarData *data){
@@ -157,8 +167,11 @@ void Frame::setScholarData(ScholarData *data){
     //go through all the body strings and format them
     for(int i = 0; i < scholarData -> scholarList.size(); i++){
 
-        string s = formatText(scholarData -> scholarList[i].factSheet, bodyTextWidth);
-        scholarData -> scholarList[i].factSheet = s;
+        string f = ScholarData::formatText(scholarData -> scholarList[i].factSheet, &regFont, bodyTextWidth - 10);
+        scholarData -> scholarList[i].factSheet = f;
+        
+        string w = ScholarData::formatText(scholarData -> scholarList[i].works, &regFont, bodyTextWidth - 10);
+        scholarData -> scholarList[i].works = w;
         
     }
     
@@ -167,74 +180,15 @@ void Frame::setScholarData(ScholarData *data){
 }
 
 
-//takes in a long string and returns a new one
-//with interspersed line breaks based on how much space there is
-//on the line
-string Frame::formatText(string incoming, int bodyWidth){
-    
-    
-    //split the whole string into a vector of words
-    vector<string> words = ofSplitString(incoming, " ");
-    
-    string outgoingString = "";
-
-    
-    int currentLine = 0;
-    int pixelsLeftInLine = bodyWidth;
-    
-    
-    
-    for(int i = 0; i < words.size(); i++){
-        
-        float thisWordLength = regFont.stringWidth(words[i]);
-        float spaceWidth = regFont.stringWidth(" ");
-        
-        //check if the number of characters left in the current line
-        //is greater than or equal to the current word, add it
-        if(thisWordLength <= pixelsLeftInLine){
-            
-            //add the word
-            outgoingString += words[i];
-            pixelsLeftInLine -= thisWordLength;
-            
-            //if there's no more room on the line...
-        } else {
-            
-            //go to next line
-            outgoingString += "\n";
-            currentLine++;
-            pixelsLeftInLine = bodyWidth;
-            
-            //add the word
-            outgoingString += words[i];
-            pixelsLeftInLine -= thisWordLength;
-            
-        }
-        
-        //add a space
-        outgoingString += " ";
-        pixelsLeftInLine -= spaceWidth;
-        
-        //if thats the end of this line
-        //go to the next line
-        if(pixelsLeftInLine <= 0){
-            outgoingString += "\n";
-            currentLine++;
-            pixelsLeftInLine = bodyWidth;
-        }
-        
-        
-    }
-    
-    return outgoingString;
-    
-    
-}
 
 void Frame::showFactSheet(){
+
+    //only show it if it's currently hidden
+    if(!bShowFactSheet){
+        bShowFactSheet = true;
+        factSheetStartTime = ofGetElapsedTimef();
+    }
     
-    bShowFactSheet = true;
-    factSheetStartTime = ofGetElapsedTimef();
     
 
     
@@ -242,8 +196,31 @@ void Frame::showFactSheet(){
 
 void Frame::hideFactSheet(){
 
-    bShowFactSheet = false;
-    factSheetHideTime = ofGetElapsedTimef();
+    //only hide it if it's being shown
+    if(bShowFactSheet){
+        bShowFactSheet = false;
+        factSheetHideTime = ofGetElapsedTimef();
+    }
+    
+}
+
+void Frame::showWorksSheet(){
+    
+    //only show it if it's currently hidden
+    if(!bShowWorksSheet){
+        bShowWorksSheet = true;
+        worksSheetStartTime = ofGetElapsedTimef();
+    }
+    
+}
+
+void Frame::hideWorksSheet(){
+    
+    //only hide it if it's being shown
+    if(bShowWorksSheet){
+        bShowWorksSheet = false;
+        worksSheetHideTime = ofGetElapsedTimef();
+    }
     
 }
 
@@ -356,7 +333,7 @@ void Frame::update(){
         
         //if it's been long enough, put the fact sheet away automatically
         if(now - factSheetStartTime > 15.0f){
-//            bShowFactSheet = false;
+        //            bShowFactSheet = false;
         }
         
     } else {
@@ -365,7 +342,7 @@ void Frame::update(){
             
             float now = ofGetElapsedTimef();
             
-            float pct = ofxeasing::map_clamp(now, factSheetHideTime, factSheetHideTime + factSheetEaseTime, 0.0, 1.0, &ofxeasing::cubic::easeIn);
+            float pct = ofxeasing::map_clamp(now, factSheetHideTime, factSheetHideTime + 0.35, 0.0, 1.0, &ofxeasing::cubic::easeIn);
             
             factSheetPos = factSheetDisplayed.getInterpolated(factSheetHidden, pct);
             
@@ -376,6 +353,39 @@ void Frame::update(){
         
     }
     
+    if(bShowWorksSheet){
+        
+        float now = ofGetElapsedTimef();
+        
+        float pct = ofxeasing::map_clamp(now, worksSheetStartTime, worksSheetStartTime + worksSheetEaseTime, 0.0, 1.0, &ofxeasing::cubic::easeOut);
+        
+        worksSheetPos = worksSheetHidden.getInterpolated(worksSheetDisplayed, pct);
+        
+        
+        bWorksSheetAnimating = true;
+        worksSheetHideTime = now;
+        
+        //if it's been long enough, put the fact sheet away automatically
+        if(now - worksSheetStartTime > 15.0f){
+            //            bShowFactSheet = false;
+        }
+        
+    } else {
+        
+        if(bWorksSheetAnimating){
+            
+            float now = ofGetElapsedTimef();
+            
+            float pct = ofxeasing::map_clamp(now, worksSheetHideTime, worksSheetHideTime + 0.35, 0.0, 1.0, &ofxeasing::cubic::easeIn);
+            
+            worksSheetPos = worksSheetDisplayed.getInterpolated(worksSheetHidden, pct);
+            
+            if(pct == 1.0){
+                bWorksSheetAnimating = true;
+            }
+        }
+        
+    }
     
     
 }
@@ -405,7 +415,7 @@ void Frame::draw(){
     //draw the image first
     portraits[currentScholar].draw(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
     
-    //then the fact sheet on top of it
+    //----------FACT SHEET----------
     
     ofPushMatrix();
     ofTranslate(factSheetPos);
@@ -426,21 +436,47 @@ void Frame::draw(){
     //dates sub heading
     regFont.drawString(scholarData -> scholarList[currentScholar].dates, dateX, portraitHeight - dateTopMargin);
     
-    //Y axis is inverted inside FBO
-    regFont.drawString(scholarData -> scholarList[currentScholar].factSheet, leftMargin, portraitHeight - bodyTopMargin);
-
     ofSetColor(255);
     divider.draw(portraitWidth/2, portraitHeight - dateTopMargin - dateBodyGap/2, portraitWidth * 0.75, 15);
     
-    //debug circles
-//    ofSetColor(0, 255, 0);
-//    ofDrawCircle(nameX, portraitHeight - nameTopMargin, 5);
-//    ofDrawCircle(dateX, portraitHeight - dateTopMargin, 5);
-//    ofDrawCircle(leftMargin, portraitHeight - bodyTopMargin, 5);
+    //Y axis is inverted inside FBO
+    regFont.drawString(scholarData -> scholarList[currentScholar].factSheet, leftMargin, portraitHeight - bodyTopMargin);
     
     ofPopMatrix();
 
+    //----------WORKS SHEET----------
+    
+    ofPushMatrix();
+    ofTranslate(worksSheetPos);
+    ofSetColor(0);
+    ofDrawRectangle(0, 0, portraitFbo.getWidth(), portraitFbo.getHeight());
+    
+    
+    //DRAW TEXT
+    
+    //find horizontal positioning for name and date
+    string worksTitle = "Well-Known Works";
+    float worksTitleX = portraitWidth/2 - regFont.stringWidth(worksTitle)/2.0f;
+    
+    //Scholar name
+    ofSetColor(255);
+    boldFont.drawString(scholarData -> scholarList[currentScholar].nameFull, nameX, portraitHeight - nameTopMargin);
+    
+    ofSetColor(0, 128, 255);
+    //Works sub heading
+    regFont.drawString(worksTitle, worksTitleX, portraitHeight - dateTopMargin);
+    
+    ofSetColor(255);
+    divider.draw(portraitWidth/2, portraitHeight - dateTopMargin - dateBodyGap/2, portraitWidth * 0.75, 15);
+    
+    //Y axis is inverted inside FBO
+    regFont.drawString(scholarData -> scholarList[currentScholar].works, leftMargin, portraitHeight - bodyTopMargin);
+    
+    ofPopMatrix();
+
+    
     portraitFbo.end();
+    
     
     ofTexture tex;
     tex = portraitFbo.getTexture();

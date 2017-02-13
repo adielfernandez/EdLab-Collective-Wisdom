@@ -15,10 +15,10 @@
 	<Control_Pt_4>0.2402</Control_Pt_4>
 	<Control_Pt_5>0.3749</Control_Pt_5>
 	<Control_Pt_6>0.393</Control_Pt_6>
-	<Control_Pt_7>0.531</Control_Pt_7>
+	<Control_Pt_7>0.54</Control_Pt_7>
 	<Control_Pt_8>0.92125</Control_Pt_8>
 	<Control_Pt_9>0.08175</Control_Pt_9>
-	<Control_Pt_10>0.534</Control_Pt_10>
+	<Control_Pt_10>0.543</Control_Pt_10>
 	<Control_Pt_11>0.396</Control_Pt_11>
 	<Control_Pt_12>0.378</Control_Pt_12>
 	<Control_Pt_13>0.2402</Control_Pt_13>
@@ -26,7 +26,7 @@
 	<Control_Pt_15>0.084</Control_Pt_15>
 <leftBookcase/>
 <Draw_Shadow>1</Draw_Shadow>
-<Gui_Position>700, 120</Gui_Position>
+<Gui_Position>638, 117</Gui_Position>
 <__MAPPING_OPTIONS/>
 	<__CONTROL_POINTS/>
 </leftBookcase>

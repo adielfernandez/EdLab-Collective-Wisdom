@@ -372,18 +372,23 @@ bool Book::checkButtonsForClicks(int x, int y, bool touchState){
 }
 
 
-void Book::setupContent(Contribution c, int _tagNum, ofColor _tagCol){
+void Book::setupContent(Contribution c, string tagText1, string tagText2, int _tagNum, ofColor _tagCol){
     
     userContribution = c;
     tagNum = _tagNum;
     tagCol = _tagCol;
     
+    //set whether or not the book is a scholar book and what scholar it is
+    bIsScholarBook = userContribution.bIsScholar;
+    scholarNum = userContribution.scholarNum;
+        
+    
     //mark this contribution as not archived
     userContribution.bIsArchived = false;
     
     //setup the tag button
-    tagButton.setFont(UIFont);
-    tagButton.setTag( userContribution.tag, tagNum, tagCol);
+    tagButton.setFont( UIFont );
+    tagButton.setTag( tagText1, tagText2, tagNum, tagCol);
     
     formatTextForDisplay();
     drawContentToTexture();

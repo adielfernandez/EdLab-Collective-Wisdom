@@ -28,7 +28,7 @@ void ofApp::setup(){
     
     //----------Scene Setup----------
     
-    currentView = 0;
+    currentView = 1;
     
     //0 = Presentation (no debug)
     //1 = Centerbook
@@ -78,7 +78,7 @@ void ofApp::setup(){
     ofAddListener(contributionManager.newContributionEvt, &bookController, &BookController::onNewContribution);
     
     //add another listener in the book controller to the tagButton in the center book
-    ofAddListener(centerBook.tagButton.newButtonClickEvt, &bookController, &BookController::onButtonClickEvt);
+    ofAddListener(centerBook.newButtonClickEvt, &bookController, &BookController::onButtonClickEvt);
     
     bgEdgeMask.load("assets/interface/bgMask.png");
     
@@ -97,6 +97,8 @@ void ofApp::setup(){
     //----------Debug Tools----------
     bShowFrameRate = false;
     bShowMouseCoords = false;
+    
+    bIsFullscreen = false;
     
     //for making randomized texture changes
     lastChangeTime = 0;
@@ -213,8 +215,8 @@ void ofApp::draw(){
     
     
     //camera inverts textures so draw the edge mask upside down
-//    ofSetColor(255);
-//    bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
+    ofSetColor(255);
+    bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
     
     
     if(currentView == 1){
@@ -272,7 +274,7 @@ void ofApp::draw(){
     
     
     
-    if(bShowFrameRate){
+    if(currentView != 0){
         ofSetColor(255);
         ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate(), 2), ofGetWidth()/2, 20);
     }
@@ -343,7 +345,9 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == 'f'){
-        bShowFrameRate = !bShowFrameRate;
+        bIsFullscreen = !bIsFullscreen;
+        
+        ofSetFullscreen(bIsFullscreen);
     }
     
     
@@ -393,10 +397,14 @@ void ofApp::keyPressed(int key){
         //make a message with a random tag
         //get the tag list from the first book
         if(bookController.books.size() > 0){
-            int thisTag = floor(ofRandom(scholarData.tagList.size()));
+//            int thisTag = floor(ofRandom(scholarData.tagList.size()));
             
             string name = "JaneDoe" + ofToString(ofGetElapsedTimef(), 2);
-            string s = scholarData.tagList[thisTag];
+            string s = scholarData.tagList[messageTagNum];
+            
+            messageTagNum++;
+            
+            if(messageTagNum == 10) messageTagNum = 0;
             
             contributionManager.logNewContribution(name, s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
             

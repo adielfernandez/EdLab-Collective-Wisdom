@@ -57,7 +57,7 @@ public:
     ScholarData *scholarData;
     int numScholars;
     
-    string formatText(string incoming, int bodyWidth);
+
     
     vector<ofImage> portraits;
     int currentScholar;
@@ -114,6 +114,8 @@ public:
     void hideFactSheet();
     void showFactSheet();
     void changeScholar(int num);
+    void showWorksSheet();
+    void hideWorksSheet();
     
     bool bShowFactSheet;
     bool bFactSheetAnimating;
@@ -135,6 +137,16 @@ public:
     ofVec2f factSheetDisplayed, factSheetHidden;
     
     ofImage divider;
+    
+    bool bShowWorksSheet;
+    bool bWorksSheetAnimating;
+    double worksSheetStartTime;
+    double worksSheetHideTime;
+    
+    float worksSheetEaseTime;
+    
+    ofVec2f worksSheetPos;
+    ofVec2f worksSheetDisplayed, worksSheetHidden;
     
     
 };

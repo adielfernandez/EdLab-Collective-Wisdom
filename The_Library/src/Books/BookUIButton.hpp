@@ -23,10 +23,11 @@ struct ButtonEvent{
     int type;
     int bookNum;
     int shelfNum;
-    string tag;
+//    string tag;
     int tagNum;
     ofColor tagCol;
     bool bIsCenterBookButton;
+    bool bScholarButton;
     
 };
 
@@ -39,7 +40,7 @@ public:
     void setup(int _type, ofVec3f bookPos);
     void setLibraryInfo(vector<ofVec3f> shelf, int _shelfNum, int _bookNum);
     void setIcons(ofImage *icon, ofImage *hover);
-    void setTag(string t, int _tagNum, ofColor c);
+    void setTag(string t1, string t2, int _tagNum, ofColor c);
     void setFont( ofTrueTypeFont *f );
     void update();
     void draw();
@@ -62,12 +63,14 @@ public:
     //for the one off button we draw
     //in the central book
     bool bIsCenterBookButton = false;
+    bool bScholarButton = false;
     
     ofTrueTypeFont *font;
     ofColor tagCol, tagOutlineCol;
     
     int tagNum;
-    string tag, tagLine1, tagLine2;
+//    string tag;
+    string tagLine1, tagLine2;
     int linesInTag;
     ofVec3f tagLine1Pos, tagLine2Pos;
     string tagHelp;

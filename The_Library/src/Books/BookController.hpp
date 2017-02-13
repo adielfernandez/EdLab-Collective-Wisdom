@@ -86,8 +86,8 @@ public:
     //Book placement and arrangment
     int numShelves;
     const float bookWidth = 24.2906;
-    const int maxNumBooks = 96;
-    const int maxBooksPerShelf = 16;
+    const int maxNumBooks = 108;
+    const int maxBooksPerShelf = 18;
 
     vector<Ornament> ornaments;
     vector<TagRibbon> tagRibbons;
@@ -149,6 +149,7 @@ public:
     
     ofxLabel tagRibbonLabel;
     ofxToggle tagRibbonWireframeToggle;
+    ofxFloatSlider staggerTimeSlider;
     ofxIntSlider numPointsSlider;
     ofxFloatSlider pctApexSlider;
     ofxFloatSlider arcHeightSlider;

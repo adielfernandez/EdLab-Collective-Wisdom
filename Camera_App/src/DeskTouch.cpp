@@ -18,6 +18,12 @@ DeskTouch::DeskTouch(){
 
 void DeskTouch::setNewTouch(int _id, ofVec2f _p, float _d){
     
+    numPosSmoothingPts = 4;
+    numDistSmoothingPts = 2;
+    
+    posHistory.clear();
+    distHistory.clear();
+    
     id = _id;
     pos = _p;
     dist = _d;
@@ -34,11 +40,37 @@ void DeskTouch::setNewTouch(int _id, ofVec2f _p, float _d){
 
 void DeskTouch::renewTouch(ofVec2f p, float d){
     
-    //add the new position to the last one and average to smooth the data a little
-    pos = (pos + p) / 2.0f;
+    //add this point to the history list
+    posHistory.push_back(p);
+    distHistory.push_back(d);
+    
+    //if we have more points than we want to smooth,
+    //remove the oldest one
+    if(posHistory.size() > numPosSmoothingPts){
+        posHistory.pop_front();
+    }
+    if(distHistory.size() > numDistSmoothingPts){
+        distHistory.pop_front();
+    }
+    
+    //Find the average of all the history of points we've stored
+    ofVec2f avgPos;
+    float avgDist;
+    
+    for(int i = 0; i < posHistory.size(); i++){
+        avgPos += posHistory[i];
+    }
+    for(int i = 0; i < distHistory.size(); i++){
+        avgDist += distHistory[i];
+    }
+    avgPos /= posHistory.size();
+    avgDist /= distHistory.size();
+    
+    //set current position as the average
+    pos = avgPos;
     
     //Do not average the depth, keep that updating quickly
-    dist = d;
+    dist = avgDist;
     
     update();
     

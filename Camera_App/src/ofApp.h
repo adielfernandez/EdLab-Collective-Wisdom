@@ -31,8 +31,8 @@ class ofApp : public ofBaseApp{
 	
     ofTrueTypeFont font;
     
-    WallCam leftCam;
-    WallCam rightCam;
+//    WallCam leftCam;
+//    WallCam rightCam;
     DeskCam centerCam;
     
     

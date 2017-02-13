@@ -111,7 +111,7 @@ void BookUIButton::setFont(ofTrueTypeFont *f){
     
 }
 
-void BookUIButton::setTag(string t, int _tagNum, ofColor c){
+void BookUIButton::setTag(string t1, string t2, int _tagNum, ofColor c){
     
     if(bIsCenterBookButton){
         buttonWidth = 210;
@@ -124,39 +124,41 @@ void BookUIButton::setTag(string t, int _tagNum, ofColor c){
     tagCol = c;
     tagOutlineCol.setHsb(tagCol.getHue(), tagCol.getSaturation(), 100);
     
-    tag = t;
+//    tag = t;
     tagNum = _tagNum;
     
-    
+    tagLine1 = t1;
+    tagLine2 = t2;
+    linesInTag = 2;
     
     //split the tag up if it has an & symbol
-    vector<string> parts = ofSplitString(t, "&");
-    
-    if(parts.size() > 1){
-        
-        linesInTag = 2;
-        
-        //If the first word is shorter, add the "&" back into it.
-        //Else, add it to the beginning of the second line
-        if(parts[1].length() < parts[0].length()){
-            
-            tagLine1 = parts[0];
-            tagLine2 = "& " + parts[1];
-            
-        } else {
-         
-            tagLine1 = parts[0] + " &";
-            tagLine2 = parts[1];
-            
-        }
-        
-    } else {
-        
-        //tag only has one word
-        tagLine1 = tag;
-        tagLine2 = "";
-        linesInTag = 1;
-    }
+//    vector<string> parts = ofSplitString(t, "&");
+//    
+//    if(parts.size() > 1){
+//        
+//        linesInTag = 2;
+//        
+//        //If the first word is shorter, add the "&" back into it.
+//        //Else, add it to the beginning of the second line
+//        if(parts[1].length() < parts[0].length()){
+//            
+//            tagLine1 = parts[0];
+//            tagLine2 = "& " + parts[1];
+//            
+//        } else {
+//         
+//            tagLine1 = parts[0] + " &";
+//            tagLine2 = parts[1];
+//            
+//        }
+//        
+//    } else {
+//        
+//        //tag only has one word
+//        tagLine1 = tag;
+//        tagLine2 = "";
+//        linesInTag = 1;
+//    }
 
     
     //Button and text positioning
@@ -240,14 +242,16 @@ void BookUIButton::checkForClicks(int x, int y, bool touchState){
                 }
                 
                 if(type == 0 || type == 3){
+                    
                     ButtonEvent e;
                     e.type = type;
-                    e.tag = tag;
+//                    e.tag = tag;
                     e.tagNum = tagNum;
                     e.bookNum = bookNum;
                     e.shelfNum = shelfNum;
                     e.tagCol = tagCol;
                     e.bIsCenterBookButton = bIsCenterBookButton;
+                    e.bScholarButton = bScholarButton;
                     
                     ofNotifyEvent(newButtonClickEvt, e, this);
                     
@@ -402,6 +406,7 @@ void BookUIButton::draw(){
                     ofFill();
                     
                 }ofPopMatrix();
+                
                 ofPopStyle();
                 //draw the first line of text
                 

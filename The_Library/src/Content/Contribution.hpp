@@ -29,12 +29,21 @@ public:
     string name;
     string tag;
     string message;
-
+    
     //unique ID for reference
     //when cycling in old contributions
     int ID;
-
+    
     //archived means not currently in a book
     bool bIsArchived = true;
+
+    
+    //only relevant to contributed messages
+    unsigned int birthTime = 0;
+    
+    //only relevant to scholar messages
+    bool bIsScholar = false;
+    int scholarNum = -1;
+
     
 };

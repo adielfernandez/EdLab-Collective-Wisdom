@@ -41,11 +41,11 @@
 	<Close_delay>0.5</Close_delay>
 	<Close_duration>2</Close_duration>
 <__TAG_RIBBONS/>
-	<Num_points>15</Num_points>
+	<Num_points>16</Num_points>
 	<Pct_dist_Apex>0.555</Pct_dist_Apex>
 	<Arc_height>211.5</Arc_height>
-	<Segment_dt>0.03097</Segment_dt>
-	<Duration>0.53395</Duration>
+	<Segment_dt>0.075925</Segment_dt>
+	<Duration>0.98305</Duration>
 <Tag_noise_amp>18.25</Tag_noise_amp>
 	<Tag_noise_speed>1.70006</Tag_noise_speed>
 	<Tag_noise_scale>0.205079</Tag_noise_scale>

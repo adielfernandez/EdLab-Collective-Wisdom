@@ -13,12 +13,13 @@ TagRibbon::TagRibbon(){
     
 }
 
-void TagRibbon::setup(ofVec3f src, ofVec3f dst, int nPts, ofColor col){
+void TagRibbon::setup(ofVec3f src, ofVec3f dst, int nPts, ofColor col, float stagger){
     
     srcPos = src;
     dstPos = dst;
     numPoints = nPts;
     tagCol = col;
+    staggerDelay = stagger;
     
     //initialize all points to be at source
     for(int i = 0; i < numPoints; i++){
@@ -66,7 +67,7 @@ void TagRibbon::update(){
 
     //all segments move through the same easing, but subsequent segments
     //are shifted in time so they are behind the head
-    double now = ofGetElapsedTimef() - startTime;
+    double now = ofGetElapsedTimef() - startTime - staggerDelay;
     
     for(int i = 0; i < points.size(); i++){
     

@@ -27,9 +27,10 @@ struct Scholar{
     
     //info
     string dates;
-    string tag;
     string factSheet;
-    ofColor tagCol;
+    string works;
+//    string tag;
+//    ofColor tagCol;
 
     //their number in the list
     int id;
@@ -56,9 +57,12 @@ public:
     const int numScholars = 10;
     
     vector<string> tagList;
+    vector<vector<string>> formattedTagList;
     vector<ofColor> tagColorList;
     vector<Scholar> scholarList;
+    vector<string> tagDescriptions;
     
+    static string formatText(string input, ofTrueTypeFont *font, int maxLineLength);
 
 };
 

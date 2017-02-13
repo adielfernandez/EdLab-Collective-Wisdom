@@ -39,6 +39,14 @@ public:
     //Maybe use for swipe gesture later
     int id;
     
+    
+    //number of points we'll use to smooth
+    int numPosSmoothingPts;
+    int numDistSmoothingPts;
+    deque<ofVec2f> posHistory;
+    deque<float> distHistory;
+    
+    
     //we'll use this flag to remove
     //touches that haven't been update
     bool bUpdated;

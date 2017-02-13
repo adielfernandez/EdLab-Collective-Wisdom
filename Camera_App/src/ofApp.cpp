@@ -10,18 +10,18 @@ void ofApp::setup(){
     ofSetBackgroundColor(50);
     
     //----------CAMERAS----------
-    leftCam.setup("LeftCam", "device/sensor0");
-    rightCam.setup("RightCam", "device/sensor1");
-//    centerCam.setup("CenterCam", "device/sensor0");
+//    leftCam.setup("LeftCam", "device/sensor0");
+//    rightCam.setup("RightCam", "device/sensor1");
+    centerCam.setup("CenterCam", "device/sensor0");
     
     numCams = 3;
-    currentCam = 0;
+    currentCam = 2;
     
 
     font.load("fonts/Aller_Rg.ttf", 50);
     
     
-    oscIP = "localhost";
+    oscIP = "192.168.1.6";
     oscPort = 12345;
     oscSender.setup(oscIP, oscPort);
     
@@ -35,9 +35,9 @@ void ofApp::update(){
 
     
     //----------CAMERAS----------
-    leftCam.update();
-    rightCam.update();
-//    centerCam.update();
+//    leftCam.update();
+//    rightCam.update();
+    centerCam.update();
     
 }
 
@@ -60,35 +60,35 @@ void ofApp::draw(){
     
     if(currentCam == 0 || currentCam == 1) {
         
-        WallCam *thisCam = currentCam == 0 ? &leftCam : &rightCam;
-//        WallCam *thisCam = &leftCam;
-        
-        
-        if(thisCam -> isThreadRunning()){
-            ofBackgroundGradient(ofColor(80), ofColor(0));
-        } else {
-            ofBackground(200, 0, 0);
-        }
-        
-        
-        string title;
-        if(currentCam == 0){
-            title = "Left Wall Cam";
-        } else {
-            title = "Right Wall Cam";
-        }
-        
-        ofSetColor(255);
-        font.drawString(title, frame1Pos.x, font.stringHeight("A") + 10);
-        
-        
-        s += "Camera Framerate: " + ofToString(thisCam -> camFrameRate) + "\n";
-        
-        
-        thisCam -> drawGui(guiPos.x, guiPos.y);
-        thisCam -> drawRaw(frame2Pos.x, frame2Pos.y);
-        thisCam -> drawThresh(frame2Pos.x, frame2Pos.y + thisCam -> camHeight + 30, false);
-        thisCam -> drawSceneProxy(frame1Pos.x + 20, frame1Pos.y);
+//        WallCam *thisCam = currentCam == 0 ? &leftCam : &rightCam;
+////        WallCam *thisCam = &leftCam;
+//        
+//        
+//        if(thisCam -> isThreadRunning()){
+//            ofBackgroundGradient(ofColor(80), ofColor(0));
+//        } else {
+//            ofBackground(200, 0, 0);
+//        }
+//        
+//        
+//        string title;
+//        if(currentCam == 0){
+//            title = "Left Wall Cam";
+//        } else {
+//            title = "Right Wall Cam";
+//        }
+//        
+//        ofSetColor(255);
+//        font.drawString(title, frame1Pos.x, font.stringHeight("A") + 10);
+//        
+//        
+//        s += "Camera Framerate: " + ofToString(thisCam -> camFrameRate) + "\n";
+//        
+//        
+//        thisCam -> drawGui(guiPos.x, guiPos.y);
+//        thisCam -> drawRaw(frame2Pos.x, frame2Pos.y);
+//        thisCam -> drawThresh(frame2Pos.x, frame2Pos.y + thisCam -> camHeight + 30, false);
+//        thisCam -> drawSceneProxy(frame1Pos.x + 20, frame1Pos.y);
         
         
         
@@ -143,42 +143,42 @@ void ofApp::draw(){
         
     
     //go through the cameras and see if they have any data to send
-    
-    if(leftCam.bNewTouchesToSend){
-        
-        //prepare a bundle to send
-        ofxOscBundle bundle;
-        
-        //then add a new message for each touch to the bundle
-        for(int i = 0; i < leftCam.touches.size(); i++){
-
-            //gather the data
-            
-            int id = leftCam.touches[i].id;
-            float x = leftCam.touches[i].pos.x;
-            float y = leftCam.touches[i].pos.y;
-            float dist = leftCam.touches[i].dist;
-            bool touching = leftCam.touches[i].bIsTouching;
-            
-            ofxOscMessage m;
-            
-            m.setAddress("/LeftCam/touch");
-            m.addIntArg(id);
-            m.addFloatArg(x);
-            m.addFloatArg(y);
-            m.addFloatArg(dist);
-            m.addIntArg(touching);
-            
-            bundle.addMessage(m);
-            
-        }
-        
-        oscSender.sendBundle(bundle);
-        leftCam.bNewTouchesToSend = false;
-        
-        cout << "Sent bundle for left cam" << endl;
-        
-    }
+//    
+//    if(leftCam.bNewTouchesToSend){
+//        
+//        //prepare a bundle to send
+//        ofxOscBundle bundle;
+//        
+//        //then add a new message for each touch to the bundle
+//        for(int i = 0; i < leftCam.touches.size(); i++){
+//
+//            //gather the data
+//            
+//            int id = leftCam.touches[i].id;
+//            float x = leftCam.touches[i].pos.x;
+//            float y = leftCam.touches[i].pos.y;
+//            float dist = leftCam.touches[i].dist;
+//            bool touching = leftCam.touches[i].bIsTouching;
+//            
+//            ofxOscMessage m;
+//            
+//            m.setAddress("/LeftCam/touch");
+//            m.addIntArg(id);
+//            m.addFloatArg(x);
+//            m.addFloatArg(y);
+//            m.addFloatArg(dist);
+//            m.addIntArg(touching);
+//            
+//            bundle.addMessage(m);
+//            
+//        }
+//        
+//        oscSender.sendBundle(bundle);
+//        leftCam.bNewTouchesToSend = false;
+//        
+//        cout << "Sent bundle for left cam" << endl;
+//        
+//    }
     
     
     

@@ -1,7 +1,7 @@
 <centerBook>
 	<__POSITIONING/>
-	<Book_Pos>111.224, 154.796</Book_Pos>
-	<Bulk_Scale>1.616</Bulk_Scale>
+	<Book_Pos>109.184, 148.673</Book_Pos>
+	<Bulk_Scale>1.5225</Bulk_Scale>
 	<Depth_Scale>0.6485</Depth_Scale>
 	<Height_Scale>0.759</Height_Scale>
 	<Width_Scale>0.8305</Width_Scale>
@@ -20,10 +20,17 @@
 	<Page_Top_Margin>33</Page_Top_Margin>
 	<Draw_Raw_Book_Tex>0</Draw_Raw_Book_Tex>
 <__TOUCH_REGIONS/>
-	<Book_Left_Bound>0.605</Book_Left_Bound>
-	<Book_Center>0.315</Book_Center>
+	<Book_Left_Bound>0.405</Book_Left_Bound>
+	<Book_Center>0.69</Book_Center>
 <Book_Top_Bound>0.025</Book_Top_Bound>
-	<Book_Bottom_Bound>0.96</Book_Bottom_Bound>
+	<Book_Bottom_Bound>0.86</Book_Bottom_Bound>
 <Wait_after_touch>500</Wait_after_touch>
 <Gui_Position>460, 540</Gui_Position>
+<Filigree_Top_M_>5</Filigree_Top_M_>
+	<Filigree_Bottom_M_>5</Filigree_Bottom_M_>
+	<Filigree_Width>142</Filigree_Width>
+	<Filigree_Height>145</Filigree_Height>
+<Filigree_Left_M_>10</Filigree_Left_M_>
+	<Help_Text_Top_M_>45</Help_Text_Top_M_>
+<Print_Norm__Mouse>0</Print_Norm__Mouse>
 </centerBook>

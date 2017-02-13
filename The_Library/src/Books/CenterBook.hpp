@@ -50,6 +50,18 @@ public:
     float widthScale, heightScale, depthScale;
     float height, thickness, depth;
     
+    //animation key frames (normalized)
+    float animationPos;
+    float targetAnimationPos;
+    const float animationStart = 0.0;
+    const float animationSpread1 = 0.34;
+    const float animationSpread2 = 0.56;
+    const float animationSpread3 = 0.77;
+    const float animationEnd = 0.94;
+    
+    const float displayRotX = -90;
+    const float displayRotZ = 180;
+    
     ofVec3f bookPos;
     
     ofTexture bookTex;
@@ -65,11 +77,36 @@ public:
     
     ofVec2f rawDeskPos;
     
+    ofVboMesh deskMesh;
+    vector<ofVec3f> meshPoints;
+    
+    
     //Book Content and UI
-    ofTrueTypeFont boldUIFont;
-    ofTrueTypeFont tagButtonFont;
-    ofTrueTypeFont scholarFont;
-    ofTrueTypeFont smallBookFont;
+
+    //Book fonts (serifs)
+    ofTrueTypeFont listFont;
+    ofTrueTypeFont helpTextFont;
+    ofTrueTypeFont homeButtonFont;
+    ofTrueTypeFont staticTextFont;
+    ofTrueTypeFont activeTextFont;
+    
+    
+    ofColor staticTextColor;
+    ofColor activeTextColor;
+    ofColor listTextColor;
+    ofColor buttonHighlightColor;
+    ofColor buttonBaseColor;
+    
+    ofColor bookFiligreeColor;
+    
+    ofColor tagHoverColor;
+    ofColor tagTextColor;
+    string tagLine1;
+    string tagLine2;
+    bool tagHover;
+    
+    string tagDescription;
+    
     vector<ofVec2f> pageTexCoords;
     float pageWidth, pageHeight;
     float page1LeftMargin, page2LeftMargin;
@@ -80,30 +117,86 @@ public:
     ofVec2f borderPos;
     float borderHeight, borderWidth;
 
+    ofImage cornerFiligree;
+    
+    float topMargin;
+    float betweenListItems;
+    float betweenNames;
+    float highlightBoxHeight;
+    float nameHeight;
+    float lineHeight;
+    
+    ofImage divider;
+    ofImage thinDivider;
+    
+    //----------Buttons/Logic----------
+    vector<bool> listHoverStates;
+    
+
+    vector<bool> scholarOptionHoverStates;
+    int selectedScholarOption;
+    
+    //Home button
+    bool bShowHomeButton;
+    bool homeButtonHover;
+    bool backToListHover;
+    float homeButtonWidth;
+    float homeButtonHeight;
+    float homeButtonBottomMargin;
+    
+    bool scholarButtonHover;
+    bool tagButtonHover;
+    
+    bool redecorateButtonHover;
+    vector<float> redecorateHeights;
+    
+    
+    //position coords inverted (+X to the left)
+    ofVec2f homeButtonPos;
+    
+    //normalized bounds of home button
+    
+    float homeTopY, homeBotY;
+    float homeLeftX, homeRightX;
+    
+    
+    
     //text stored as vector of lines
     //so we can draw aligned center
     vector<vector<string>> helpText;
     int currentHelpText;
     
-    ofVboMesh deskMesh;
-    vector<ofVec3f> meshPoints;
-    
-    //animation key frames (normalized)
-    float animationPos;
-    float targetAnimationPos;
-    const float animationStart = 0.0;
-    const float animationSpread1 = 0.34;
-    const float animationSpread2 = 0.56;
-    const float animationSpread3 = 0.77;
-    const float animationEnd = 0.94;
-    
-    const float displayRotX = -90;
-    const float displayRotZ = 180;
-    
+    //Book open page and the current scholar on view
     int currentOpenPage;
     int currentScholar;
+    int currentTag;
     
-    //-----GUI SETUP-----
+
+    
+    bool bViewingScholars;
+    
+    
+    
+    struct MouseTouch{
+        
+        ofVec2f pos;
+        bool bIsTouching;
+        
+    };
+    
+    vector<MouseTouch> mouseTouches;
+    unsigned long long lastTouchTime;
+    
+    
+    
+    //event listening between book
+    //controller and buttons
+    ofEvent<ButtonEvent> newButtonClickEvt;
+    
+    
+    //-----------------------------
+    //----------GUI SETUP----------
+    //-----------------------------
     void setupGui();
     void drawGui();
     void drawGui(int x, int y);
@@ -125,6 +218,13 @@ public:
     ofxFloatSlider heightScaleSlider;
     ofxFloatSlider widthScaleSlider;
     
+    ofxIntSlider filigreeTopMarginSlider;
+    ofxIntSlider filigreeLeftMarginSlider;
+    ofxIntSlider filigreeWidthSlider;
+    ofxIntSlider filigreeHeightSlider;
+    
+    ofxIntSlider helpTextTopSlider;
+    
     ofxLabel mappingLabel;
     ofxToggle showRawDeskToggle;
     ofxButton reMapMeshButton;
@@ -137,49 +237,21 @@ public:
     ofxToggle drawBookTexToggle;
     
     ofxLabel detectionLabel;
+    ofxToggle printNormCoordsToggle;
     ofxFloatSlider bookLeftBoundSlider;
     ofxFloatSlider bookCenterSlider;
     ofxFloatSlider bookPageTopSlider;
     ofxFloatSlider bookPageBottomSlider;
     ofxIntSlider touchWaitSlider;
     
-    //desk positions
+    
+    //desk control points
     ofxVec2Slider meshPt0;
     ofxVec2Slider meshPt1;
     ofxVec2Slider meshPt2;
     ofxVec2Slider meshPt3;
     
-    float topMargin;
-    float betweenScholars;
-    float betweenNames;
-    float highlightBoxHeight;
-    float nameHeight;
-    float lineHeight;
-    
-    ofImage divider;
-    ofImage thinDivider;
-    ofColor textColor;
-    ofColor highlightColor;
-    
-    vector<bool> scholarHoverStates;
-    vector<bool> page4OptionHoverStates;
-    
-    ofVec3f tagPos;
-    ofVec3f tagHelpTextPos;
-    string tagHelpText;
-    BookUIButton tagButton;
-    
-    vector<string> page4OptionText;
-    
-    struct MouseTouch{
-        
-        ofVec2f pos;
-        bool bIsTouching;
-        
-    };
-    
-    vector<MouseTouch> mouseTouches;
-    unsigned long long lastTouchTime;
+
 
 };
 

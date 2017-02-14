@@ -439,15 +439,18 @@ void BookController::receiveTouch(Touch t){
     if( touchExists ){
         
         touches[existingIndex].ID = t.ID;
-        touches[existingIndex].pos = t.pos;
+        touches[existingIndex].mappedPos = t.mappedPos;
         touches[existingIndex].dist = t.dist;
         touches[existingIndex].bIsTouching = t.bIsTouching;
+        
+//        cout << "Updating touch: " << touches[existingIndex].ID << endl;
         
     } else {
         
         t.birthTime = ofGetElapsedTimef();
         touches.push_back(t);
         
+//        cout << "Adding touch: " << t.ID << endl;
         
     }
     
@@ -945,33 +948,8 @@ void BookController::draw(){
     //go through touches (for now mouseTouches, but eventually OSC data from camera)
     //draw cursors, do button region detection, etc.
     for(int i = 0; i < touches.size(); i++){
-        
-        ofVec3f p = touches[i].mappedPos;
-        
-        float rad = ofMap(touches[i].dist, 0, 50, 7, 50, true);
-        
-        //touch is green if touching
-        //otherwise, lero from white to green-ish
-        if(touches[i].bIsTouching){
-            
-            ofSetColor(0, 255, 0);
-            
-        } else {
-            
-            float colorPct = ofMap(touches[i].dist, 0, 40, 1.0, 0.0, true);
-            
-            ofColor c(255);
-            c.lerp(ofColor(0, 255, 0), colorPct);
-            
-            ofSetColor(c);
-        }
-        
-        ofSetLineWidth(3);
-        ofNoFill();
-//        ofDrawCircle(p.x, p.y, -100, rad);
-        
+        touches[i].draw();
     }
-    ofFill();
     
     
     
@@ -1141,6 +1119,7 @@ void BookController::setupGui(){
     ribbonSettingsLabel.setBackgroundColor(ofColor(255));
     tagRibbonLabel.setBackgroundColor(ofColor(255));
     shelfOverlayLabel.setBackgroundColor(ofColor(255));
+    touchSettingsLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels
     settingsLabel.setDefaultTextColor(ofColor(0));

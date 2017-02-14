@@ -44,7 +44,9 @@ class ofApp : public ofBaseApp{
     string oscIP;
     int oscPort;
     
-//    ofxOscBundle getBundleForTouches(vector<DeskTouch> touches);
+    unsigned long lastOSCTime;
+    float lastOSCRate;
+    float oscRate;
     
     
     template <class TouchType>

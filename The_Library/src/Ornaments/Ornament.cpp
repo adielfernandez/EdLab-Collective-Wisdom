@@ -116,14 +116,14 @@ void Ornament::checkForClicks(int x, int y, bool state){
     
     //region is defined from lower left corner then
     //"gapWidth" to the left and "gapHeight" above
-    if(x > pos.x + bookThickness && x < pos.x + gapWidth - bookThickness && y < pos.y && y > pos.y - gapHeight){
+    if(x > pos.x + leftPadding && x < pos.x + gapWidth - rightPadding && y < pos.y && y > pos.y - imgHeight){
 
         //if we're being clicked, not hovered over
         if( state ){
             
             //only trigger on bookends (for now}
-            if(type == 1 || type == 4){
-                
+//            if(type == 1 || type == 4){
+            
                 SceneEvent se;
                 
                 //pos at center of ornament
@@ -132,22 +132,22 @@ void Ornament::checkForClicks(int x, int y, bool state){
                 //determine the event type from which ornament it is
                 switch (type) {
                     case 0:
-                        //                    se.type = SceneEvent::WALLPAPER;
+                        se.type = SceneEvent::WALLPAPER;
                         break;
                     case 1:
                         se.type = SceneEvent::BOOKCASE_LEFT;
                         break;
                     case 2:
-                        //                    se.type = SceneEvent::WALLPAPER;
+                        se.type = SceneEvent::FRAME;
                         break;
                     case 3:
-                        //                    se.type = SceneEvent::WALLPAPER;
+                        se.type = SceneEvent::WALLPAPER;
                         break;
                     case 4:
                         se.type = SceneEvent::BOOKCASE_RIGHT;
                         break;
                     case 5:
-                        //                    se.type = SceneEvent::WALLPAPER;
+                        se.type = SceneEvent::FRAME;
                         break;
                     default:
                         break;
@@ -157,7 +157,7 @@ void Ornament::checkForClicks(int x, int y, bool state){
                 
                 triggered = true;
                 triggerTime = ofGetElapsedTimef();
-            }
+//            }
             
         } else {
             

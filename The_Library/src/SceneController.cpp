@@ -64,6 +64,11 @@ void SceneController::setup(){
     //how long to wait after a change to unlock the scene
     lockWaitTime = 6.0f;
     
+    //move these to a GUI
+    wallpaperWait = 4.0f;
+    frameWait = 4.0f;
+    bookcaseWait = 4.0f;
+    
     //pre-decided combinations of textures that look good
     
     //Number order:
@@ -78,59 +83,83 @@ void SceneController::setup(){
                         { 7,  7,  5},       //7
                         { 8, 12,  6},       //8
                         { 9,  2,  2} };     //9
+    lastTextureCombo = 6;
     
     //start app with this combo
-    setTextureCombo(6);
+    setTextureCombo(lastTextureCombo);
     
 }
 
 void SceneController::update(){
     
-    
-    if( ofGetElapsedTimeMillis() - lastChangeTime < lockWaitTime){
-        
+    //handle locked booleans
+    if( ofGetElapsedTimef() - lastChangeTime < lockWaitTime){
         lockScene = true;
-        
     } else {
         lockScene = false;
     }
+    
+    if(ofGetElapsedTimef() - lastBookcaseChangeTime < bookcaseWait){
+        lockBookcases = true;
+    } else {
+        lockBookcases = false;
+    }
+    
+    if(ofGetElapsedTimef() - lastWallpaperChangeTime < wallpaperWait){
+        lockWallpaper = true;
+    } else {
+        lockWallpaper = false;
+    }
+    
+    if(ofGetElapsedTimef() - lastFrameChangeTime < frameWait){
+        lockFrame = true;
+    } else {
+        lockFrame = false;
+    }
+    
     
     
     
     //Trigger an animation if the system is idle AND if it's been
     //long enough since the last one and the scene isn't locked
     
-    if( !lockScene &&  *idleTimer > 300.0f && ofGetElapsedTimef() - lastChangeTime > idleTriggerWaitTime){
-        
-        float whichObject = ofRandom(3);
-        
-        int newTexture = floor(ofRandom(10));
-        
-        float x = ofRandom(ofGetWidth());
-        float y = ofRandom(ofGetHeight());
-        
-        if(whichObject < 1.0){
-            
-            //BOOKCASES
-            leftBookcase -> triggerWave( newTexture, ofVec2f(leftBookcase -> bookcaseCorners[0].x + (leftBookcase -> bookcaseCorners[1].x - leftBookcase -> bookcaseCorners[0].x)/2.0 , y) );
-            
-            rightBookcase -> triggerWave( newTexture, ofVec2f(rightBookcase -> bookcaseCorners[0].x + (rightBookcase -> bookcaseCorners[1].x - rightBookcase -> bookcaseCorners[0].x)/2.0, y));
-            
-        } else if(whichObject < 2.0){
-
-            //FRAME
-            frame -> triggerWave( newTexture, ofVec2f(x, y));
-            
-        } else {
-            
-            //WALLPAPER
-            wallpaper -> triggerWave( newTexture, ofVec2f(x, y));
-        }
-        
-        idleTriggerWaitTime = ofRandom(30.0f, 60.0f);
-        lastChangeTime = ofGetElapsedTimef();
-        
-    }
+//    if( !lockScene &&  *idleTimer > 300.0f && ofGetElapsedTimef() - lastChangeTime > idleTriggerWaitTime){
+//        
+//        float whichObject = ofRandom(3);
+//        
+//        int newTexture = floor(ofRandom(10));
+//        
+//        float x = ofRandom(ofGetWidth());
+//        float y = ofRandom(ofGetHeight());
+//        
+//        if(whichObject < 1.0){
+//            
+//            //BOOKCASES
+//            leftBookcase -> triggerWave( newTexture, ofVec2f(leftBookcase -> bookcaseCorners[0].x + (leftBookcase -> bookcaseCorners[1].x - leftBookcase -> bookcaseCorners[0].x)/2.0 , y) );
+//            
+//            rightBookcase -> triggerWave( newTexture, ofVec2f(rightBookcase -> bookcaseCorners[0].x + (rightBookcase -> bookcaseCorners[1].x - rightBookcase -> bookcaseCorners[0].x)/2.0, y));
+//            
+//            lastBookcaseChangeTime = ofGetElapsedTimef();
+//            
+//        } else if(whichObject < 2.0){
+//
+//            //FRAME
+//            frame -> triggerWave( newTexture, ofVec2f(x, y));
+//            
+//            lastFrameChangeTime = ofGetElapsedTimef();
+//            
+//        } else {
+//            
+//            //WALLPAPER
+//            wallpaper -> triggerWave( newTexture, ofVec2f(x, y));
+//            
+//            lastWallpaperChangeTime = ofGetElapsedTimef();
+//        }
+//        
+//        idleTriggerWaitTime = ofRandom(30.0f, 60.0f);
+////        lastChangeTime = ofGetElapsedTimef();
+//        
+//    }
     
     
     
@@ -150,38 +179,91 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
 
         if(se.type == SceneEvent::CENTERBOOK){
             
-            int randTex = floor( ofRandom( textureCombos.size() ) );
+//            int randTex = floor( ofRandom( textureCombos.size() ) );
+            lastTextureCombo++;
+            
+            if(lastTextureCombo == textureCombos.size()){
+                lastTextureCombo = 0;
+            }
+            
+            int combo = lastTextureCombo;
             
             //position of button to trigger event
             p.set( se.pos.x, se.pos.y);
             
-            wallpaper -> triggerWave( textureCombos[randTex][0], p );
+            wallpaper -> triggerWave( textureCombos[combo][0], p );
             
             //trigger left case from left
             p.set( 0, se.pos.y );
-            leftBookcase -> triggerWave( textureCombos[randTex][1], p );
+            leftBookcase -> triggerWave( textureCombos[combo][1], p );
             
             //right case from right
             p.set( ofGetWidth(), se.pos.y );
-            rightBookcase -> triggerWave( textureCombos[randTex][1], p );
+            rightBookcase -> triggerWave( textureCombos[combo][1], p );
             
             //frame from above
             p.set( se.pos.x, 0 );
-            frame -> triggerWave( textureCombos[randTex][2], p );
+            frame -> triggerWave( textureCombos[combo][2], p );
+            
+            
+            lastBookcaseChangeTime = ofGetElapsedTimef();
+            lastFrameChangeTime = ofGetElapsedTimef();
+            lastWallpaperChangeTime = ofGetElapsedTimef();
+
             
         } else if(se.type == SceneEvent::BOOKCASE_LEFT || se.type == SceneEvent::BOOKCASE_RIGHT){
             
-            //trigger from event center
-            p.set( se.pos.x, se.pos.y );
+            if( !lockBookcases ){
+                
+                //trigger from event center
+                p.set( se.pos.x, se.pos.y );
+                
+                int newTex = floor( ofRandom(leftBookcase -> images.size()) );
+                
+                leftBookcase -> triggerWave( newTex, p );
+                rightBookcase -> triggerWave( newTex, p );
+                
+                lastBookcaseChangeTime = ofGetElapsedTimef();
             
-            int newTex = floor( ofRandom(leftBookcase -> images.size()) );
+            }
             
-            leftBookcase -> triggerWave( newTex, p );
-            rightBookcase -> triggerWave( newTex, p );
+        } else if(se.type == SceneEvent::WALLPAPER){
+            
+            if( !lockWallpaper ){
+                
+                //trigger from event center
+                p.set( se.pos.x, se.pos.y );
+                
+                int newTex = floor( ofRandom(wallpaper -> images.size()) );
+                
+                wallpaper -> triggerWave( newTex, p );
+                
+                lastWallpaperChangeTime = ofGetElapsedTimef();
+
+            }
+            
+        } else if(se.type == SceneEvent::FRAME){
+            
+            if( !lockFrame ){
+                
+                //trigger from event center
+                //            p.set( se.pos.x, se.pos.y );
+                
+                //start wave from bottom of frame
+                p.set( (frame -> frameCorners[2] + frame -> frameCorners[3])/2.0f );
+                
+                int newTex = floor( ofRandom(frame -> images.size()) );
+                
+                frame -> triggerWave( newTex, p );
+                
+                lastFrameChangeTime = ofGetElapsedTimef();
+                
+            }
+            
             
         }
         
-        lastChangeTime = ofGetElapsedTimef();
+        
         
     }
     

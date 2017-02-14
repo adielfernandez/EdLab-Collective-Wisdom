@@ -161,14 +161,40 @@ void ofApp::update(){
          
          */
         
+        if(m.getAddress() == "/FrameStamp"){
+            
+            float thisFrameRate = 1.0/( (ofGetElapsedTimeMillis() - lastOSCTime) / 1000.0 );
+            
+            //average this framerate with the last one to smooth out numbers
+            //and get a better reading.
+            oscRate = (thisFrameRate + lastOSCRate)/2;
+            lastOSCRate = thisFrameRate;
+            
+            //
+            lastOSCTime = ofGetElapsedTimeMillis();
+            
+//            cout << "OSC Receive FrameRate: " << oscRate << endl;
+            
+        }
+        
+        
         if(m.getAddress() == "/CenterCam/touch"){
             
             //package the touch and send it to the center cam
             Touch t;
             t.ID                =  m.getArgAsInt(0);
+            //invert the X since the desk FBO has its texture flipped
             t.pos               =  ofVec2f( m.getArgAsFloat(1), m.getArgAsFloat(2) );
+
+            //scale the normalized value to the desk dimensions
+            t.mappedPos         =  ofVec2f( t.pos.x * centerBook.deskWidth, t.pos.y * centerBook.deskHeight );
             t.dist              =  m.getArgAsFloat(3);
             t.bIsTouching       =  m.getArgAsBool(4);
+            
+            //store the right vals so the touches handle their
+            //own axis inversions in and out of FBOs
+            t.mappedXFlip = ofVec2f( ( 1.0f - t.pos.x ) * centerBook.deskWidth, t.pos.y * centerBook.deskHeight );
+            t.drawFlippedX = true;
             
             centerBook.receiveTouch(t);
             

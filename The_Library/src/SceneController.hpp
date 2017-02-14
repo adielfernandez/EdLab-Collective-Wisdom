@@ -79,6 +79,17 @@ public:
     //effects will be listened to
     bool lockScene;
     
+    bool lockBookcases;
+    double lastBookcaseChangeTime;
+    bool lockFrame;
+    double lastFrameChangeTime;
+    bool lockWallpaper;
+    double lastWallpaperChangeTime;
+    
+    float wallpaperWait;
+    float frameWait;
+    float bookcaseWait;
+    
     //how long has it been since
     //there's been a camera touch
     double *idleTimer;
@@ -90,6 +101,7 @@ public:
     
     
     vector<vector<int>> textureCombos;
+    int lastTextureCombo;
     
     
     void onRedecorateEvent( SceneEvent &se );

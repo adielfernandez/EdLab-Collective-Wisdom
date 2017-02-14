@@ -179,7 +179,7 @@ void CenterBook::setup(ScholarData *sData, Frame *f){
 
 
     //apparent position of book on screen after FBO is mapped
-    apparentBookCenter.set( 1094, 840, -80);
+    apparentBookCenter.set( 1094, 873, -80);
     
     
     
@@ -529,7 +529,17 @@ void CenterBook::update(){
         
     }
     
-    
+    //remove all the touches that haven't been updated recently
+    //starting from the end of the vector and moving to the front
+    for(int i = touches.size() - 1; i >= 0; i--){
+        
+        touches[i].update();
+        
+        if(touches[i].age > touchKillAgeSlider){
+            touches.erase( touches.begin() + i );
+        }
+        
+    }
 
     
     
@@ -854,17 +864,7 @@ void CenterBook::update(){
     
     
     
-    //remove all the touches that haven't been updated recently
-    //starting from the end of the vector and moving to the front
-    for(int i = touches.size() - 1; i >= 0; i--){
-        
-        touches[i].update();
-        
-        if(touches[i].age > touchKillAgeSlider){
-            touches.erase( touches.begin() + i );
-        }
-        
-    }
+
     
     
     
@@ -1606,47 +1606,7 @@ void CenterBook::draw(){
         //go through touches (for now mouseTouches, but eventually OSC data from camera)
         //draw cursors, do button region detection, etc.
         for(int i = 0; i < touches.size(); i++){
-            
-            ofVec3f p = touches[i].pos;
-            
-            //convert from normalized
-            //flip X because of FBO texture flipping
-            p.x = 1.0f - p.x;
-            p.x *= deskWidth;
-            p.y *= deskHeight;
-            p.z = -50;
-            
-            float rad = ofMap(touches[i].dist, 0, 50, 7, 50, true);
-            
-            //touch is green if touching
-            //otherwise, lero from white to green-ish
-            if(touches[i].bIsTouching){
-
-                ofSetColor(0, 255, 0);
-                
-            } else {
-                
-                float colorPct = ofMap(touches[i].dist, 0, 40, 1.0, 0.0, true);
-
-                ofColor c(255);
-                c.lerp(ofColor(0, 255, 0), colorPct);
-                
-                ofSetColor(c);
-            }
-            
-            ofSetLineWidth(3);
-            ofNoFill();
-            ofDrawCircle(p, rad);
-            
-//            if(touches[i].bIsTouching){
-//                ofSetColor(255, 0, 0);
-//            } else {
-//                ofSetColor(0);
-//            }
-//        
-//            
-//            ofDrawCircle((1.0f - touches[i].pos.x) * deskWidth, touches[i].pos.y * deskHeight, -50, 5);
-            
+            touches[i].draw();
         }
         
         

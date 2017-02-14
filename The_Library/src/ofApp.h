@@ -125,6 +125,9 @@ class ofApp : public ofBaseApp{
     ofxOscReceiver oscReceiver;
 
     
+    unsigned long lastOSCTime;
+    float lastOSCRate;
+    float oscRate;
     
 };
 

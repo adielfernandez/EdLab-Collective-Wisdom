@@ -78,7 +78,7 @@ void WallTouch::renewTouch(ofVec2f p, float d){
 
 void WallTouch::update(){
     
-    if(dist < distForTouch)
+    if(dist < 0)
         bIsTouching = true;
     else
         bIsTouching = false;

@@ -149,11 +149,26 @@ void ofApp::draw(){
         //prepare a bundle to send
         ofxOscBundle bundle = getBundleForTouches(leftCam.touches, "/LeftCam/touch");
         
+        ofxOscMessage m;
+        m.setAddress("/FrameStamp");
+        bundle.addMessage(m);
+        
+        float thisFrameRate = 1.0/( (ofGetElapsedTimeMillis() - lastOSCTime) / 1000.0 );
+        
+        //average this framerate with the last one to smooth out numbers
+        //and get a better reading.
+        oscRate = (thisFrameRate + lastOSCRate)/2;
+        lastOSCRate = thisFrameRate;
+        
+        //
+        lastOSCTime = ofGetElapsedTimeMillis();
+        cout << "OSC Send FrameRate: " << oscRate << endl;
+        
         oscSender.sendBundle(bundle);
         
         leftCam.bNewTouchesToSend = false;
         
-        cout << "Sent bundle for left cam" << endl;
+//        cout << "Sent bundle for left cam" << endl;
         
     }
     

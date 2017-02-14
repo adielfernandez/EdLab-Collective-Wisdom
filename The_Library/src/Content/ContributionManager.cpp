@@ -127,9 +127,8 @@ void ContributionManager::loadContent(){
     
     if(contributionList.size() > numBookModels){
         
-        //sor the first bunch
+        //sort the first bunch
         std::random_shuffle(contributionList.begin(), contributionList.begin() + (numBookModels - 1));
-        
         
     } else {
         

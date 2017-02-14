@@ -309,6 +309,9 @@ void WallCam::update(){
                     //get how far the touch is from the wall itself
                     float distFromWall = threshPix.getHeight() - closestPoint.y;
                     
+                    //how far are we from the touch boundary
+                    float distFromTouch = distFromWall - wallHitDistSlider;
+                    
                     //check if a touch exists with the ID, if it does, update it, if not add it.
                     bool touchExists = false;
                     int existingIndex;
@@ -323,7 +326,7 @@ void WallCam::update(){
                     
                     if(touchExists){
                         //update the touch
-                        touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), distFromWall);
+                        touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), distFromTouch);
                         
                         //store the raw coordinates of the low point for debug
                         touches[existingIndex].rawCamPos = closestPoint;
@@ -334,7 +337,7 @@ void WallCam::update(){
                     } else {
                         //add the new touch
                         WallTouch t;
-                        t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), distFromWall);
+                        t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), distFromTouch);
                         
                         //store the raw coordinates of the low point for debug
                         t.rawCamPos = closestPoint;

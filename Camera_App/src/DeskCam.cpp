@@ -714,8 +714,8 @@ void DeskCam::setupGui(){
     gui.setup(camName, filePath + camName + ".xml", 0, 0);
     
     gui.add(cameraLabel.setup("   CAMERA SETTINGS", ""));
-    gui.add(nearClipSlider.setup("Cam Near Clip", 500, 0, 8000));
-    gui.add(farClipSlider.setup("Cam Far Clip", 3000, 0, 8000));
+    gui.add(nearClipSlider.setup("Cam Near Clip", 500, 0, 3000));
+    gui.add(farClipSlider.setup("Cam Far Clip", 1500, 0, 3000));
     
     gui.add(cvLabel.setup("   IMAGE PROCESSING", ""));
     gui.add(nearThreshSlider.setup("Near Threshold", 255, 0, 255));

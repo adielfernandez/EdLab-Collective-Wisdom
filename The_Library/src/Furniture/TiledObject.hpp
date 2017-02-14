@@ -60,7 +60,7 @@ public:
     
     //-----EFFECTS-----
     void applyEffectToAll( Tile::Effect e );
-    void triggerWave(ofVec2f epicenter);
+    void triggerWave( int img, ofVec2f epicenter);
     bool bWave;
     float waveSpeed;
     ofVec2f waveEpicenter;

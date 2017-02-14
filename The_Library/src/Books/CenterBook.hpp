@@ -21,6 +21,9 @@
 #include "../Content/ScholarData.hpp"
 #include "BookUIButton.hpp"
 #include "../Furniture/Frame.hpp"
+#include "Touch.hpp"
+
+#pragma once
 
 
 class CenterBook{
@@ -104,6 +107,7 @@ public:
     string tagLine1;
     string tagLine2;
     bool tagHover;
+    float tagColorPct;
     
     string tagDescription;
     
@@ -131,21 +135,28 @@ public:
     
     //----------Buttons/Logic----------
     vector<bool> listHoverStates;
+    vector<float> listColorPcts;
     
 
     vector<bool> scholarOptionHoverStates;
+    vector<float> scholarOptionColorPcts;
+    
     int selectedScholarOption;
     
     //Home button
     bool bShowHomeButton;
     bool homeButtonHover;
     bool backToListHover;
+    float backToListColPct;
+    
     float homeButtonWidth;
     float homeButtonHeight;
     float homeButtonBottomMargin;
     
     bool scholarButtonHover;
     bool tagButtonHover;
+    float scholarButtonColPct;
+    float tagButtonColPct;
     
     bool redecorateButtonHover;
     vector<float> redecorateHeights;
@@ -159,6 +170,7 @@ public:
     float homeTopY, homeBotY;
     float homeLeftX, homeRightX;
     
+    ofVec3f apparentBookCenter;
     
     
     //text stored as vector of lines
@@ -187,11 +199,16 @@ public:
     vector<MouseTouch> mouseTouches;
     unsigned long long lastTouchTime;
     
+    //stores the touch data
+    vector<Touch> touches;
+    void receiveTouch(Touch t);
     
     
     //event listening between book
     //controller and buttons
     ofEvent<ButtonEvent> newButtonClickEvt;
+
+    ofEvent<bool> redecorateEvent;
     
     
     //-----------------------------
@@ -222,8 +239,10 @@ public:
     ofxIntSlider filigreeLeftMarginSlider;
     ofxIntSlider filigreeWidthSlider;
     ofxIntSlider filigreeHeightSlider;
-    
     ofxIntSlider helpTextTopSlider;
+    ofxFloatSlider colorLerpInSlider;
+    ofxFloatSlider colorLerpOutSlider;
+    
     
     ofxLabel mappingLabel;
     ofxToggle showRawDeskToggle;
@@ -243,6 +262,7 @@ public:
     ofxFloatSlider bookPageTopSlider;
     ofxFloatSlider bookPageBottomSlider;
     ofxIntSlider touchWaitSlider;
+    ofxFloatSlider touchKillAgeSlider;
     
     
     //desk control points

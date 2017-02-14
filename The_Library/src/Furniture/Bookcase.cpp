@@ -63,20 +63,14 @@ void Bookcase::setup(string name, bool _leftCase){
     //now that we've loaded, move the gui to where we last had it
     gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
     
-    mapMesh();
-
-    
-    
-    //Setup the parent class TiledObject with all th info set above
-    TiledObject::setupTiledObject(true);   //TRUE, this is a bookcase
-    
-    
-
     
 }
 
 
 void Bookcase::loadMedia(){
+    
+
+    
     
     //load all the images from file
     ofDirectory dir;
@@ -102,9 +96,13 @@ void Bookcase::loadMedia(){
     
     //after the mesh has been mapped and all the tiles set up (with images loaded),
     //set up the static bookcase mesh and texture
+    mapMesh();
     recordStaticTexture();
-    setStaticBookcase();
+    setStaticBookcaseMesh();
     bStaticCaseNeedsUpdate = true;
+    
+    //Setup the parent class TiledObject with all th info set above
+    TiledObject::setupTiledObject(true);   //TRUE, this is a bookcase
     
 }
 
@@ -163,11 +161,10 @@ void Bookcase::update(){
         controlPoints[15] = bookcaseCorners[0].getInterpolated(bookcaseCorners[3], controlPointPcts[15]);
         
         if(reMapMeshButton && ofGetElapsedTimeMillis() - lastButtonPressTime > 1000){
-            tiles.clear();
             
             mapMesh();
             recordStaticTexture();
-            setStaticBookcase();
+            setStaticBookcaseMesh();
             
             lastButtonPressTime = ofGetElapsedTimeMillis();
         }
@@ -205,6 +202,8 @@ void Bookcase::update(){
         }
         
     }
+    
+//    bIsAnimating = ofGetMouseX() > ofGetWidth()/2;
     
     
     //this will be set to true later if we're drawing the gui.
@@ -261,22 +260,17 @@ void Bookcase::draw(){
     //draw tiles if we're actively flipping them
     //but a simpler static mesh if we're not
     if( bIsAnimating ){
+
         
         TiledObject::draw();
-        
-//        cout << "Drawing Bookcase tiles" << endl;
         
     } else {
         
         staticBookcaseTex.bind();
-
         ofSetColor(255);
         staticBookcase.draw();
-        
         staticBookcaseTex.unbind();
 
-//        cout << "Drawing static mesh" << endl;
-        
     }
 
     ofPopMatrix();
@@ -559,6 +553,8 @@ void Bookcase::prepareMesh(){
 }
 
 void Bookcase::mapMesh(){
+    
+    tiles.clear();
     
     //ofVec2f controlPoints are for convenience and calculated
     //based on controlPointsPcts vector. Recalculate them in case settings have changed
@@ -1364,7 +1360,7 @@ void Bookcase::recordStaticTexture(){
     
 }
 
-void Bookcase::setStaticBookcase(){
+void Bookcase::setStaticBookcaseMesh(){
     
     //Now the bookcase tiles are all properly mapped and positioned
     //To get a properly warped bookcase as a static image we'll draw the

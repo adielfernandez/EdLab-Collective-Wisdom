@@ -58,7 +58,7 @@ public:
     
     void drawRaw(int x, int y);
     void drawThresh(int x, int y);
-    
+    void drawDeskProxy(int x, int y);
     
     void drawGui(int x, int y);
     
@@ -71,6 +71,12 @@ public:
     unsigned long long lastFrameTime;
     float lastFrameRate; //for smoothing
     
+    //Flag for triggering new
+    //data to send via OSC
+    bool bNewContours;
+    bool bNewTouchesToSend;
+    
+    
     //Masking
     vector<ofVec2f> maskPoints;
     vector<bool> maskPointMouseLock;
@@ -82,6 +88,7 @@ public:
     //from GL thread
     ofPixels rawPix;
     ofPixels threshPix;
+    ofPixels foregroundPix;
     ofxCv::ContourFinder contours;
     
     //touch data we'll send elsewhere
@@ -122,6 +129,7 @@ public:
     ofxToggle useBgDiff;
     
     ofxLabel contoursLabel;
+    ofxToggle drawForegroundToggle;
     ofxToggle drawContoursToggle;
     ofxToggle drawBlobInfoToggle;
     ofxIntSlider minBlobAreaSlider;
@@ -129,6 +137,11 @@ public:
     ofxIntSlider persistenceSlider;
     ofxIntSlider maxDistanceSlider;
     
+    ofxLabel touchSettingsLabel;
+    ofxIntSlider touchThresholdSlider;
+    ofxIntSlider touchSearchAreaSlider;
+    ofxIntSlider posSmoothingSlider;
+    ofxIntSlider distSmoothingSlider;
     
     unsigned long long lastFrameToThread;
     
@@ -155,6 +168,7 @@ private:
     //Thread output
     ofThreadChannel<ofPixels> rawPixOut;
     ofThreadChannel<ofPixels> threshPixOut;
+    ofThreadChannel<ofPixels> foregroundPixOut;
     ofThreadChannel<ofxCv::ContourFinder> contoursOut;
     
     

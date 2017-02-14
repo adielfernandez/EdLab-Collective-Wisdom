@@ -46,6 +46,9 @@ public:
     deque<ofVec2f> posHistory;
     deque<float> distHistory;
     
+    //raw touch data
+    ofVec2f rawCamPos;
+    float rawDepth;
     
     //we'll use this flag to remove
     //touches that haven't been update

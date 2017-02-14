@@ -38,6 +38,11 @@ void ofApp::setup(){
     numViews = 5;
     
     
+    idleTimer = 0;
+    lastTouchTime = 0;
+    
+    
+    
     //set up objects without loading image data
     wallpaper.setup();
     frame.setup("frame");
@@ -73,12 +78,29 @@ void ofApp::setup(){
     bookController.setup(&contributionManager.contributionList);
     centerBook.setup(&scholarData, &frame);
     
+    //setup the scene controller and give it references to all the objects
+    sceneController.setWallpaperRef( &wallpaper );
+    sceneController.setBookcaseRefs( &leftBookcase , &rightBookcase );
+    sceneController.setCenterBookRef( &centerBook );
+    sceneController.setFrameRef( &frame );
+    
+    //get a reference to the idle timer
+    sceneController.setIdleTimerRef( &idleTimer );
+    sceneController.setup();
+    
+    
+    
+    //add a listener for the redecorate event in the center book in the scene controller
+    ofAddListener(centerBook.redecorateEvent, &sceneController, &SceneController::onRedecorateEvent);
+    
     //add a listener in the Book controller for events
     //in the content manager when it gets new messages
     ofAddListener(contributionManager.newContributionEvt, &bookController, &BookController::onNewContribution);
     
     //add another listener in the book controller to the tagButton in the center book
     ofAddListener(centerBook.newButtonClickEvt, &bookController, &BookController::onButtonClickEvt);
+    
+    
     
     bgEdgeMask.load("assets/interface/bgMask.png");
     
@@ -100,14 +122,15 @@ void ofApp::setup(){
     
     bIsFullscreen = false;
     
-    //for making randomized texture changes
-    lastChangeTime = 0;
-    waitTime = 30000;
+
 
     //time of the last save/load event
     //start them out earlier so they dont draw on startup
     lastLoadTime = -10.0f;
     lastSaveTime = -10.0f;
+    
+    oscReceivePort = 12345;
+    oscReceiver.setup(oscReceivePort);
     
     
     
@@ -116,7 +139,43 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    
+    //Listen for OSC data to send touches to the right places
+    if(oscReceiver.hasWaitingMessages()){
+        // get the next message
+        ofxOscMessage m;
+        oscReceiver.getNextMessage(m);
+        
+        /*
+         ADDRESSES:
+         /CenterCam/touch
+         /RightCam/touch
+         /LeftCam/touch
+         
+         */
+        
+        if(m.getAddress() == "/CenterCam/touch"){
+            
+            //package the touch and send it to the center cam
+            Touch t;
+            t.ID                =  m.getArgAsInt(0);
+            t.pos               =  ofVec2f( m.getArgAsFloat(1), m.getArgAsFloat(2) );
+            t.dist              =  m.getArgAsFloat(3);
+            t.bIsTouching       =  m.getArgAsBool(4);
+            
+            centerBook.receiveTouch(t);
+            
+        }
 
+     
+        lastTouchTime = ofGetElapsedTimef();
+        
+    }
+    
+    idleTimer = ofGetElapsedTimef() - lastTouchTime;
+    
+    
+    sceneController.update();
     
     wallpaper.update();
     frame.update();
@@ -139,45 +198,12 @@ void ofApp::update(){
     }
     
 
-    //Uncomment to debug camera position and orientation
-    
-//    float zPos = ofMap(mouseX, 0, ofGetWidth(), -2000, 2000);
-//    cout << "Dist: " << zPos << endl;
-//    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, zPos);
-
-//    float x = ofMap(mouseX, 0, ofGetWidth(), -180, 180);
-//    float y = ofMap(mouseY, 0, ofGetHeight(), -180, 180);
-//    cout << "XY: " << x << ", " << y << endl;
-//    camera.setOrientation(ofVec3f(x, y, 0));
-    
+    //update camera positions so it snaps back after dragging
     camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
     camera.setOrientation(ofVec3f(180, 0, 0));
 
     
     
-    //timer based tile animations
-//    if(ofGetElapsedTimeMillis() - lastChangeTime > waitTime){
-//        
-//        float rand = ofRandom(3);
-//        
-//        float x = ofRandom(ofGetWidth());
-//        float y = ofRandom(ofGetHeight());
-//        
-//        if(rand < 1.0){
-//            
-//            leftBookcase.triggerWave(ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
-//            rightBookcase.triggerWave(ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
-//            
-//        } else if(rand < 2.0){
-//            frame.triggerWave(ofVec2f(x, y));
-//
-//        } else {
-//            wallpaper.triggerWave(ofVec2f(x, y));
-//        }
-//    
-//        waitTime = ofRandom(5000, 10000);
-//        lastChangeTime = ofGetElapsedTimeMillis();
-//    }
     
 
     
@@ -440,16 +466,19 @@ void ofApp::mousePressed(int x, int y, int button){
 
     if(button == 2){
         
+        int randomTexNum = floor(ofRandom(10));
+        
+        
         if(x < leftBookcase.bookcaseCorners[1].x || x > rightBookcase.bookcaseCorners[0].x){
             
             //make bookcase wave start from center X of bookcase
-            leftBookcase.triggerWave(ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
-            rightBookcase.triggerWave(ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
+            leftBookcase.triggerWave( randomTexNum, ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
+            rightBookcase.triggerWave( randomTexNum, ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
             
         } else if(y < frame.frameCorners[3].y){
-            frame.triggerWave(ofVec2f(x, y));
+            frame.triggerWave( randomTexNum, ofVec2f(x, y));
         } else {
-            wallpaper.triggerWave(ofVec2f(x, y));
+            wallpaper.triggerWave( randomTexNum, ofVec2f(x, y));
         }
         
     }

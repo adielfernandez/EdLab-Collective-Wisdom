@@ -24,7 +24,7 @@
 	<Book_Center>0.69</Book_Center>
 <Book_Top_Bound>0.025</Book_Top_Bound>
 	<Book_Bottom_Bound>0.86</Book_Bottom_Bound>
-<Wait_after_touch>500</Wait_after_touch>
+<Wait_after_touch>1094</Wait_after_touch>
 <Gui_Position>460, 540</Gui_Position>
 <Filigree_Top_M_>5</Filigree_Top_M_>
 	<Filigree_Bottom_M_>5</Filigree_Bottom_M_>
@@ -33,4 +33,9 @@
 <Filigree_Left_M_>10</Filigree_Left_M_>
 	<Help_Text_Top_M_>45</Help_Text_Top_M_>
 <Print_Norm__Mouse>0</Print_Norm__Mouse>
+<Button_Color_Lerp_IN>0.08</Button_Color_Lerp_IN>
+	<Button_Color_Lerp_OUT>0.02</Button_Color_Lerp_OUT>
+	<Time_touches_last>0.25</Time_touches_last>
+<Btn_Col_LerpIN>0.11761</Btn_Col_LerpIN>
+	<Btn_Col_LerpOUT>0.07276</Btn_Col_LerpOUT>
 </centerBook>

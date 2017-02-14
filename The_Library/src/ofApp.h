@@ -1,4 +1,3 @@
-#pragma once
 
 #include "ofMain.h"
 #include "ofxLibwebsockets.h"
@@ -7,9 +6,9 @@
 #include "Furniture/Wallpaper.hpp"
 #include "Furniture/Frame.hpp"
 #include "Furniture/Bookcase.hpp"
+#include "Books/CenterBook.hpp"
 
 #include "Books/BookController.hpp"
-#include "Books/CenterBook.hpp"
 #include "Books/SpawnRibbon.hpp"
 
 #include "Content/Contribution.hpp"
@@ -17,6 +16,11 @@
 #include "Content/ScholarData.hpp"
 
 #include "ofxOsc.h"
+#include "Touch.hpp"
+
+#include "SceneController.hpp"
+
+#pragma once
 
 class ofApp : public ofBaseApp{
 
@@ -60,6 +64,7 @@ class ofApp : public ofBaseApp{
     ScholarData scholarData;
     
     //----------Scene Setup----------
+    SceneController sceneController;
     
     bool bIsFullscreen;
     
@@ -78,6 +83,8 @@ class ofApp : public ofBaseApp{
     //help place things on screen
     bool bShowMouseCoords;
 
+    //for drawing the saving/loading
+    //feedback on screen
     double lastSaveTime, lastLoadTime;
     
 
@@ -101,15 +108,23 @@ class ofApp : public ofBaseApp{
     //-----MESSAGE LOGGING AND RETRIEVAL-----
     ContributionManager contributionManager;
     
-    
-    unsigned long long lastChangeTime;
-    int waitTime;
-    
+    //how long it's been since there's
+    //been any activity
+    double idleTimer;
+    double lastTouchTime;
 
     
     //DELETE ME
     int messageTagNum = 0;
+    
+    
+    
+    //OSC Receiver
+    int oscReceivePort;
+    ofxOscReceiver oscReceiver;
 
+    
+    
 };
 
 

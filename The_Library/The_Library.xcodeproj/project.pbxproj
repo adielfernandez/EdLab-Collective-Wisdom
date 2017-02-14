@@ -53,6 +53,7 @@
 		D72C74831DED442B00D770C8 /* BookUIButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D72C74811DED442B00D770C8 /* BookUIButton.cpp */; };
 		D7AB7C401E2423D800E5EE36 /* Ornament.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7AB7C3E1E2423D800E5EE36 /* Ornament.cpp */; };
 		D7AB7C431E25F6AA00E5EE36 /* TagRibbon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7AB7C411E25F6A900E5EE36 /* TagRibbon.cpp */; };
+		D7B0A92E1E526534008A68D0 /* SceneController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7B0A92C1E526534008A68D0 /* SceneController.cpp */; };
 		D7E190BD1DFDFBFA00D52145 /* CenterBook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E190BB1DFDFBFA00D52145 /* CenterBook.cpp */; };
 		D7E2DC9A1E1C5D6700AEB632 /* ScholarData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */; };
 		D7E2DCA71E21A3A800AEB632 /* SpawnRibbon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7E2DCA51E21A3A800AEB632 /* SpawnRibbon.cpp */; };
@@ -436,6 +437,9 @@
 		D7AB7C3F1E2423D800E5EE36 /* Ornament.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ornament.hpp; sourceTree = "<group>"; };
 		D7AB7C411E25F6A900E5EE36 /* TagRibbon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TagRibbon.cpp; sourceTree = "<group>"; };
 		D7AB7C421E25F6AA00E5EE36 /* TagRibbon.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TagRibbon.hpp; sourceTree = "<group>"; };
+		D7B0A92A1E518FBC008A68D0 /* Touch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Touch.hpp; sourceTree = "<group>"; };
+		D7B0A92C1E526534008A68D0 /* SceneController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneController.cpp; sourceTree = "<group>"; };
+		D7B0A92D1E526534008A68D0 /* SceneController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneController.hpp; sourceTree = "<group>"; };
 		D7E190BB1DFDFBFA00D52145 /* CenterBook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CenterBook.cpp; sourceTree = "<group>"; };
 		D7E190BC1DFDFBFA00D52145 /* CenterBook.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CenterBook.hpp; sourceTree = "<group>"; };
 		D7E2DC981E1C5D6700AEB632 /* ScholarData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScholarData.cpp; sourceTree = "<group>"; };
@@ -1656,6 +1660,9 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
+				D7B0A92D1E526534008A68D0 /* SceneController.hpp */,
+				D7B0A92C1E526534008A68D0 /* SceneController.cpp */,
+				D7B0A92A1E518FBC008A68D0 /* Touch.hpp */,
 				D72C74721DEBCD7A00D770C8 /* Content */,
 				D7AB7C3D1E2423D800E5EE36 /* Ornaments */,
 				D72C745A1DEBCB2C00D770C8 /* Books */,
@@ -1857,6 +1864,7 @@
 			files = (
 				D72C746A1DEBCB2C00D770C8 /* Book.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				D7B0A92E1E526534008A68D0 /* SceneController.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				3B8120368B4FCCD80883BAF3 /* ofxAssimpAnimation.cpp in Sources */,
 				483FA4F6D5FA6422C559B1F5 /* ofxAssimpMeshHelper.cpp in Sources */,

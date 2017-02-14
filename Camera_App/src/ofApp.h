@@ -31,7 +31,7 @@ class ofApp : public ofBaseApp{
 	
     ofTrueTypeFont font;
     
-//    WallCam leftCam;
+    WallCam leftCam;
 //    WallCam rightCam;
     DeskCam centerCam;
     
@@ -44,6 +44,11 @@ class ofApp : public ofBaseApp{
     string oscIP;
     int oscPort;
     
+//    ofxOscBundle getBundleForTouches(vector<DeskTouch> touches);
+    
+    
+    template <class TouchType>
+    ofxOscBundle getBundleForTouches(vector<TouchType> touches, string address);
     
     
 };

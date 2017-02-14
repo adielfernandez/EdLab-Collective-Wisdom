@@ -18,8 +18,8 @@ DeskTouch::DeskTouch(){
 
 void DeskTouch::setNewTouch(int _id, ofVec2f _p, float _d){
     
-    numPosSmoothingPts = 4;
-    numDistSmoothingPts = 2;
+//    numPosSmoothingPts = 10;
+//    numDistSmoothingPts = 6;
     
     posHistory.clear();
     distHistory.clear();

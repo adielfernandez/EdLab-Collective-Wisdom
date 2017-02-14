@@ -51,7 +51,7 @@ public:
     //these hold a mesh and texture
     //we'll draw when the bookcase tiles
     //are not actively flipping
-    void setStaticBookcase();
+    void setStaticBookcaseMesh();
     void recordStaticTexture();
     ofVboMesh staticBookcase;
     ofTexture staticBookcaseTex;

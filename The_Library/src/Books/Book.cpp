@@ -20,6 +20,8 @@ void Book::loadModel(int bType, int tType, int fType){
     texType = tType;
     fontType = fType;
     
+    
+    
     if(bookType == 0){
         model.loadModel("books/bookShort.fbx", false);
     } else if(bookType == 1){

@@ -49,4 +49,5 @@
 <Tag_noise_amp>18.25</Tag_noise_amp>
 	<Tag_noise_speed>1.70006</Tag_noise_speed>
 	<Tag_noise_scale>0.205079</Tag_noise_scale>
+<Stagger_Time>0.02</Stagger_Time>
 </bookController>

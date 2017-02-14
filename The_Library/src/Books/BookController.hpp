@@ -86,6 +86,7 @@ public:
     //Book placement and arrangment
     int numShelves;
     const float bookWidth = 24.2906;
+    
     const int maxNumBooks = 108;
     const int maxBooksPerShelf = 18;
 

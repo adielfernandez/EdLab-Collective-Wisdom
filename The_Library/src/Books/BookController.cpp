@@ -466,6 +466,9 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
         
     } else if(b.type == 3){
 
+        //source of the tag ribbons
+        ofVec3f src = b.src;
+
         //if it's a scholar button we need to find books per scholar
         //any other event is found by tag
         if( !b.bScholarButton ){
@@ -474,27 +477,27 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
             //-----FIND BY TAG-----
             //---------------------
             
-            //source of the tag ribbons
-            ofVec3f src;
             
             //first check if it was the centerBook tagButton
-            if(b.bIsCenterBookButton){
-                
-                //src based on centerbook button position (should make this a gui setting)
-                src = ofVec3f( 1094, 840, -80);
-                
-                
-            } else {
-                
-                //src position based on typical book button positions
-                BookUIButton *bttn = &books[b.bookNum].tagButton;
-                src = bttn -> displayedPos + ofVec3f(bttn -> buttonWidth/2, bttn -> buttonHeight/2, -80);
-                
-                
-            }
+//            if(b.bIsCenterBookButton){
+//                
+//                //src based on centerbook button position (should make this a gui setting)
+//                src = ofVec3f( 1094, 840, -80);
+//                
+//                
+//            } else {
+//                
+//                //src position based on typical book button positions
+//                BookUIButton *bttn = &books[b.bookNum].tagButton;
+//                src = bttn -> displayedPos + ofVec3f(bttn -> buttonWidth/2, bttn -> buttonHeight/2, -80);
+//                
+//                
+//            }
             
             //go through all the books and trigger a ribbon from that
             //book's tag button to all the books that share the same tag
+            int numRibbonsSent = 0;
+            
             for(int i = 0; i < books.size(); i++){
                 
                 //check if the book has the same tag, but make sure
@@ -505,7 +508,10 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
                     
                     ofVec3f dst = books[i].storedPos + ofVec3f(books[i].thickness/2.0f, - 135);
                     
-                    tr.setup(src, dst, numPointsSlider, b.tagCol, staggerTimeSlider * i);
+                    float thisStaggerTime = staggerTimeSlider * numRibbonsSent;
+                    numRibbonsSent++;
+                    
+                    tr.setup(src, dst, numPointsSlider, b.tagCol, thisStaggerTime);
                     tr.dstBookNum = i;
                     
                     //helper function to deliver all the gui
@@ -527,7 +533,8 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
             //-------------------------
             //for scholar events, the tagNumber IS the scholar number
             
-            ofVec3f src = ofVec3f( 1094, 840, -80);
+//            ofVec3f src = ofVec3f( 1094, 840, -80);
+            int numRibbonsSent = 0;
             
             for(int i = 0; i < books.size(); i++){
                 
@@ -539,7 +546,10 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
                     
                     ofVec3f dst = books[i].storedPos + ofVec3f(books[i].thickness/2.0f, - 135);
                     
-                    tr.setup(src, dst, numPointsSlider, books[i].tagCol, staggerTimeSlider * i);
+                    float thisStaggerTime = staggerTimeSlider * numRibbonsSent;
+                    numRibbonsSent++;
+                    
+                    tr.setup(src, dst, numPointsSlider, books[i].tagCol, thisStaggerTime);
                     tr.dstBookNum = i;
                     
                     //helper function to deliver all the gui
@@ -567,7 +577,7 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
 
 void BookController::addToLibrary( Contribution& c ){
  
-    int fillThisIndex;
+    int fillThisIndex = -1;
     
     //go through the book vector, if we have any unused books available,
     //trigger those, if not, recycle an existing one
@@ -596,8 +606,6 @@ void BookController::addToLibrary( Contribution& c ){
         //doing it this way instead of using a for loop
         //prevents reusing the same few books at the beginning of the vector
         
-        int timesChecked = 0;
-        
         do {
             
             int checkIndex = floor( ofRandom(books.size()) );
@@ -611,37 +619,41 @@ void BookController::addToLibrary( Contribution& c ){
             
             if( !shelfInUse && !books[checkIndex].bIsActive && !books[checkIndex].bIsNewBookEvt ){
                 
-                //if we're recycling a used book, we need to mark the
-                //contribution that it currently has as archived before replacing it
-                
-                //find the book in the contributionList that matches the ID of this
-                //message then mark it
-                for(int i = 0; i < contributionList -> size(); i++){
+                //also make sure the book doesn't contain a permanent scholar contribution
+                if( !books[checkIndex].bIsScholarBook ){
                     
-                    if( (*contributionList)[i].ID == books[checkIndex].userContribution.ID ){
+                    //if we're recycling a used book, we need to mark the
+                    //contribution that it currently has as archived before replacing it
+                    
+                    //find the book in the contributionList that matches the ID of this
+                    //message then mark it
+                    for(int i = 0; i < contributionList -> size(); i++){
                         
-                        (*contributionList)[i].bIsArchived = true;
-                        
-                        break;
+                        if( (*contributionList)[i].ID == books[checkIndex].userContribution.ID ){
+                            
+                            (*contributionList)[i].bIsArchived = true;
+                            
+                            break;
+                            
+                        }
                         
                     }
                     
+                    //jot it down so we can reset it below
+                    fillThisIndex = checkIndex;
+
                 }
                 
                 
-                
-                //jot it down so we can reset it below
-                fillThisIndex = checkIndex;
-                
             }
             
-            timesChecked++;
-            
-            
-        } while ( timesChecked < 30 );
+            //keep looping as long as we haven't found a new index
+        } while ( fillThisIndex == -1 );
         
     }
 
+    
+    
     //if we've gotten this far,
     //get tag number and color from the tagList in scholar data to set up the book
     int tagNum;
@@ -679,6 +691,9 @@ void BookController::addToLibrary( Contribution& c ){
     books[fillThisIndex].triggerNewBookEvt();
     
     lastNewBookEvent = ofGetElapsedTimef();
+    
+    //reset the recycle timer too so recycle events wait after ANY book addition
+    lastRecycleTime = ofGetElapsedTimef();
     
 }
 
@@ -743,7 +758,7 @@ void BookController::update(){
         ornaments[i].update();
     }
     
-    //it's been long enough...
+    //Wait a little bit between ANY event (New book or recycle)
     if( ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider ){
        
         //check if there's anything in the queue
@@ -754,6 +769,9 @@ void BookController::update(){
             
             //then remove the oldest one (the first element in the vector)
             incomingQueue.pop_front();
+            
+
+
         
         } else {
             
@@ -761,7 +779,7 @@ void BookController::update(){
             //and if it's been long enough for a recycling event
             if( contributionList -> size() > books.size() ){
                 
-                //AND it's been long enough...
+                //AND it's been long enough between recycle events
                 if( ofGetElapsedTimef() - lastRecycleTime > archiveRecycleSlider){
                     
                     //            cout << "Triggering recycle event" << endl;
@@ -995,7 +1013,7 @@ void BookController::setupGui(){
     
     gui.add(tagRibbonLabel.setup("  TAG RIBBONS", ""));
     gui.add(tagRibbonWireframeToggle.setup("Draw wireframe", false));
-    gui.add(staggerTimeSlider.setup("Stagger Time", 0.02f, 0.0f, 0.2f));
+    gui.add(staggerTimeSlider.setup("Stagger Time", 0.1f, 0.0f, 1.0f));
     gui.add(numPointsSlider.setup("Num points", 10, 2, 30));
     gui.add(pctApexSlider.setup("Pct dist Apex", 0.5f, 0.0f, 1.0f));
     gui.add(arcHeightSlider.setup("Arc height", 100.0f, 0.0f, 300.0f));

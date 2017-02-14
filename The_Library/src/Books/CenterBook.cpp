@@ -177,8 +177,9 @@ void CenterBook::setup(ScholarData *sData, Frame *f){
     homeButtonHeight = 18;
     homeButtonBottomMargin = 5;
 
-    
 
+    //apparent position of book on screen after FBO is mapped
+    apparentBookCenter.set( 1094, 840, -80);
     
     
     
@@ -429,6 +430,50 @@ void CenterBook::resetCamera(){
     camera.setPosition(deskWidth/2, deskHeight/2, 1000);
 }
 
+
+void CenterBook::receiveTouch(Touch t){
+    
+    //check to see if t is new or if there
+    //exists one with the same ID already
+    
+    bool touchExists = false;
+    int existingIndex = -1;
+    
+    for(int i = 0; i < touches.size(); i++){
+        
+        if(touches[i].ID == t.ID){
+            
+            touchExists = true;
+            existingIndex = i;
+            break;
+            
+        }
+        
+    }
+    
+    //if it's new, add it. If not, update it.
+    if( touchExists ){
+        
+        touches[existingIndex].ID = t.ID;
+        touches[existingIndex].pos = t.pos;
+        touches[existingIndex].dist = t.dist;
+        touches[existingIndex].bIsTouching = t.bIsTouching;
+        
+    } else {
+        
+        t.birthTime = ofGetElapsedTimef();
+        touches.push_back(t);
+        
+        
+    }
+    
+    
+
+
+
+}
+
+
 void CenterBook::update(){
     
     
@@ -453,28 +498,39 @@ void CenterBook::update(){
     //this is practice for when touches actually come in through OSC
     //Touches will be normalized from 0-1 over the width/height of the entire desk
     
-    mouseTouches.clear();
+//    mouseTouches.clear();
     
     if(showRawDeskToggle && bIsGuiActive){
         
-        ofVec2f m(ofGetMouseX(), ofGetMouseY());
+        ofVec2f mouse(ofGetMouseX(), ofGetMouseY());
         
-        if(m.x > rawDeskPos.x && m.x < rawDeskPos.x + deskWidth && m.y > rawDeskPos.y && m.y < rawDeskPos.y + deskHeight){
+        if(mouse.x > rawDeskPos.x && mouse.x < rawDeskPos.x + deskWidth && mouse.y > rawDeskPos.y && mouse.y < rawDeskPos.y + deskHeight){
             
-            ofVec2f normalizedMouse((m.x - rawDeskPos.x)/deskWidth, (m.y - rawDeskPos.y)/deskHeight);
+            ofVec2f normalizedMouse((mouse.x - rawDeskPos.x)/deskWidth, (mouse.y - rawDeskPos.y)/deskHeight);
             
-            MouseTouch mt;
-            mt.pos = normalizedMouse;
-            mt.bIsTouching = ofGetMousePressed();
+//            MouseTouch mt;
+//            mt.pos = normalizedMouse;
+//            mt.bIsTouching = ofGetMousePressed();
+//            mouseTouches.push_back(mt);
+//            if(printNormCoordsToggle) cout << mt.pos << endl;
+
             
-            mouseTouches.push_back(mt);
+            //add mouse touch to touches vector
+            Touch m;
+            m.ID = 99999999;
+            m.pos = normalizedMouse;
+            m.dist = 1000;
+            m.bIsTouching = ofGetMousePressed();
             
-            if(printNormCoordsToggle) cout << mt.pos << endl;
+            receiveTouch(m);
             
         }
         
         
     }
+    
+    
+
     
     
     //go through and manage scholars
@@ -499,40 +555,40 @@ void CenterBook::update(){
     backToListHover = false;
     
     //go through mouse touches and check for detection zones
-    for(int i = 0; i < mouseTouches.size(); i++){
+    for(int i = 0; i < touches.size(); i++){
         
     
         //touch data is normalized from 0-1 in x and y
-        ofVec2f m = mouseTouches[i].pos;
+        ofVec2f thisTouch = touches[i].pos;
         
 
         
         //see if we're over book
-        if(m.x > bookLeftBoundSlider && m.y > bookPageTopSlider && m.y < bookPageBottomSlider){
+        if(thisTouch.x > bookLeftBoundSlider && thisTouch.y > bookPageTopSlider && thisTouch.y < bookPageBottomSlider){
             
             //now we have different detection zones based on what page we're on
             if(currentOpenPage == 0){
                 
                 //check if we're in the vertical slice with the two buttons
-                if(m.y > 0.17 && m.y < 0.36){
+                if(thisTouch.y > 0.17 && thisTouch.y < 0.36){
 
                     //check what page we're on
-                    if(m.x > 0.48 && m.x < bookCenterSlider){
+                    if(thisTouch.x > 0.48 && thisTouch.x < bookCenterSlider){
 
                         //left page
                         scholarButtonHover = true;
                         
-                        if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                        if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
                             currentOpenPage = 1;
                             bViewingScholars = true;
                             lastTouchTime = ofGetElapsedTimeMillis();
                         }
                         
-                    } else if(m.x > bookCenterSlider && m.x < 0.89){
+                    } else if(thisTouch.x > bookCenterSlider && thisTouch.x < 0.89){
                         //right page
                         tagButtonHover = true;
                         
-                        if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                        if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
                             currentOpenPage = 1;
                             bViewingScholars = false;
                             lastTouchTime = ofGetElapsedTimeMillis();
@@ -540,13 +596,15 @@ void CenterBook::update(){
                         
                     }
                     
-                } else if(m.x > bookCenterSlider && m.y > 0.73){
+                } else if(thisTouch.x > bookCenterSlider && thisTouch.y > 0.73){
                     
                     redecorateButtonHover = true;
                     
-                    if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                    if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
 
                         //do redecorate animation here...
+                        bool redecorate = true;
+                        ofNotifyEvent(redecorateEvent, redecorate, this);
                         
                         lastTouchTime = ofGetElapsedTimeMillis();
                     }
@@ -565,14 +623,14 @@ void CenterBook::update(){
                 int listIndex;
                 
                 //see which page we're on
-                if(m.x < bookCenterSlider){
+                if(thisTouch.x < bookCenterSlider){
                     //left page
                     
-                    listIndex = floor( (m.y - bookPageTopSlider)/regionHeight );
+                    listIndex = floor( (thisTouch.y - bookPageTopSlider)/regionHeight );
                     
                 } else {
                     //right page = next 5 scholars
-                    listIndex = floor( (m.y - bookPageTopSlider)/regionHeight ) + 5;
+                    listIndex = floor( (thisTouch.y - bookPageTopSlider)/regionHeight ) + 5;
                     
                 }
                 
@@ -581,7 +639,7 @@ void CenterBook::update(){
                 
                 
                 //check if the "touch" is actually selecting the scholar
-                if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
                     
                     currentOpenPage = 2;
                     
@@ -637,24 +695,24 @@ void CenterBook::update(){
                 
                 //We already know we're hovering over the book
                 //but let's see which page we're on
-                if(m.x < bookCenterSlider){
+                if(thisTouch.x < bookCenterSlider){
                     //left page
 
                     //over button area
-                    if(m.y > 0.21){
+                    if(thisTouch.y > 0.21){
                         
                         //"show portrait" button
-                        if(m.y < 0.4){
+                        if(thisTouch.y < 0.4){
                         
                             hoveredOption = 0;
                             
                         //"show factsheet" button
-                        } else if(m.y < 0.6){
+                        } else if(thisTouch.y < 0.6){
                             
                             hoveredOption = 1;
                             
                         //"show well known works" button
-                        } else if(m.y < 0.78){
+                        } else if(thisTouch.y < 0.78){
                             
                             hoveredOption = 2;
                             
@@ -663,52 +721,54 @@ void CenterBook::update(){
                         
                     }
                     
-                    scholarOptionHoverStates[hoveredOption] = true;
-                    
-                    if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                    if( hoveredOption >= 0 && hoveredOption <= 2){
                         
+                        scholarOptionHoverStates[hoveredOption] = true;
                         
-                        lastTouchTime = ofGetElapsedTimeMillis();
-                        
-                        //don't do anything if this option is already selected
-                        if(selectedScholarOption != hoveredOption){
-                        
-                            if(hoveredOption == 0){
+                        if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                            
+                            
+                            lastTouchTime = ofGetElapsedTimeMillis();
+                            
+                            //don't do anything if this option is already selected
+                            if(selectedScholarOption != hoveredOption){
+                            
+                                if(hoveredOption == 0){
+                                    
+                                    frame -> changeScholar(currentScholar);
+                                    frame -> hideFactSheet();
+                                    frame -> hideWorksSheet();
+                                    
+                                } else if(hoveredOption == 1){
+                                    
+                                    frame -> changeScholar(currentScholar);
+                                    frame -> showFactSheet();
+                                    frame -> hideWorksSheet();
+                                    
+                                } else if(hoveredOption == 2){
+                                    
+                                    frame -> changeScholar(currentScholar);
+                                    frame -> showWorksSheet();
+                                    frame -> hideFactSheet();
+                                }
                                 
-                                frame -> changeScholar(currentScholar);
-                                frame -> hideFactSheet();
-                                frame -> hideWorksSheet();
+                                selectedScholarOption = hoveredOption;
                                 
-                            } else if(hoveredOption == 1){
-                                
-                                frame -> changeScholar(currentScholar);
-                                frame -> showFactSheet();
-                                frame -> hideWorksSheet();
-                                
-                            } else if(hoveredOption == 2){
-                                
-                                frame -> changeScholar(currentScholar);
-                                frame -> showWorksSheet();
-                                frame -> hideFactSheet();
                             }
-                            
-                            selectedScholarOption = hoveredOption;
-                            
                         }
                     }
-                    
                     
                 } else {
                     
                     //right page
                     //tag button
-                    if(m.y > 0.26 && m.y < 0.45){
+                    if(thisTouch.y > 0.26 && thisTouch.y < 0.45){
                         
                         tagHover = true;
                         
                         //if we're inside the tag button, fake a Button press event
                         //to trigger the event to the book controller
-                        if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                        if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
 
                             //create a button event and send it to the book controller
                             ButtonEvent e;
@@ -726,6 +786,7 @@ void CenterBook::update(){
                             //set these as non-applicable
                             e.bookNum = -1;
                             e.shelfNum = -1;
+                            e.src = apparentBookCenter;
                             
                             ofNotifyEvent(newButtonClickEvt, e, this);
                             
@@ -734,12 +795,12 @@ void CenterBook::update(){
                         }
                         
                         //check for "back to list" button
-                    } else if(m.y > 0.61 && m.y < 0.78){
+                    } else if(thisTouch.y > 0.61 && thisTouch.y < 0.78){
                         
                         backToListHover = true;
                         
                         //go back to the list
-                        if(mouseTouches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                        if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
                             
                             currentOpenPage = 1;
                             
@@ -760,11 +821,11 @@ void CenterBook::update(){
             //look for home button on first page
             if(currentOpenPage != 0){
                 
-                if(m.x > homeLeftX && m.x < homeRightX && m.y > homeTopY && m.y < homeBotY){
+                if(thisTouch.x > homeLeftX && thisTouch.x < homeRightX && thisTouch.y > homeTopY && thisTouch.y < homeBotY){
                     
                     homeButtonHover = true;
                     
-                    if(mouseTouches[i].bIsTouching){
+                    if(touches[i].bIsTouching){
                         currentOpenPage = 0;
                         lastTouchTime = ofGetElapsedTimeMillis();
                     }
@@ -780,14 +841,20 @@ void CenterBook::update(){
         
     }
     
-    //hack to save a few CPU cycles. Only redraw the texture if there are actual touches.
-    //otherwise the texture will be static.
-//    if(mouseTouches.size()){
-//        
-//        //draws text to book
-//        
-//    }
-//    
+    //remove all the touches that haven't been updated recently
+    //starting from the end of the vector and moving to the front
+    for(int i = touches.size() - 1; i >= 0; i--){
+        
+        touches[i].update();
+        
+        if(touches[i].age > touchKillAgeSlider){
+            touches.erase( touches.begin() + i );
+        }
+        
+    }
+    
+    
+    
     drawContentToTexture();
     
     
@@ -895,20 +962,17 @@ void CenterBook::drawContentToTexture(){
     
     //draw Scholar button
     if(scholarButtonHover){
-        ofSetColor(buttonHighlightColor);
-        ofDrawRectangle(pageWidth/2 - buttonWidth/2, buttonTopMargin, buttonWidth, buttonHeight);
-        
-        //set text color too
-        ofSetColor(255);
+        scholarButtonColPct = ofLerp(scholarButtonColPct, 1.0, colorLerpInSlider);
     } else {
-        ofSetColor(buttonBaseColor);
-        ofDrawRectangle(pageWidth/2 - buttonWidth/2, buttonTopMargin, buttonWidth, buttonHeight);
-        
-        ofSetColor(activeTextColor);
+        scholarButtonColPct = ofLerp(scholarButtonColPct, 0.0, colorLerpOutSlider);
     }
     
+    //box color
+    ofSetColor( buttonBaseColor.getLerped(buttonHighlightColor, scholarButtonColPct) );
+    ofDrawRectangle(pageWidth/2 - buttonWidth/2, buttonTopMargin, buttonWidth, buttonHeight);
 
-    
+    //text color
+    ofSetColor( activeTextColor.getLerped(ofColor(255), scholarButtonColPct) );
     
     vector<string> scholarButtonText = {"Show", "Scholars" };
     
@@ -963,18 +1027,20 @@ void CenterBook::drawContentToTexture(){
     cornerFiligree.draw(pageWidth - filigreeMargin, pageHeight - filigreeMargin, -filigreeWidth, -filigreeWidth);
     
     
-    //draw Scholar button
+    //draw Tag button
     if(tagButtonHover){
-        ofSetColor(buttonHighlightColor);
-        ofDrawRectangle(pageWidth/2 - buttonWidth/2, buttonTopMargin, buttonWidth, buttonHeight);
-        
-        ofSetColor(255);
+        tagButtonColPct = ofLerp(tagButtonColPct, 1.0, colorLerpInSlider);
     } else {
-        ofSetColor(buttonBaseColor);
-        ofDrawRectangle(pageWidth/2 - buttonWidth/2, buttonTopMargin, buttonWidth, buttonHeight);
-        
-        ofSetColor(activeTextColor);
+        tagButtonColPct = ofLerp(tagButtonColPct, 0.0, colorLerpOutSlider);
     }
+    
+    //box color
+    ofSetColor( buttonBaseColor.getLerped(buttonHighlightColor, tagButtonColPct) );
+    ofDrawRectangle(pageWidth/2 - buttonWidth/2, buttonTopMargin, buttonWidth, buttonHeight);
+    
+    //text color
+    ofSetColor( activeTextColor.getLerped(ofColor(255), tagButtonColPct) );
+    
     
     vector<string> tagButtonText = {"Show", "Tags"};
     
@@ -1359,6 +1425,9 @@ void CenterBook::drawContentToTexture(){
     ofSetColor(bookFiligreeColor);
     thinDivider.draw(pageWidth/2, backButtonYPos, thinDivider.getWidth(), thinDivider.getHeight() * 2 );
     
+    //text color
+    ofSetColor( activeTextColor.getLerped(ofColor(255), tagButtonColPct) );
+    
     if(backToListHover){
         ofSetColor(buttonHighlightColor);
         ofDrawRectangle(page1LeftMargin, backButtonYPos + 10, pageWidth - page1LeftMargin * 2, highlightBoxHeight + 10);
@@ -1523,16 +1592,47 @@ void CenterBook::draw(){
         
         //go through touches (for now mouseTouches, but eventually OSC data from camera)
         //draw cursors, do button region detection, etc.
-        for(int i = 0; i < mouseTouches.size(); i++){
+        for(int i = 0; i < touches.size(); i++){
             
-            if(mouseTouches[i].bIsTouching){
-                ofSetColor(255, 0, 0);
+            ofVec3f p = touches[i].pos;
+            
+            //convert from normalized
+            //flip X because of FBO texture flipping
+            p.x = 1.0f - p.x;
+            p.x *= deskWidth;
+            p.y *= deskHeight;
+            p.z = -50;
+            
+            float rad = ofMap(touches[i].dist, 0, 50, 7, 50, true);
+            
+            //touch is green if touching
+            //otherwise, lero from white to green-ish
+            if(touches[i].bIsTouching){
+
+                ofSetColor(0, 255, 0);
+                
             } else {
-                ofSetColor(0);
+                
+                float colorPct = ofMap(touches[i].dist, 0, 40, 1.0, 0.0, true);
+
+                ofColor c(255);
+                c.lerp(ofColor(0, 255, 0), colorPct);
+                
+                ofSetColor(c);
             }
-        
             
-            ofDrawCircle((1.0f - mouseTouches[i].pos.x) * deskWidth, mouseTouches[i].pos.y * deskHeight, -50, 5);
+            ofSetLineWidth(3);
+            ofNoFill();
+            ofDrawCircle(p, rad);
+            
+//            if(touches[i].bIsTouching){
+//                ofSetColor(255, 0, 0);
+//            } else {
+//                ofSetColor(0);
+//            }
+//        
+//            
+//            ofDrawCircle((1.0f - touches[i].pos.x) * deskWidth, touches[i].pos.y * deskHeight, -50, 5);
             
         }
         
@@ -1702,6 +1802,8 @@ void CenterBook::setupGui(){
     gui.add(filigreeWidthSlider.setup("Filigree Width", 150, 0, 200));
     gui.add(filigreeHeightSlider.setup("Filigree Height", 150, 0, 200));
     gui.add(helpTextTopSlider.setup("Help Text Top M.", 10, 0, 100));
+    gui.add(colorLerpInSlider.setup("Btn Col LerpIN", 0.08f, 0.001, 0.3));
+    gui.add(colorLerpOutSlider.setup("Btn Col LerpOUT", 0.02f, 0.001, 0.3));
     
     gui.add(mappingLabel.setup("  MAPPING", ""));
 
@@ -1722,6 +1824,8 @@ void CenterBook::setupGui(){
     gui.add(bookPageTopSlider.setup("Book Top Bound", 0.1f, 0.0, 1.0));
     gui.add(bookPageBottomSlider.setup("Book Bottom Bound", 0.95f, 0.0, 1.0));
     gui.add(touchWaitSlider.setup("Wait after touch", 500, 10, 2000));
+    gui.add(touchKillAgeSlider.setup("Time touches last", 0.25, 0.0, 1.0));
+    
     
     maxRangeX = 100;
     maxRangeY = 320;

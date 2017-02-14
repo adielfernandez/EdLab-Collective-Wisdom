@@ -33,6 +33,7 @@ public:
     vector<Contribution> contributionList;
     
     
+    const int numBookModels = 77;
     
     ofEvent<Contribution> newContributionEvt;
     

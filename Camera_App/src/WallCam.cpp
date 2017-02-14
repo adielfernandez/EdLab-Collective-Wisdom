@@ -207,8 +207,8 @@ void WallCam::update(){
             //go through all the contours
             for(int i = 0; i < contours.size(); i++){
                 
-                //get all the points in the blob so we can find the lowest point
-                //i.e. the closest point to the wall
+                //get all the points in the blob so we can find the highest point
+                //(lowest on screen) i.e. the closest point to the wall
                 vector<ofPoint> points = contours.getPolyline(i).getVertices();
                 
                 //occasionally, contours will return polylines with zero vertices
@@ -228,7 +228,7 @@ void WallCam::update(){
                         }
                     }
                     
-                    ofVec2f lowestPoint(points[index].x, points[index].y);
+                    ofVec2f closestPoint(points[index].x, points[index].y);
                     
                     //since the depth at the edge pixel might not always be the true depth (at boundary of contour),
                     //look around the area just above the lowest point and
@@ -237,8 +237,8 @@ void WallCam::update(){
                     
                     //search pixels above and to the sides, wider area gives more stable touch data
                     int pixelArea = 20;
-                    for(int x = lowestPoint.x - pixelArea; x < lowestPoint.x + pixelArea; x++){
-                        for(int y = lowestPoint.y - pixelArea; y < lowestPoint.y; y++){
+                    for(int x = closestPoint.x - pixelArea; x < closestPoint.x + pixelArea; x++){
+                        for(int y = closestPoint.y - pixelArea; y < closestPoint.y; y++){
                             
                             //make sure the pixel is in bounds
                             if(x > 0 && x < camWidth && y > 0 && y < roiDepthSlider){
@@ -302,10 +302,10 @@ void WallCam::update(){
                     
                     //now we know the left and right bounds at any depth: xLeft and xRight
                     //so let's finally map them to a normalized scale
-                    float mappedX = ofMap(lowestPoint.x, xLeftEdge, xRightEdge, 0.0, 1.0);
+                    float mappedX = ofMap(closestPoint.x, xLeftEdge, xRightEdge, 0.0, 1.0);
                     
                     //get how far the touch is from the wall itself
-                    float distFromWall = threshPix.getHeight() - lowestPoint.y;
+                    float distFromWall = threshPix.getHeight() - closestPoint.y;
                     
                     //check if a touch exists with the ID, if it does, update it, if not add it.
                     bool touchExists = false;
@@ -324,7 +324,7 @@ void WallCam::update(){
                         touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), distFromWall);
                         
                         //store the raw coordinates of the low point for debug
-                        touches[existingIndex].rawCamPos = ofVec2f(lowestPoint.x, lowestPoint.y);
+                        touches[existingIndex].rawCamPos = closestPoint;
                         touches[existingIndex].rawDepth = touchDepth;
                         
                         //                    cout << "Touch[" << touches[existingIndex].id << "] updated" << endl;
@@ -335,7 +335,7 @@ void WallCam::update(){
                         t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), distFromWall);
                         
                         //store the raw coordinates of the low point for debug
-                        t.rawCamPos = ofVec2f(lowestPoint.x, lowestPoint.y);
+                        t.rawCamPos = closestPoint;
                         t.rawDepth = touchDepth;
                         
                         touches.push_back(t);

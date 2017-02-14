@@ -36,7 +36,7 @@ void TiledObject::setupTiledObject(bool isBookcase){
     waveSpeed = 2.0;   //in pixels per ms
     waveTileIndex = 0;
     
-    bIsAnimating = false;
+    bIsAnimating = true;
     lastAnimationTime = 0;
     
 }
@@ -52,7 +52,7 @@ void TiledObject::setupCommonGui(){
     gui.add(guiPosSlider.setup("Gui Position", min, min, max));
     
     gui.add(settingsLabel.setup("  GENERAL SETTINGS", ""));
-    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 6.0f));
+    gui.add(waveSpeedSlider.setup("Wave Speed", 1.0f, 0.1f, 2.5f));
     gui.add(effectDurationSlider.setup("Effect Duration", 1.8f, 0.1f, 5.0f));
     gui.add(backEasingSlider.setup("Easing Bounce Amt", 1.0, 0.0, 4.0));
     
@@ -85,44 +85,20 @@ void TiledObject::updateCommonGui(){
     
 }
 
-void TiledObject::triggerWave(ofVec2f epicenter){
+void TiledObject::triggerWave( int img, ofVec2f epicenter){
     
 
     
     waveEpicenter = epicenter;
+
+    //send the next image number to the tiles
+    //they will draw with the current image and
+    //flip with the next image on the back
+    nextImg = img;
     
-    //pick next image depending on type
-    //bookcase increments by one, everything else picks a random number
-    if(bIsBookcase){
-        nextImg = currentImg + 1;
-        
-        
-        if(nextImg == images.size()) nextImg = 0;
-        
-    } else {
-        
-        nextImg++;
-        
-        if(nextImg > images.size() - 1){
-            nextImg = 0;
-        }
-//        nextImg = round(ofRandom( images.size() - 1 ));
-//        
-//        //make sure the next image selected isn't the same as the current one
-//        if(nextImg == currentImg){
-//            
-//            nextImg += (int)ofRandom(images.size() - 1);
-//            
-//            //wrap around
-//            if(nextImg > images.size() - 1){
-//                nextImg -= images.size();
-//            }
-//            
-//        }
-    }
-    
-    //then store it for the next time
-    currentImg = nextImg;
+    //store it again so when the object is finished
+    //animating, we'll have that next one as the current image
+    currentImg = img;
     
     
     //go through all the tiles and calculate their distance from the epicenter
@@ -245,8 +221,9 @@ void TiledObject::update(){
     }
     
     //Wait for the last tile to finish it's effect
-    //the turn the animation flag off
-    if(ofGetElapsedTimef() - lastAnimationTime > effectDurationSlider){
+    //then turn the animation flag off. Wait a bit extra to make sure all tiles
+    //have settled down or we'll have weird artifacts in the static texture
+    if(ofGetElapsedTimef() - lastAnimationTime > effectDurationSlider + 2){
         bIsAnimating = false;
     }
     

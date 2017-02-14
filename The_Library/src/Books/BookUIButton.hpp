@@ -28,6 +28,7 @@ struct ButtonEvent{
     ofColor tagCol;
     bool bIsCenterBookButton;
     bool bScholarButton;
+    ofVec3f src;
     
 };
 

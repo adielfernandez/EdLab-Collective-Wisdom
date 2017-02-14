@@ -124,7 +124,16 @@ void DeskCam::update(){
     ofxCv::ContourFinder c;
     if(contoursOut.tryReceive(c)){
         contours = c;
+        
+        bNewContours = true;
     }
+    
+    ofPixels fg;
+    if(foregroundPixOut.tryReceive(fg)){
+        foregroundPix = fg;
+    }
+    
+    
     
     
     //---------------------------------------------------------------
@@ -180,6 +189,143 @@ void DeskCam::update(){
         firstStop = false;
         
     }
+    
+    
+    
+    
+    
+    //process new data from thread if there are contours to find
+    
+    if( bNewContours ){
+        
+        bNewContours = false;
+        
+        //Go through previous touch data and set all touches to not updated
+        for(int i = 0; i < touches.size(); i++){
+            touches[i].bUpdated = false;
+            
+            touches[i].distForTouch = touchThresholdSlider;
+            touches[i].numPosSmoothingPts = posSmoothingSlider;
+            touches[i].numDistSmoothingPts = distSmoothingSlider;
+            
+        }
+        
+        
+        for(int i = 0; i < contours.size(); i++){
+            
+            
+            //get all the points in the blob so we can find the lowest point
+            //(highest on screen) i.e. the closest point to the wall
+            vector<ofPoint> points = contours.getPolyline(i).getVertices();
+            
+            //occasionally, contours will return polylines with zero vertices
+            //so check for verts to avoid seg-fault
+            if(points.size() > 0){
+                
+                //go through all the vertices and find the point with the lowest y value
+                int yVal = 100000;
+                int index = 0;
+                for(int j = 0; j < points.size(); j++){
+                    //if we find a point lower than yVal, store it
+                    if(points[j].y < yVal){
+                        yVal = points[j].y;
+                        
+                        //also store this index;
+                        index = j;
+                    }
+                }
+                
+                ofVec2f fingerTipPoint(points[index].x, points[index].y);
+            
+                //since the depth at the edge pixel might not always be the true depth (at boundary of contour),
+                //look around the area just above the lowest point and pick the highest (closest)
+                //depth value as the depth reading, this should be the hand rather than table noise
+                float touchDepth = -1;
+                
+                //search pixels above and to the sides, wider area gives more stable touch data
+                int pixelArea = touchSearchAreaSlider;
+                for(int x = fingerTipPoint.x - pixelArea; x < fingerTipPoint.x + pixelArea; x++){
+                    for(int y = fingerTipPoint.y; y < fingerTipPoint.y + pixelArea; y++){
+                        
+                        //make sure the pixel is in bounds
+                        if(x > 0 && x < foregroundPix.getWidth() && y > 0 && y < foregroundPix.getHeight()){
+                            int thisIndex = foregroundPix.getPixelIndex(x, y);
+                            if(foregroundPix[thisIndex] > touchDepth) touchDepth = foregroundPix[thisIndex];
+                        }
+                        
+                    }
+                }
+                
+                //now we know the left and right bounds at any depth: xLeft and xRight
+                //so let's finally map them to a normalized scale
+                float mappedX = ofMap(fingerTipPoint.x, 0, camWidth, 0.0, 1.0);
+                float mappedY = ofMap(fingerTipPoint.y, 0, camHeight, 0.0, 1.0);
+                
+                //get how far above the desk the fingertip is
+                float heightAboveDesk = touchDepth;
+                
+                //check if a touch exists with the ID, if it does, update it, if not add it.
+                bool touchExists = false;
+                int existingIndex;
+                
+                for(int j = 0; j < touches.size(); j++){
+                    if(touches[j].id == contours.getLabel(i)){
+                        touchExists = true;
+                        existingIndex = j;
+                        break;
+                    }
+                }
+                
+                if(touchExists){
+                    
+                    //update the touch
+                    touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), heightAboveDesk);
+                    
+                    touches[existingIndex].rawCamPos = fingerTipPoint;
+                    touches[existingIndex].rawDepth = touchDepth;
+                    
+                } else {
+                    
+                    //add the new touch
+                    DeskTouch t;
+                    t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), heightAboveDesk);
+
+                    t.rawCamPos = fingerTipPoint;
+                    t.rawDepth = touchDepth;
+                    
+                    touches.push_back(t);
+                    
+                }
+
+                
+                
+            }
+        
+        
+        
+        
+        }
+        
+        
+        //remove all the touches that haven't been updated recently
+        //starting from the end of the vector and moving to the front
+        for(int i = touches.size() - 1; i >= 0; i--){
+            
+            if(!touches[i].bUpdated){
+                touches.erase( touches.begin() + i );
+            }
+            
+        }
+        
+        bNewTouchesToSend = true;
+        
+        
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -373,15 +519,29 @@ void DeskCam::drawRaw(int x, int y){
     
 }
 
-//bDrawShifted = false draws at X and Y
-//true draws as if it were overlaying on top of the raw image
+
 void DeskCam::drawThresh(int x, int y){
     
-    ofImage threshImg;
-    threshImg.setFromPixels(threshPix);
-
-    threshImg.draw(x, y);
     
+    if(drawForegroundToggle){
+        
+        ofImage fgImg;
+        fgImg.setFromPixels(foregroundPix);
+        fgImg.draw(x, y);
+
+        ofSetColor(255);
+        ofDrawBitmapString("Foreground (640 x 480): after BG subtraction", x, y - 5);
+        
+    } else {
+        
+        ofImage threshImg;
+        threshImg.setFromPixels(threshPix);
+        threshImg.draw(x, y);
+        
+        ofSetColor(255);
+        ofDrawBitmapString("Processed (640 x 480): crop, threshold, contours", x, y - 5);
+        
+    }
     
     float w = threshPix.getWidth();
     float h = threshPix.getHeight();
@@ -431,11 +591,25 @@ void DeskCam::drawThresh(int x, int y){
                 
                 contourData += ofToString(label) + " : " + ofToString(c.x) + ", " + ofToString(c.y) + "\n";
                 
+                
             }
             
             ofSetColor(255);
             ofDrawBitmapString(contourData, 0, h + 20);
 
+        }
+        
+        //draw the low points of the touches
+        ofSetColor(0, 0, 255);
+        for(int j = 0; j < touches.size(); j++){
+            ofDrawCircle(touches[j].rawCamPos, 5);
+            ofDrawBitmapStringHighlight(ofToString(touches[j].id) + " : " + ofToString(touches[j].rawCamPos) + "\n" + ofToString(touches[j].dist), touches[j].rawCamPos.x + 20, touches[j].rawCamPos.y);
+            
+            //draw the touch search area for the finger point
+            ofNoFill();
+            ofSetColor(0, 255, 255);
+            ofDrawRectangle(touches[j].rawCamPos.x - touchSearchAreaSlider, touches[j].rawCamPos.y, touchSearchAreaSlider * 2, touchSearchAreaSlider);
+            
         }
         
     }
@@ -448,11 +622,78 @@ void DeskCam::drawThresh(int x, int y){
         ofSetColor(255);
         
         float depth = rawPix[rawPix.getPixelIndex(ofGetMouseX() - x, ofGetMouseY() - y)];
-        ofDrawBitmapStringHighlight("Raw Depth: " + ofToString(depth), ofGetMouseX() - 20, ofGetMouseY() - 20);
+        ofDrawBitmapStringHighlight("Raw Depth: " + ofToString(depth), ofGetMouseX() + 10, ofGetMouseY());
+        
+        float fgVal = foregroundPix[foregroundPix.getPixelIndex(ofGetMouseX() - x, ofGetMouseY() - y)];
+        ofDrawBitmapStringHighlight("Diff. val: " + ofToString(fgVal), ofGetMouseX() + 10, ofGetMouseY() + 20);
         
     }
     
 }
+
+void DeskCam::drawDeskProxy(int x, int y){
+    
+    ofSetColor(255);
+    ofDrawBitmapString("Desk Proxy with Normalized Coordinates", x, y - 5);
+    
+    
+    ofPushMatrix();
+    ofTranslate(x, y);
+    
+    //draw desk outline
+    float w = 400;
+    float h = 175;
+    
+    ofNoFill();
+    
+    ofSetColor(255, 200, 0);
+    ofDrawRectangle(0, 0, w, h);
+    
+    //draw touch data
+    for(int i = 0; i < touches.size(); i++){
+        
+        ofVec2f p = touches[i].pos;
+        
+        //convert from normalized
+        p.x *= w;
+        p.y *= h;
+        
+        float rad = ofMap(touches[i].dist, 0, 20, 7, 50, true);
+        
+        if(touches[i].bIsTouching){
+            ofSetColor(0, 255, 0);
+            
+        } else {
+            ofSetColor(0, 128, 255);
+        }
+        
+        ofSetLineWidth(3);
+        ofNoFill();
+        ofDrawCircle(p, rad);
+        
+        ofDrawBitmapStringHighlight(ofToString(touches[i].pos) + "\n" + ofToString(touches[i].dist), p);
+        
+    }
+    
+    
+    string touchData = "Num Touches: " + ofToString(touches.size()) + "\n";
+    
+    for(int i = 0; i < touches.size(); i++){
+        
+        touchData += "touch[" + ofToString(i) + "] - ID: " + ofToString(touches[i].id) + ", X: " + ofToString(touches[i].pos.x) + ", Y: " + ofToString(touches[i].pos.y) + ", Height: " + ofToString(touches[i].dist) + "\n";
+        
+    }
+    
+    ofSetColor(255);
+    ofDrawBitmapString(touchData, 0, h + 20);
+    
+    ofPopMatrix();
+    
+    
+    
+}
+
+
 
 
 
@@ -495,10 +736,11 @@ void DeskCam::setupGui(){
     
     gui.add(bgDiffLabel.setup("   BG SUBTRACTION", ""));
     gui.add(useBgDiff.setup("Use BG Diff", false));
-    gui.add(learningTimeSlider.setup("Frames to learn BG", 100, 0, 2000));
+    gui.add(learningTimeSlider.setup("Frames to learn BG", 100, 0, 500));
     gui.add(resetBG.setup("Reset Background"));
     
     gui.add(contoursLabel.setup("   CONTOUR FINDING", ""));
+    gui.add(drawForegroundToggle.setup("Draw Foreground", false));
     gui.add(drawContoursToggle.setup("Draw Contours", true));
     gui.add(drawBlobInfoToggle.setup("Draw Blob info", true));
     gui.add(minBlobAreaSlider.setup("Min Blob Area", 0, 0, 5000));
@@ -506,6 +748,11 @@ void DeskCam::setupGui(){
     gui.add(persistenceSlider.setup("Persistence", 15, 0, 100));
     gui.add(maxDistanceSlider.setup("Max Distance", 32, 0, 100));
     
+    gui.add(touchSettingsLabel.setup("   TOUCH SETTINGS", ""));
+    gui.add(touchThresholdSlider.setup("Touch Threshold", 5, 1, 30));
+    gui.add(touchSearchAreaSlider.setup("Touch Search Area", 5, 1, 30));
+    gui.add(posSmoothingSlider.setup("Pos Smooth Amt", 10, 1, 30));
+    gui.add(distSmoothingSlider.setup("Dist Smooth Amt", 6, 1, 30));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     
@@ -517,6 +764,7 @@ void DeskCam::setupGui(){
     maskingLabel.setBackgroundColor(ofColor(255));
     contoursLabel.setBackgroundColor(ofColor(255));
     bgDiffLabel.setBackgroundColor(ofColor(255));
+    touchSettingsLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels for some reason
     cvLabel.setDefaultTextColor(ofColor(0));
@@ -554,6 +802,7 @@ void DeskCam::threadedFunction(){
             ofPixels rawPix_thread;      
             ofPixels threshPix_thread, blurredPix_thread;
             ofPixels mappedBlurredPix_thread;
+            ofPixels foregroundPix_thread;
             ofxCv::ContourFinder contours_thread;
             
             //get all the values from the settings vector
@@ -588,7 +837,7 @@ void DeskCam::threadedFunction(){
             rawPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
             blurredPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
             mappedBlurredPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
-            threshPix_thread.allocate(camWidth_thread/2, camHeight_thread/2, OF_IMAGE_GRAYSCALE);
+            threshPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
             
             
             //Convert from ofShortPixels to ofPixels and put into rawPix_thread
@@ -611,10 +860,6 @@ void DeskCam::threadedFunction(){
             
             //take the rawPixels and get the bi-linear mapped subset from it
             getQuadSubPixels(blurredPix_thread, mappedBlurredPix_thread, meshPts);
-
-            //resize AFTER we get the subimage, so we don't lose data
-            //from the blurring operation
-            mappedBlurredPix_thread.resize(camWidth_thread/2, camHeight_thread/2, OF_INTERPOLATE_BICUBIC);
             
             //either use BG differencing or just straight up threshold it
             if(useBgDiff){
@@ -635,6 +880,11 @@ void DeskCam::threadedFunction(){
                 
                 background.update(mappedBlurredPix_thread, threshPix_thread);
                 
+                //get the background pixels
+                ofxCv::toOf( background.getForeground() , foregroundPix_thread );
+                
+                //send it out
+                foregroundPixOut.send(std::move(foregroundPix_thread));
                 
             } else {
                 

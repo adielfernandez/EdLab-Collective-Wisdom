@@ -1,3 +1,4 @@
+#pragma once
 
 #include "ofMain.h"
 #include "ofxLibwebsockets.h"
@@ -20,7 +21,7 @@
 
 #include "SceneController.hpp"
 
-#pragma once
+
 
 class ofApp : public ofBaseApp{
 

@@ -13,6 +13,8 @@
 
 #endif /* BookController_hpp */
 
+#pragma once
+
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "ofxGui.h"
@@ -28,7 +30,8 @@
 #include "../Ornaments/Ornament.hpp"
 #include "TagRibbon.hpp"
 
-#pragma once
+#include "Touch.hpp"
+
 
 
 class BookController{
@@ -44,7 +47,7 @@ public:
     void update();
     void draw();
     
-    void checkMouseEvents(int x, int y);
+    void checkTouchEvents(int x, int y, bool touchState);
     
     ScholarData *scholarData;
     
@@ -66,6 +69,9 @@ public:
     double lastRecycleTime;
     
     
+    //stores the touch data
+    vector<Touch> touches;
+    void receiveTouch(Touch t);
     
     
     void onButtonClickEvt(ButtonEvent &b);
@@ -169,6 +175,9 @@ public:
     ofxFloatSlider openDurationSlider;
     ofxFloatSlider closeDelaySlider;
     ofxFloatSlider closeDurationSlider;
+    
+    ofxLabel touchSettingsLabel;
+    ofxFloatSlider touchKillAgeSlider;
     
     void giveSettingsToRibbon(TagRibbon *tr);
     

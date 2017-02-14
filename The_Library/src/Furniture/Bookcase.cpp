@@ -59,6 +59,7 @@ void Bookcase::setup(string name, bool _leftCase){
 //    saveSettings();
     
     loadSettings();
+    setVarsFromGui();
     
     //now that we've loaded, move the gui to where we last had it
     gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
@@ -119,27 +120,7 @@ void Bookcase::update(){
         TiledObject::updateCommonGui();
     
         //set variables from GUI settings
-        bookcaseCorners[0] = frameCorner0;
-        bookcaseCorners[1] = frameCorner1;
-        bookcaseCorners[2] = frameCorner2;
-        bookcaseCorners[3] = frameCorner3;
-        
-        controlPointPcts[0] = controlPtPct0;
-        controlPointPcts[1] = controlPtPct1;
-        controlPointPcts[2] = controlPtPct2;
-        controlPointPcts[3] = controlPtPct3;
-        controlPointPcts[4] = controlPtPct4;
-        controlPointPcts[5] = controlPtPct5;
-        controlPointPcts[6] = controlPtPct6;
-        controlPointPcts[7] = controlPtPct7;
-        controlPointPcts[8] = controlPtPct8;
-        controlPointPcts[9] = controlPtPct9;
-        controlPointPcts[10] = controlPtPct10;
-        controlPointPcts[11] = controlPtPct11;
-        controlPointPcts[12] = controlPtPct12;
-        controlPointPcts[13] = controlPtPct13;
-        controlPointPcts[14] = controlPtPct14;
-        controlPointPcts[15] = controlPtPct15;
+        setVarsFromGui();
         
         //ofVec2f controlPoints are for convenience and calculated
         //based on controlPointsPcts vector. Recalculate them in case settings have changed
@@ -413,11 +394,8 @@ void Bookcase::setupGui(){
     
 }
 
-void Bookcase::loadSettings(){
+void Bookcase::setVarsFromGui(){
     
-    gui.loadFromFile( filePath + guiName + ".xml");
-    
-    //set runtime variables to loaded GUI settings
     bookcaseCorners[0] = frameCorner0;
     bookcaseCorners[1] = frameCorner1;
     bookcaseCorners[2] = frameCorner2;
@@ -431,6 +409,22 @@ void Bookcase::loadSettings(){
     controlPointPcts[5] = controlPtPct5;
     controlPointPcts[6] = controlPtPct6;
     controlPointPcts[7] = controlPtPct7;
+    controlPointPcts[8] = controlPtPct8;
+    controlPointPcts[9] = controlPtPct9;
+    controlPointPcts[10] = controlPtPct10;
+    controlPointPcts[11] = controlPtPct11;
+    controlPointPcts[12] = controlPtPct12;
+    controlPointPcts[13] = controlPtPct13;
+    controlPointPcts[14] = controlPtPct14;
+    controlPointPcts[15] = controlPtPct15;
+    
+
+    
+}
+
+void Bookcase::loadSettings(){
+    
+    gui.loadFromFile( filePath + guiName + ".xml");
     
 }
 
@@ -1318,18 +1312,21 @@ void Bookcase::mapMesh(){
     shelfCorners.clear();
     shelfCorners.resize(3);
     
+    //top shelf
     shelfCorners[0].resize(4);
     shelfCorners[0][0] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[14], controlPoints[3]);
     shelfCorners[0][1] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[14], controlPoints[3]);
     shelfCorners[0][2] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[15], controlPoints[2]);
     shelfCorners[0][3] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[15], controlPoints[2]);
 
+    //middle shelf
     shelfCorners[1].resize(4);
     shelfCorners[1][0] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[12], controlPoints[5]);
     shelfCorners[1][1] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[12], controlPoints[5]);
     shelfCorners[1][2] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[13], controlPoints[4]);
     shelfCorners[1][3] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[13], controlPoints[4]);
     
+    //bottom shelf
     shelfCorners[2].resize(4);
     shelfCorners[2][0] = getIntersectionPoint(controlPoints[0], controlPoints[9], controlPoints[10], controlPoints[7]);
     shelfCorners[2][1] = getIntersectionPoint(controlPoints[1], controlPoints[8], controlPoints[10], controlPoints[7]);
@@ -1386,6 +1383,85 @@ void Bookcase::setStaticBookcaseMesh(){
     
 
 }
+
+ofVec2f Bookcase::mapToShelves( float x, float y ){
+    
+    //we'll be doing a bilinear interpolation between 4 control points
+    //to be determined below.
+    vector<ofVec2f> ctrlPts;
+    ctrlPts.assign( 4, ofVec2f(0) );
+    
+    float yAdjusted;
+    
+    //Split it up into three sections to figure out which control points to map between
+    //Control points are clockwise from top left but are taken from the shelfCorners
+    //which are counterclockwise from bottom left!
+    if( y < 0.3333 ){
+        
+        //top shelf: shelfCorners[0]
+        
+        ctrlPts[0] = shelfCorners[0][3];
+        ctrlPts[1] = shelfCorners[0][2];
+        ctrlPts[2] = shelfCorners[0][1];
+        ctrlPts[3] = shelfCorners[0][0];
+        
+        //adjust Y so that it maps 0 to 1 in THIS section
+        yAdjusted = ofMap(y, 0, 0.33333, 0.0, 1.0);
+        
+    } else if( y < 0.6666 ){
+        
+        //middle third of incoming points are from bottom points of shelfCorners[0]
+        //to bottom points of shelfCorners[1]
+        
+        ctrlPts[0] = shelfCorners[0][0];
+        ctrlPts[1] = shelfCorners[0][1];
+        ctrlPts[2] = shelfCorners[1][1];
+        ctrlPts[3] = shelfCorners[1][0];
+
+        //adjust Y so that it maps 0 to 1 in THIS section
+        yAdjusted = ofMap(y, 0.3333, 0.6666, 0.0, 1.0);
+        
+    } else {
+        
+        //Bottom third of incoming points are from bottom points of shelfCorners[1]
+        //to bottom points of shelfCorners[2]
+        
+        ctrlPts[0] = shelfCorners[1][0];
+        ctrlPts[1] = shelfCorners[1][1];
+        ctrlPts[2] = shelfCorners[2][1];
+        ctrlPts[3] = shelfCorners[2][0];
+        
+        //adjust Y so that it maps 0 to 1 in THIS section
+        yAdjusted = ofMap(y, 0.6666, 1.0, 0.0, 1.0);
+    
+    }
+    
+    //now do a bilinear interpolation between these 4 control points
+    /*
+     
+     go down the Y to find then go across the X
+     
+                        0                   1
+                        |                   |
+      Y% down  leftMid  |---------X---------| rightMid
+                        |                   |
+                        3                   2
+                                X% across
+     
+     */
+    
+
+    ofVec2f leftMid = ctrlPts[0].getInterpolated(ctrlPts[3], yAdjusted);
+    ofVec2f rightMid = ctrlPts[1].getInterpolated(ctrlPts[2], yAdjusted);
+    
+    ofVec2f output = leftMid.getInterpolated(rightMid, x);
+    
+    return output;
+    
+    
+}
+
+
 
 
 

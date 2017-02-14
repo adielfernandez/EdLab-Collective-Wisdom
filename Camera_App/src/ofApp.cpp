@@ -147,7 +147,7 @@ void ofApp::draw(){
     if(leftCam.bNewTouchesToSend){
         
         //prepare a bundle to send
-        ofxOscBundle bundle = getBundleForTouches(centerCam.touches, "/LeftCam/touch");
+        ofxOscBundle bundle = getBundleForTouches(leftCam.touches, "/LeftCam/touch");
         
         oscSender.sendBundle(bundle);
         
@@ -169,7 +169,7 @@ void ofApp::draw(){
         //mark as sent
         centerCam.bNewTouchesToSend = false;
         
-//        cout << "Sent bundle for center cam" << endl;
+        cout << "Sent bundle for center cam" << endl;
         
     }
 

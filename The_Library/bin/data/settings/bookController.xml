@@ -49,5 +49,7 @@
 <Tag_noise_amp>18.25</Tag_noise_amp>
 	<Tag_noise_speed>1.70006</Tag_noise_speed>
 	<Tag_noise_scale>0.205079</Tag_noise_scale>
-<Stagger_Time>0.02</Stagger_Time>
+<Stagger_Time>0.15</Stagger_Time>
+<__TOUCH_SETTINGS/>
+	<Time_touches_last>0.25</Time_touches_last>
 </bookController>

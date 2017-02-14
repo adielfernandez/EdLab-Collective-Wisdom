@@ -168,11 +168,12 @@ void BookController::setup(vector<Contribution> *cList){
         fonts.push_back(f);
     }
     
-    UIFont.load("assets/interface/Century-gothic-bold.ttf", 15);
+    UIFont.load("assets/interface/Century-gothic-bold.ttf", 13);
 
     //decrease letter spacing a bit to fit more text into tight spaces
     UIFont.setLetterSpacing(0.9);
 
+    
     
     buttonIcons.resize(6);
     buttonIcons[0].load("assets/interface/buttons/exit.png");
@@ -413,15 +414,71 @@ void BookController::setup(vector<Contribution> *cList){
     
 }
 
-void BookController::checkMouseEvents(int x, int y){
-    
 
+void BookController::receiveTouch(Touch t){
+    
+    //check to see if t is new or if there
+    //exists one with the same ID already
+    
+    bool touchExists = false;
+    int existingIndex = -1;
+    
+    for(int i = 0; i < touches.size(); i++){
+        
+        if(touches[i].ID == t.ID){
+            
+            touchExists = true;
+            existingIndex = i;
+            break;
+            
+        }
+        
+    }
+    
+    //if it's new, add it. If not, update it.
+    if( touchExists ){
+        
+        touches[existingIndex].ID = t.ID;
+        touches[existingIndex].pos = t.pos;
+        touches[existingIndex].dist = t.dist;
+        touches[existingIndex].bIsTouching = t.bIsTouching;
+        
+    } else {
+        
+        t.birthTime = ofGetElapsedTimef();
+        touches.push_back(t);
+        
+        
+    }
+    
+    
+    
+    
+    
+}
+
+
+
+void BookController::checkTouchEvents(int x, int y, bool touchState){
+    
+    //check ornaments
+    
+    for(int i = 0; i < ornaments.size(); i++){
+        
+        //only trigger if not on an active shelf
+        //ornaments and shelves have same indices
+        if(shelfOverlays[i].bIsInUse == false){
+            ornaments[i].checkForClicks(x, y, touchState);
+        }
+    }
+    
+    
     //Check all books for mouse presence
     for(int i = 0; i < books.size(); i++){
      
         //if we're not active AND we're not in a new book event AND
         //the touch is true, check for book triggers
-        if(!books[i].bIsActive && !books[i].bIsNewBookEvt && ofGetMousePressed()){
+        if(!books[i].bIsActive && !books[i].bIsNewBookEvt && touchState){
             
             //only check books that are not on active shelves
             if(shelfOverlays[books[i].shelfNum].bIsInUse == false){
@@ -444,7 +501,7 @@ void BookController::checkMouseEvents(int x, int y){
         } else {
             
             //if we ARE active, check for buttons
-            books[i].checkButtonsForClicks(x, y, ofGetMousePressed());
+            books[i].checkButtonsForClicks(x, y, touchState);
 
                         
         }
@@ -476,23 +533,6 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
             //---------------------
             //-----FIND BY TAG-----
             //---------------------
-            
-            
-            //first check if it was the centerBook tagButton
-//            if(b.bIsCenterBookButton){
-//                
-//                //src based on centerbook button position (should make this a gui setting)
-//                src = ofVec3f( 1094, 840, -80);
-//                
-//                
-//            } else {
-//                
-//                //src position based on typical book button positions
-//                BookUIButton *bttn = &books[b.bookNum].tagButton;
-//                src = bttn -> displayedPos + ofVec3f(bttn -> buttonWidth/2, bttn -> buttonHeight/2, -80);
-//                
-//                
-//            }
             
             //go through all the books and trigger a ribbon from that
             //book's tag button to all the books that share the same tag
@@ -744,8 +784,29 @@ void BookController::update(){
         }
     }
     
-    //this will eventually be looping through camera touches
-    checkMouseEvents(ofGetMouseX(), ofGetMouseY());
+    
+    //go through the touches and check for detection zones
+    for(int i = 0; i < touches.size(); i++){
+        checkTouchEvents(touches[i].mappedPos.x, touches[i].mappedPos.y, touches[i].bIsTouching);
+    }
+
+    
+    //pretend the mouse is a touch:
+    checkTouchEvents(ofGetMouseX(), ofGetMouseY(), ofGetMousePressed());
+    
+    
+    
+    //remove all the touches that haven't been updated recently
+    //starting from the end of the vector and moving to the front
+    for(int i = touches.size() - 1; i >= 0; i--){
+        
+        touches[i].update();
+        
+        if(touches[i].age > touchKillAgeSlider){
+            touches.erase( touches.begin() + i );
+        }
+        
+    }
     
     
     //update the shelf overlays
@@ -880,6 +941,39 @@ void BookController::draw(){
         ornaments[i].draw();
     }
 
+    
+    //go through touches (for now mouseTouches, but eventually OSC data from camera)
+    //draw cursors, do button region detection, etc.
+    for(int i = 0; i < touches.size(); i++){
+        
+        ofVec3f p = touches[i].mappedPos;
+        
+        float rad = ofMap(touches[i].dist, 0, 50, 7, 50, true);
+        
+        //touch is green if touching
+        //otherwise, lero from white to green-ish
+        if(touches[i].bIsTouching){
+            
+            ofSetColor(0, 255, 0);
+            
+        } else {
+            
+            float colorPct = ofMap(touches[i].dist, 0, 40, 1.0, 0.0, true);
+            
+            ofColor c(255);
+            c.lerp(ofColor(0, 255, 0), colorPct);
+            
+            ofSetColor(c);
+        }
+        
+        ofSetLineWidth(3);
+        ofNoFill();
+//        ofDrawCircle(p.x, p.y, -100, rad);
+        
+    }
+    ofFill();
+    
+    
     
     //draw any tagRibbons we have
     for(int i = 0; i < tagRibbons.size(); i++){
@@ -1032,6 +1126,9 @@ void BookController::setupGui(){
     gui.add(openDurationSlider.setup("Open duration", 2.0f, 0.001f, 4.0f));
     gui.add(closeDelaySlider.setup("Close delay", 0.5f, 0.0f, 3.0f));
     gui.add(closeDurationSlider.setup("Close duration", 2.0f, 0.001f, 4.0f));
+    
+    gui.add(touchSettingsLabel.setup("  TOUCH SETTINGS", ""));
+    gui.add(touchKillAgeSlider.setup("Time touches last", 0.25f, 0.0f, 1.0f));
     
     gui.setHeaderBackgroundColor(ofColor(255));
     

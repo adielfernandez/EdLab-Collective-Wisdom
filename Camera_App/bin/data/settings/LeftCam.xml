@@ -1,15 +1,15 @@
 <LeftCam>
 	<___IMAGE_PROCESSING/>
-	<Blur>6</Blur>
+	<Blur>8</Blur>
 	<Near_Threshold>255</Near_Threshold>
-	<Far_Threshold>15</Far_Threshold>
-	<Number_of_erosions>0</Number_of_erosions>
-	<Number_of_dilations>1</Number_of_dilations>
+	<Far_Threshold>2</Far_Threshold>
+	<Number_of_erosions>1</Number_of_erosions>
+	<Number_of_dilations>0</Number_of_dilations>
 	<___ROI_SETTINGS/>
-	<Region_Depth>108</Region_Depth>
-	<Wall_Level_Cutoff>242</Wall_Level_Cutoff>
+	<Region_Depth>132</Region_Depth>
+	<Wall_Level_Cutoff>254</Wall_Level_Cutoff>
 	<___CONTOUR_FINDING/>
-	<Min_Blob_Area>255</Min_Blob_Area>
+	<Min_Blob_Area>540</Min_Blob_Area>
 	<Max_Blob_Area>9600</Max_Blob_Area>
 	<Persistence>66</Persistence>
 	<Max_Distance>32</Max_Distance>
@@ -21,21 +21,25 @@
 	<Draw_Blob_info>1</Draw_Blob_info>
 <___BG_SUBTRACTION/>
 	<Use_BG_Diff>1</Use_BG_Diff>
-	<Frames_to_learn_BG>100</Frames_to_learn_BG>
+	<Frames_to_learn_BG>30</Frames_to_learn_BG>
 <Dist_from_wall_for_a_hit>10</Dist_from_wall_for_a_hit>
-<Dist_for_touch>10</Dist_for_touch>
+<Dist_for_touch>21</Dist_for_touch>
 <___CONTROL_POINTS/>
-	<First_Depth_Pt>39</First_Depth_Pt>
-	<Second_Depth_Pt>106</Second_Depth_Pt>
-	<Third_Depth_Pt>177</Third_Depth_Pt>
-	<Fourth_Depth_Pt>250</Fourth_Depth_Pt>
-	<First_Left_X>459</First_Left_X>
-	<First_Right_X>180</First_Right_X>
-	<Second_Left_X>489</Second_Left_X>
-	<Second_Right_X>156</Second_Right_X>
-	<Third_Left_X>528</Third_Left_X>
-	<Third_Right_X>113</Third_Right_X>
-	<Fourth_Left_X>592</Fourth_Left_X>
-	<Fourth_Right_X>41</Fourth_Right_X>
+	<First_Depth_Pt>42</First_Depth_Pt>
+	<Second_Depth_Pt>102</Second_Depth_Pt>
+	<Third_Depth_Pt>164</Third_Depth_Pt>
+	<Fourth_Depth_Pt>223</Fourth_Depth_Pt>
+	<First_Left_X>455</First_Left_X>
+	<First_Right_X>181</First_Right_X>
+	<Second_Left_X>485</Second_Left_X>
+	<Second_Right_X>155</Second_Right_X>
+	<Third_Left_X>526</Third_Left_X>
+	<Third_Right_X>110</Third_Right_X>
+	<Fourth_Left_X>600</Fourth_Left_X>
+	<Fourth_Right_X>40</Fourth_Right_X>
 <Rotate_Image>1</Rotate_Image>
+<___TOUCH_SETTINGS/>
+	<Touch_Search_Area>15</Touch_Search_Area>
+	<Pos_Smooth_Amt>10</Pos_Smooth_Amt>
+	<Dist_Smooth_Amt>3</Dist_Smooth_Amt>
 </LeftCam>

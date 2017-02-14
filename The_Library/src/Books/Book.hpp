@@ -13,6 +13,7 @@
 
 #endif /* Book_hpp */
 
+#pragma once
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "ofxEasing.h"
@@ -21,7 +22,6 @@
 #include "SpawnRibbon.hpp"
 
 
-#pragma once
 
 class Book{
     

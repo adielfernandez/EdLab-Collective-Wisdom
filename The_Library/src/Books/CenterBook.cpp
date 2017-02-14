@@ -603,8 +603,18 @@ void CenterBook::update(){
                     if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
 
                         //do redecorate animation here...
-                        bool redecorate = true;
-                        ofNotifyEvent(redecorateEvent, redecorate, this);
+                        
+//                        bool redecorate = true;
+//                        ofNotifyEvent(redecorateEvent, redecorate, this);
+                        
+                        SceneEvent se;
+                        
+                        //set at just above desk level
+                        se.pos.set( ofGetWidth()/2, 700 );
+                        se.type = SceneEvent::CENTERBOOK;
+                        
+                        ofNotifyEvent(redecorateEvent, se, this);
+                        
                         
                         lastTouchTime = ofGetElapsedTimeMillis();
                     }
@@ -840,6 +850,9 @@ void CenterBook::update(){
         
         
     }
+    
+    
+    
     
     //remove all the touches that haven't been updated recently
     //starting from the end of the vector and moving to the front

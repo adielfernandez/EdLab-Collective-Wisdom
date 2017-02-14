@@ -11,14 +11,43 @@
 
 #include <stdio.h>
 
-#endif /* SceneController_hpp */
+
+
+#pragma once
 
 #include "ofMain.h"
 #include "Furniture/Wallpaper.hpp"
 #include "Furniture/Frame.hpp"
 #include "Furniture/Bookcase.hpp"
-#include "Books/CenterBook.hpp"
-#pragma once
+
+//Dont include CenterBook
+//#include "Books/CenterBook.hpp"
+
+//use forward declaration instead to
+//clear circular include issue
+class CenterBook;
+
+
+struct SceneEvent{
+    
+    enum OBJECT_TYPE{
+        
+        WALLPAPER = 0,
+        BOOKCASE_LEFT = 1,
+        BOOKCASE_RIGHT = 2,
+        FRAME = 3,
+        CENTERBOOK = 4
+        
+    };
+    
+    OBJECT_TYPE type;
+    ofVec2f pos;
+    
+    
+};
+
+
+
 
 class SceneController{
     
@@ -48,24 +77,26 @@ public:
     
     //While on, no other transition, changes
     //effects will be listened to
-    bool lock;
+    bool lockScene;
     
-    
+    //how long has it been since
+    //there's been a camera touch
     double *idleTimer;
     
-    unsigned long long lastChangeTime;
-    int waitTime;
+    double lastChangeTime;
+    float lockWaitTime;
     
-    
-    void onRedecorateEvent( bool &e );
+    float idleTriggerWaitTime;
     
     
     vector<vector<int>> textureCombos;
     
+    
+    void onRedecorateEvent( SceneEvent &se );
 };
 
 
 
 
-
+#endif /* SceneController_hpp */
 

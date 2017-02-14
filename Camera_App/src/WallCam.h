@@ -155,6 +155,10 @@ public:
     ofxIntSlider fourthXLeftSlider;
     ofxIntSlider fourthXRightSlider;
     
+    ofxLabel touchSettingsLabel;
+    ofxIntSlider touchSearchAreaSlider;
+    ofxIntSlider posSmoothingSlider;
+    ofxIntSlider distSmoothingSlider;
     
     unsigned long long lastFrameToThread;
     

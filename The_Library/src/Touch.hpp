@@ -19,7 +19,9 @@
 
 struct Touch{
     
-    ofVec2f pos;
+    ofVec2f pos, mappedPos;
+    
+    
     int ID;
     float dist;
     bool bIsTouching;

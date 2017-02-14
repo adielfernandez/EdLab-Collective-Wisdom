@@ -13,14 +13,13 @@
 
 #endif /* Bookcase_hpp */
 
+#pragma once
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "Tile.hpp"
 #include "TiledObject.hpp"
 
 
-
-#pragma once
 
 
 class Bookcase: public TiledObject{
@@ -43,6 +42,7 @@ public:
     
         
     void setupGui();
+    void setVarsFromGui();
     void drawGui();
     void drawGui(int x, int y);
     void saveSettings();
@@ -88,6 +88,14 @@ public:
     float shelfTileHeight, bottomTileHeight;
     
 
+    //helper function to do a bi-linear
+    //interpolation of normalized coords
+    //to map to the bookcase
+    ofVec2f mapToShelves( float x, float y );
+
+    
+    
+    
     //----------GUI SETUP----------
     bool bIsGuiActive;
     

@@ -317,7 +317,9 @@ void DeskCam::update(){
             
         }
         
-        bNewTouchesToSend = true;
+        if( touches.size() > 0 ){
+            bNewTouchesToSend = true;
+        }
         
         
     }

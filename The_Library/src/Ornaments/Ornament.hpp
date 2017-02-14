@@ -14,6 +14,7 @@
 #endif /* Ornament_hpp */
 
 #include "ofMain.h"
+#include "../SceneController.hpp"
 
 #pragma once
 
@@ -29,6 +30,8 @@ public:
     void update();
     
     void triggerAnimation();
+    
+    void checkForClicks(int x, int y, bool state);
     
     void draw();
 
@@ -53,4 +56,13 @@ public:
     //thickness of one book on the shelf
     const float bookThickness = 24.2906;
     
+    ofEvent<SceneEvent> sceneChangeEvent;
+    
+    double triggerTime;
+    bool triggered;
+    float scale;
+    
 };
+
+
+

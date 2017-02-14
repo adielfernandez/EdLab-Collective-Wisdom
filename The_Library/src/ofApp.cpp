@@ -1,5 +1,6 @@
 #include "ofApp.h"
 
+
 //--------------------------------------------------------------
 void ofApp::setup(){
 
@@ -88,16 +89,22 @@ void ofApp::setup(){
     sceneController.setIdleTimerRef( &idleTimer );
     sceneController.setup();
     
+    //-----EVENT LISTENERS
     
-    
-    //add a listener for the redecorate event in the center book in the scene controller
+    //Scene listens to centerbook redecorate button
     ofAddListener(centerBook.redecorateEvent, &sceneController, &SceneController::onRedecorateEvent);
+
+    //Scene listens to ornaments on shelves
+    for(int i = 0; i < bookController.ornaments.size(); i++){
+        ofAddListener(bookController.ornaments[i].sceneChangeEvent, &sceneController,
+                      &SceneController::onRedecorateEvent);
+    }
     
-    //add a listener in the Book controller for events
-    //in the content manager when it gets new messages
+    
+    //BookController listens to new contributions
     ofAddListener(contributionManager.newContributionEvt, &bookController, &BookController::onNewContribution);
     
-    //add another listener in the book controller to the tagButton in the center book
+    //Bookcontroller listens to tag button for ribbons
     ofAddListener(centerBook.newButtonClickEvt, &bookController, &BookController::onButtonClickEvt);
     
     
@@ -166,8 +173,44 @@ void ofApp::update(){
             centerBook.receiveTouch(t);
             
         }
+        
+        if(m.getAddress() == "/LeftCam/touch"){
+            
+            //package the touch and send it to the center cam
+            Touch t;
+            t.ID                =  m.getArgAsInt(0);
+            t.pos               =  ofVec2f( m.getArgAsFloat(1), m.getArgAsFloat(2) );
+            t.mappedPos         =  leftBookcase.mapToShelves( m.getArgAsFloat(1), m.getArgAsFloat(2) );
+            t.dist              =  m.getArgAsFloat(3);
+            t.bIsTouching       =  m.getArgAsBool(4);
+            
+            
+            //Before sending the touch data to the
+            bookController.receiveTouch(t);
+            
+        }
 
      
+        if(m.getAddress() == "/RightCam/touch"){
+            
+            //package the touch and send it to the center cam
+            Touch t;
+            
+            //add a big number so touches don't overlap with the other camera's
+            //touches that are put into the same touches vector in bookController
+            t.ID                =  m.getArgAsInt(0) + 10000;
+            t.pos               =  ofVec2f( m.getArgAsFloat(1), m.getArgAsFloat(2) );
+            t.mappedPos         =  rightBookcase.mapToShelves( m.getArgAsFloat(1), m.getArgAsFloat(2) );
+            t.dist              =  m.getArgAsFloat(3);
+            t.bIsTouching       =  m.getArgAsBool(4);
+            
+            
+            //Before sending the touch data to the
+            bookController.receiveTouch(t);
+            
+        }
+        
+        
         lastTouchTime = ofGetElapsedTimef();
         
     }
@@ -284,6 +327,7 @@ void ofApp::draw(){
         bookController.drawGui();
         
     }
+    
     
 
     

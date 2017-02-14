@@ -34,7 +34,7 @@ void Wallpaper::setup(){
 
     guiName = "wallpaper";
     
-    tileResSliderName = "Tile Res: ";
+    tileResSliderName = "Tile Res _ ";
     
     bIsGuiActive = false;
     
@@ -247,7 +247,7 @@ void Wallpaper::setupGui(){
     TiledObject::setupCommonGui();
     
     gui.add(mappingLabel.setup("  Mapping Points", ""));
-    gui.add(tileResSlider.setup("Tile Resolution: ", 7, 1, 9));
+    gui.add(tileResSlider.setup("Tile Resolution - ", 7, 1, 9));
     gui.add(reMapMeshButton.setup("Re-Map Mesh"));
     
     //color applies to gui title only

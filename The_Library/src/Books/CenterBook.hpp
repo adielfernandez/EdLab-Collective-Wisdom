@@ -11,8 +11,10 @@
 
 #include <stdio.h>
 
-#endif /* CenterBook_hpp */
 
+
+
+#pragma once
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
@@ -23,7 +25,7 @@
 #include "../Furniture/Frame.hpp"
 #include "Touch.hpp"
 
-#pragma once
+#include "../SceneController.hpp"
 
 
 class CenterBook{
@@ -41,6 +43,8 @@ public:
     void resetCamera();
 
     void mapMesh();
+    
+    
     
     ScholarData *scholarData;
     Frame *frame;
@@ -208,7 +212,7 @@ public:
     //controller and buttons
     ofEvent<ButtonEvent> newButtonClickEvt;
 
-    ofEvent<bool> redecorateEvent;
+    ofEvent<SceneEvent> redecorateEvent;
     
     
     //-----------------------------
@@ -277,3 +281,4 @@ public:
 
 
 
+#endif /* CenterBook_hpp */

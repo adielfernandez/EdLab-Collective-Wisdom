@@ -13,12 +13,12 @@
 
 #endif /* TiledObject_hpp */
 
+#pragma once
 
 #include "ofMain.h"
 #include "Tile.hpp"
 #include "ofxGui.h"
 
-#pragma once
 
 
 class TiledObject{

@@ -13,6 +13,7 @@
 
 #endif /* Frame_hpp */
 
+#pragma once
 
 #include "ofMain.h"
 #include "ofxGui.h"
@@ -21,7 +22,6 @@
 #include "ofxEasing.h"
 #include "../Content/ScholarData.hpp"
 
-#pragma once
 
 
 

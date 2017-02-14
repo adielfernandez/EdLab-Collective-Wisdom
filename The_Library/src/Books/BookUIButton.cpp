@@ -252,7 +252,7 @@ void BookUIButton::checkForClicks(int x, int y, bool touchState){
                     e.tagCol = tagCol;
                     e.bIsCenterBookButton = bIsCenterBookButton;
                     e.bScholarButton = bScholarButton;
-                    e.src = ofVec3f(currentPos.x + buttonWidth/2, currentPos.y + buttonHeight/2, -80);
+                    e.src = ofVec3f(currentPos.x + buttonWidth/2, currentPos.y + buttonHeight/2, -90);
                     
                     ofNotifyEvent(newButtonClickEvt, e, this);
                     

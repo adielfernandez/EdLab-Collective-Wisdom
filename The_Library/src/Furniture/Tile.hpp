@@ -13,9 +13,9 @@
 
 #endif /* Tile_hpp */
 
+#pragma once
 #include "ofMain.h"
 #include "ofxEasing.h"
-#pragma once
 
 
 class Tile{

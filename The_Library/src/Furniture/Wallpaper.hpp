@@ -13,12 +13,12 @@
 
 #endif /* Wallpaper_hpp */
 
+#pragma once
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "Tile.hpp"
 #include "TiledObject.hpp"
 
-#pragma once
 
 
 class Wallpaper: public TiledObject{

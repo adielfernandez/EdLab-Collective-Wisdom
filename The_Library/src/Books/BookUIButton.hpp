@@ -13,10 +13,10 @@
 
 #endif /* BookUIButton_hpp */
 
+#pragma once
 #include "ofMain.h"
 #include "ofxEasing.h"
 
-#pragma once
 
 struct ButtonEvent{
     

@@ -199,6 +199,8 @@ void WallCam::update(){
         for(int i = 0; i < touches.size(); i++){
             touches[i].bUpdated = false;
             touches[i].distForTouch = wallHitDistSlider;
+            touches[i].numPosSmoothingPts = posSmoothingSlider;
+            touches[i].numDistSmoothingPts = distSmoothingSlider;
         }
         
         
@@ -236,7 +238,7 @@ void WallCam::update(){
                     float touchDepth = -1;
                     
                     //search pixels above and to the sides, wider area gives more stable touch data
-                    int pixelArea = 20;
+                    int pixelArea = touchSearchAreaSlider;
                     for(int x = closestPoint.x - pixelArea; x < closestPoint.x + pixelArea; x++){
                         for(int y = closestPoint.y - pixelArea; y < closestPoint.y; y++){
                             
@@ -363,7 +365,9 @@ void WallCam::update(){
             
         }
         
-        bNewTouchesToSend = true;
+        if( touches.size() > 0 ){
+            bNewTouchesToSend = true;
+        }
         
     }
     
@@ -588,6 +592,12 @@ void WallCam::drawThresh(int x, int y, bool bDrawShifted){
         for(int j = 0; j < touches.size(); j++){
             ofDrawCircle(touches[j].rawCamPos, 5);
             ofDrawBitmapStringHighlight(ofToString(touches[j].id) + " : " + ofToString(touches[j].rawCamPos), touches[j].rawCamPos.x + 20, touches[j].rawCamPos.y);
+            
+            //draw the touch search area for the finger point
+            ofNoFill();
+            ofSetColor(0, 255, 255);
+            ofDrawRectangle(touches[j].rawCamPos.x - touchSearchAreaSlider, touches[j].rawCamPos.y, touchSearchAreaSlider * 2, -touchSearchAreaSlider);
+            
         }
         
     }
@@ -616,7 +626,7 @@ void WallCam::drawSceneProxy(int x, int y){
     ofPushMatrix();
     ofTranslate(x, y);
     
-    
+    //big rect
     ofSetColor(255, 200, 0);
     ofNoFill();
     ofSetLineWidth(1);
@@ -661,6 +671,26 @@ void WallCam::drawSceneProxy(int x, int y){
         
         
     }
+    
+    //draw thin rectangles to represent the shelf dividers
+    
+    int shelfThickness = 20;
+    
+    ofPolyline shelf1;
+    shelf1.addVertex(controlPoints[5]);
+    shelf1.addVertex(controlPoints[9]);
+    shelf1.addVertex(controlPoints[9] + ofVec2f(0, shelfThickness));
+    shelf1.addVertex(controlPoints[5] + ofVec2f(0, shelfThickness));
+    shelf1.close();
+    shelf1.draw();
+
+    ofPolyline shelf2;
+    shelf2.addVertex(controlPoints[6]);
+    shelf2.addVertex(controlPoints[10]);
+    shelf2.addVertex(controlPoints[10] + ofVec2f(0, shelfThickness));
+    shelf2.addVertex(controlPoints[6] + ofVec2f(0, shelfThickness));
+    shelf2.close();
+    shelf2.draw();
     
     //draw touch data
     for(int i = 0; i < touches.size(); i++){
@@ -941,6 +971,11 @@ void WallCam::setupGui(){
     gui.add(fourthXLeftSlider.setup("Fourth Left X", 0, 0, 640));
     gui.add(fourthXRightSlider.setup("Fourth Right X", 255, 0, 640));
     
+    gui.add(touchSettingsLabel.setup("   TOUCH SETTINGS", ""));
+    gui.add(touchSearchAreaSlider.setup("Touch Search Area", 5, 1, 30));
+    gui.add(posSmoothingSlider.setup("Pos Smooth Amt", 10, 1, 30));
+    gui.add(distSmoothingSlider.setup("Dist Smooth Amt", 6, 1, 30));
+    
     gui.setHeaderBackgroundColor(ofColor(255));
     
     //color applies to gui title only
@@ -952,6 +987,7 @@ void WallCam::setupGui(){
     roiLabel.setBackgroundColor(ofColor(255));
     bgDiffLabel.setBackgroundColor(ofColor(255));
     controlPointsLabel.setBackgroundColor(ofColor(255));
+    touchSettingsLabel.setBackgroundColor(ofColor(255));
     
     //this changes the color of all the labels for some reason
     cvLabel.setDefaultTextColor(ofColor(0));

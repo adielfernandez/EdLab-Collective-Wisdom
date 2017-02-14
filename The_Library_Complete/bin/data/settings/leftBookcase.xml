@@ -1,0 +1,32 @@
+<leftBookcase>
+	<__GENERAL_SETTINGS/>
+	<Wave_Speed>0.69</Wave_Speed>
+	<Effect_Duration>0.737</Effect_Duration>
+	<Easing_Bounce_Amt>1</Easing_Bounce_Amt>
+	<__Mapping_Points/>
+	<Corner_0>69.7347, 151.551</Corner_0>
+	<Corner_1>612.184, 148.49</Corner_1>
+	<Corner_2>612.184, 1200</Corner_2>
+	<Corner_3>65.1429, 1200</Corner_3>
+	<Control_Pt_0>0.08475</Control_Pt_0>
+	<Control_Pt_1>0.919</Control_Pt_1>
+	<Control_Pt_2>0.084</Control_Pt_2>
+	<Control_Pt_3>0.222</Control_Pt_3>
+	<Control_Pt_4>0.2402</Control_Pt_4>
+	<Control_Pt_5>0.3749</Control_Pt_5>
+	<Control_Pt_6>0.393</Control_Pt_6>
+	<Control_Pt_7>0.54</Control_Pt_7>
+	<Control_Pt_8>0.92125</Control_Pt_8>
+	<Control_Pt_9>0.08175</Control_Pt_9>
+	<Control_Pt_10>0.543</Control_Pt_10>
+	<Control_Pt_11>0.396</Control_Pt_11>
+	<Control_Pt_12>0.378</Control_Pt_12>
+	<Control_Pt_13>0.2402</Control_Pt_13>
+	<Control_Pt_14>0.222</Control_Pt_14>
+	<Control_Pt_15>0.084</Control_Pt_15>
+<leftBookcase/>
+<Draw_Shadow>1</Draw_Shadow>
+<Gui_Position>638, 117</Gui_Position>
+<__MAPPING_OPTIONS/>
+	<__CONTROL_POINTS/>
+</leftBookcase>

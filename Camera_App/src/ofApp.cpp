@@ -20,8 +20,8 @@ void ofApp::setup(){
 
     font.load("fonts/Aller_Rg.ttf", 50);
     
-    oscIP = "localhost";
-//    oscIP = "192.168.1.6";
+//    oscIP = "localhost";
+    oscIP = "192.168.1.2";
     oscPort = 12345;
     oscSender.setup(oscIP, oscPort);
     
@@ -110,32 +110,6 @@ void ofApp::draw(){
         centerCam.drawDeskProxy(frame2Pos.x, frame2Pos.y + 480 + 40);
         
         s += "Camera Framerate: " + ofToString(centerCam.camFrameRate) + "\n";
-        
-        
-        
-        //draw touch data
-        for(int i = 0; i < centerCam.touches.size(); i++){
-            
-            ofVec2f p = centerCam.touches[i].pos;
-            float rad = ofMap(centerCam.touches[i].dist, 0, 70, 7, 50, true);
-            
-            if(centerCam.touches[i].bIsTouching){
-                ofSetColor(0, 255, 0);
-                
-            } else {
-                ofSetColor(0, 128, 255);
-            }
-            
-            ofSetLineWidth(3);
-            ofNoFill();
-            ofDrawCircle(p, rad);
-            
-        }
-
-        
-        
-        
-        
         
         
         

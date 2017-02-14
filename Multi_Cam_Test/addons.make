@@ -1,4 +1,0 @@
-ofxCv
-ofxGui
-ofxOpenCv
-ofxOrbbecAstra

@@ -1,0 +1,41 @@
+<centerBook>
+	<__POSITIONING/>
+	<Book_Pos>109.184, 148.673</Book_Pos>
+	<Bulk_Scale>1.5225</Bulk_Scale>
+	<Depth_Scale>0.6485</Depth_Scale>
+	<Height_Scale>0.759</Height_Scale>
+	<Width_Scale>0.8305</Width_Scale>
+	<__MAPPING/>
+	<Show_UnWarped>0</Show_UnWarped>
+	<Draw_Wireframe>0</Draw_Wireframe>
+	<Mesh_Pt_0>757.959, 700</Mesh_Pt_0>
+	<Mesh_Pt_1>1158.98, 696.735</Mesh_Pt_1>
+	<Mesh_Pt_2>1206.94, 1181.94</Mesh_Pt_2>
+	<Mesh_Pt_3>697.755, 1195</Mesh_Pt_3>
+<centerBook/>
+<__CONTENT_and_TEXTURING/>
+	<Show_Raw_Desk>1</Show_Raw_Desk>
+	<Page1_Left_Margin>8.725</Page1_Left_Margin>
+	<Page2_Left_Margin>33.25</Page2_Left_Margin>
+	<Page_Top_Margin>33</Page_Top_Margin>
+	<Draw_Raw_Book_Tex>0</Draw_Raw_Book_Tex>
+<__TOUCH_REGIONS/>
+	<Book_Left_Bound>0.405</Book_Left_Bound>
+	<Book_Center>0.69</Book_Center>
+<Book_Top_Bound>0.025</Book_Top_Bound>
+	<Book_Bottom_Bound>0.86</Book_Bottom_Bound>
+<Wait_after_touch>1094</Wait_after_touch>
+<Gui_Position>587, 309</Gui_Position>
+<Filigree_Top_M_>5</Filigree_Top_M_>
+	<Filigree_Bottom_M_>5</Filigree_Bottom_M_>
+	<Filigree_Width>142</Filigree_Width>
+	<Filigree_Height>145</Filigree_Height>
+<Filigree_Left_M_>10</Filigree_Left_M_>
+	<Help_Text_Top_M_>45</Help_Text_Top_M_>
+<Print_Norm__Mouse>0</Print_Norm__Mouse>
+<Button_Color_Lerp_IN>0.08</Button_Color_Lerp_IN>
+	<Button_Color_Lerp_OUT>0.02</Button_Color_Lerp_OUT>
+	<Time_touches_last>0.25</Time_touches_last>
+<Btn_Col_LerpIN>0.11761</Btn_Col_LerpIN>
+	<Btn_Col_LerpOUT>0.07276</Btn_Col_LerpOUT>
+</centerBook>

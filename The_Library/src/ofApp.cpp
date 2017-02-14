@@ -115,7 +115,7 @@ void ofApp::setup(){
     
     //----------Lighting/Material/Camera Setup----------
     camera.enableOrtho();
-//    camera.disableMouseInput();
+    camera.disableMouseInput();
     camera.setTarget(ofVec3f(ofGetWidth()/2, ofGetHeight()/2, 0));
 //    camera.setFarClip(10000);
 //    camera.setNearClip(-100);

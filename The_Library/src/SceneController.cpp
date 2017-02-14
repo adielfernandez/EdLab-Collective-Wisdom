@@ -64,11 +64,7 @@ void SceneController::setup(){
     //how long to wait after a change to unlock the scene
     lockWaitTime = 6.0f;
     
-    //move these to a GUI
-    wallpaperWait = 4.0f;
-    frameWait = 4.0f;
-    bookcaseWait = 4.0f;
-    
+
     //pre-decided combinations of textures that look good
     
     //Number order:
@@ -99,23 +95,19 @@ void SceneController::update(){
         lockScene = false;
     }
     
-    if(ofGetElapsedTimef() - lastBookcaseChangeTime < bookcaseWait){
+
+    //lock the elements if they're still animating
+
+    if(leftBookcase -> bIsAnimating || rightBookcase -> bIsAnimating){
         lockBookcases = true;
     } else {
         lockBookcases = false;
     }
     
-    if(ofGetElapsedTimef() - lastWallpaperChangeTime < wallpaperWait){
-        lockWallpaper = true;
-    } else {
-        lockWallpaper = false;
-    }
+    lockWallpaper = wallpaper -> bIsAnimating;
+    lockFrame = frame -> bIsAnimating;
     
-    if(ofGetElapsedTimef() - lastFrameChangeTime < frameWait){
-        lockFrame = true;
-    } else {
-        lockFrame = false;
-    }
+    
     
     
     
@@ -204,11 +196,6 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
             //frame from above
             p.set( se.pos.x, 0 );
             frame -> triggerWave( textureCombos[combo][2], p );
-            
-            
-            lastBookcaseChangeTime = ofGetElapsedTimef();
-            lastFrameChangeTime = ofGetElapsedTimef();
-            lastWallpaperChangeTime = ofGetElapsedTimef();
 
             
         } else if(se.type == SceneEvent::BOOKCASE_LEFT || se.type == SceneEvent::BOOKCASE_RIGHT){
@@ -223,8 +210,6 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
                 leftBookcase -> triggerWave( newTex, p );
                 rightBookcase -> triggerWave( newTex, p );
                 
-                lastBookcaseChangeTime = ofGetElapsedTimef();
-            
             }
             
         } else if(se.type == SceneEvent::WALLPAPER){
@@ -238,8 +223,6 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
                 
                 wallpaper -> triggerWave( newTex, p );
                 
-                lastWallpaperChangeTime = ofGetElapsedTimef();
-
             }
             
         } else if(se.type == SceneEvent::FRAME){
@@ -255,8 +238,6 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
                 int newTex = floor( ofRandom(frame -> images.size()) );
                 
                 frame -> triggerWave( newTex, p );
-                
-                lastFrameChangeTime = ofGetElapsedTimef();
                 
             }
             

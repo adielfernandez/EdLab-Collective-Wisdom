@@ -110,6 +110,7 @@ public:
     ofxIntSlider farClipSlider;
     
     ofxLabel cvLabel;
+    ofxToggle preThresholdToggle;
     ofxIntSlider nearThreshSlider;
     ofxIntSlider farThreshSlider;
     ofxIntSlider blurAmountSlider;
@@ -142,6 +143,7 @@ public:
     ofxIntSlider touchSearchAreaSlider;
     ofxIntSlider posSmoothingSlider;
     ofxIntSlider distSmoothingSlider;
+
     
     unsigned long long lastFrameToThread;
     

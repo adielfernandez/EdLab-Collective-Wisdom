@@ -269,7 +269,7 @@ public:
     ofxFloatSlider bookPageTopSlider;
     ofxFloatSlider bookPageBottomSlider;
     ofxIntSlider touchWaitSlider;
-
+    ofxIntSlider verticalShiftSlider;
     
     
     //desk control points

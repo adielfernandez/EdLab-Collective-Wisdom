@@ -254,13 +254,12 @@ void WallCam::update(){
                     //we have a position from left to right and a depth.
                     //Now we need to map them to wall space
                     
-                    //This mapping outputs normalized coordinates. For Camera under bookcase scenario
-                    //far is y = 0.0, near is y = 1.0
-                    float nearYval = 1.0;
-                    float farYval = 0.0;
+                    //This mapping outputs normalized coordinates.
+                    float nearYval = 0.0;
+                    float farYval = 1.0;
                     
                     //Y is easy, as pixel brightness maps linearly to distance
-                    float mappedY = ofMap(touchDepth, fourthDepthSlider, firstDepthSlider, nearYval, farYval);
+                    float mappedY = ofMap(touchDepth, firstDepthSlider, fourthDepthSlider, nearYval, farYval);
                     
                     //X is more difficult since travel perpendicular to the camera FOV changes with distance
                     //Basically we will map the X differently from left to right using control points
@@ -284,12 +283,12 @@ void WallCam::update(){
                     //(higher depth val = closer)
                     
                     //top shelf
-                    if(touchDepth < secondDepthSlider){
+                    if(touchDepth > secondDepthSlider){
                         xLeftEdge = ofMap(touchDepth, firstDepthSlider, secondDepthSlider, firstXLeftSlider, secondXLeftSlider);
                         xRightEdge = ofMap(touchDepth, firstDepthSlider, secondDepthSlider, firstXRightSlider, secondXRightSlider);
                         
                         //second shelf
-                    } else if(touchDepth < thirdDepthSlider){
+                    } else if(touchDepth > thirdDepthSlider){
                         xLeftEdge = ofMap(touchDepth, secondDepthSlider, thirdDepthSlider, secondXLeftSlider, thirdXLeftSlider);
                         xRightEdge = ofMap(touchDepth, secondDepthSlider, thirdDepthSlider, secondXRightSlider, thirdXRightSlider);
                         
@@ -393,7 +392,7 @@ void WallCam::update(){
         
         //get settings from gui
         vector<int> settings;
-        settings.resize(17);
+        settings.resize(18);
 
         settings[0] = nearClipSlider;
         settings[1] = farClipSlider;
@@ -430,6 +429,7 @@ void WallCam::update(){
         settings[15] = maxDistanceSlider;
         
         settings[16] = rotateImageToggle;
+        settings[17] = preThresholdToggle;
         
         settingsIn.send(settings);
         
@@ -931,6 +931,7 @@ void WallCam::setupGui(){
     gui.add(farClipSlider.setup("Cam Far Clip", 3000, 0, 8000));
     
     gui.add(cvLabel.setup("   IMAGE PROCESSING", ""));
+    gui.add(preThresholdToggle.setup("Simple Threshold", true));
     gui.add(nearThreshSlider.setup("Near Threshold", 255, 0, 255));
     gui.add(farThreshSlider.setup("Far Threshold", 0, 0, 255));
     gui.add(blurAmountSlider.setup("Blur", 1, 0, 40));
@@ -949,6 +950,7 @@ void WallCam::setupGui(){
     gui.add(resetBGToggle.setup("Reset Background"));
     
     gui.add(contoursLabel.setup("   CONTOUR FINDING", ""));
+//    gui.add(findContoursToggle.setup("Find Contours", true));
     gui.add(drawContoursToggle.setup("Draw Contours", true));
     gui.add(drawBlobInfoToggle.setup("Draw Blob info", true));
     gui.add(minBlobAreaSlider.setup("Min Blob Area", 0, 0, 1000));
@@ -1058,6 +1060,7 @@ void WallCam::threadedFunction(){
             int maxBlobDist = settings_thread[15];
             
             bool rotateImage = settings_thread[16];
+            bool preThresh = settings_thread[17];
             
             
 //            cout << "Frame Num: " << frameNum << ", ROI Depth" << roiDepth << ", Wall Cutoff" << wallCutoff << endl;
@@ -1097,16 +1100,30 @@ void WallCam::threadedFunction(){
                 
             }
             
+            if( preThresh ){
+                
+                //PRE threshold the raw image: blackout pixels out of range
+                //but leave the in-range pixels with original values
+                for(int i = 0; i < rawPix_thread.size(); i++){
+                    
+                    if(rawPix_thread[i] < farThresh || rawPix_thread[i] > nearThresh){
+                        rawPix_thread[i] = 0;
+                    }
+                    
+                }
+                
+            }
+            
             //blur the new raw image
             ofxCv::GaussianBlur(rawPix_thread, blurredPix_thread, blurAmount);
 
+            
             
             //get the thresholded image (or use BG Diff): a horizontal slice of the raw image
             //bound at the bottom by the wallCutoff with a height of roiDepth
             int startingRow = wallCutoff - roiDepth;
             int startPixel = startingRow * camWidth_thread;
             int endPixel = startPixel + (roiDepth * camWidth_thread);
-            
             
             //either use BG differencing or just straight up threshold it
             if(useBgDiff){
@@ -1177,20 +1194,20 @@ void WallCam::threadedFunction(){
             
             
             //Define contour finder
-            contours.setMinArea(minBlobArea);
-            contours.setMaxArea(maxBlobArea);
-            contours.setThreshold(254);  //only detect white
+            contours_thread.setMinArea(minBlobArea);
+            contours_thread.setMaxArea(maxBlobArea);
+            contours_thread.setThreshold(254);  //only detect white
             
             // wait before forgetting something
-            contours.getTracker().setPersistence(persistence);
+            contours_thread.getTracker().setPersistence(persistence);
             
             // an object can move up to ___ pixels per frame
-            contours.getTracker().setMaximumDistance(maxBlobDist);
+            contours_thread.getTracker().setMaximumDistance(maxBlobDist);
             
             //find dem blobs
-            contours.findContours(threshPix_thread);
+            contours_thread.findContours(threshPix_thread);
             
-            contoursOut.send(std::move(contours));
+            contoursOut.send(std::move(contours_thread));
             
             rawPixOut.send(std::move(blurredPix_thread));
             threshPixOut.send(std::move(threshPix_thread));

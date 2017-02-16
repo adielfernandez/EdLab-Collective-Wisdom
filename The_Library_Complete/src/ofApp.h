@@ -135,7 +135,7 @@ public:
     
     //----------CAMERA TRACKING----------
     WallCam leftCam;
-    //    WallCam rightCam;
+    WallCam rightCam;
     DeskCam centerCam;
     
     ofTrueTypeFont font;

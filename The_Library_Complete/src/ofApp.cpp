@@ -116,9 +116,9 @@ void ofApp::setup(){
     
     
     //----------CAMERAS----------
-    leftCam.setup("LeftCam", "device/sensor0");
-    //    rightCam.setup("RightCam", "device/sensor1");
-    centerCam.setup("CenterCam", "device/sensor1");
+    centerCam.setup("CenterCam", "device/sensor0");
+    leftCam.setup("LeftCam", "device/sensor1");
+    rightCam.setup("RightCam", "device/sensor2");
     
     bViewCameras = false;
     numCams = 3;
@@ -165,28 +165,42 @@ void ofApp::update(){
     
     //----------CAMERAS----------
     leftCam.update();
-    //    rightCam.update();
+    rightCam.update();
     centerCam.update();
     
     
     
     //transfer touches from cameras to their respective locations
-
-    //clear out the destination vector
-    bookController.touches.clear();
-    
-    //resize it to receive all the touches
-    bookController.touches.resize( leftCam.touches.size() );
+    //-----------------------------------------------------------
+    //-------------------LEFT AND LEFT CAM TOUCHES---------------
+    //-----------------------------------------------------------
 
     //before copying, go through the touches and map them using data from the bookcases
     for(int i = 0; i < leftCam.touches.size(); i++){
         leftCam.touches[i].mappedPos = leftBookcase.mapToShelves(leftCam.touches[i].pos.x, leftCam.touches[i].pos.y);
     }
     
-    //copy it over
-    std::copy(leftCam.touches.begin(), leftCam.touches.end(), bookController.touches.begin());
+    //before copying, go through the touches and map them using data from the bookcases
+    for(int i = 0; i < rightCam.touches.size(); i++){
+        rightCam.touches[i].mappedPos = rightBookcase.mapToShelves(rightCam.touches[i].pos.x, rightCam.touches[i].pos.y);
+    }
+    
+    //clear out the destination vector
+    bookController.touches.clear();
+    
+    //resize it to receive all the touches
+    bookController.touches.resize( rightCam.touches.size() + leftCam.touches.size() );
+    
+    //copy them over
+    std::copy(rightCam.touches.begin(), rightCam.touches.end(), bookController.touches.begin());
+
+    //copy left touches immediately after the right touches
+    std::copy(leftCam.touches.begin(), leftCam.touches.end(), bookController.touches.begin() + rightCam.touches.size());
     
     
+    //------------------------------------------------
+    //---------------CENTER CAM TOUCHES---------------
+    //------------------------------------------------
     centerBook.touches.clear();
     centerBook.touches.resize( centerCam.touches.size() );
     
@@ -203,7 +217,6 @@ void ofApp::update(){
     
     //copy it over
     std::copy(centerCam.touches.begin(), centerCam.touches.end(), centerBook.touches.begin());
-    
     
     
     
@@ -342,25 +355,7 @@ void ofApp::draw(){
         }
         
         
-        ofVec2f textPos(ofGetWidth() - 175, 20);
-        
-        if(ofGetElapsedTimef() - lastSaveTime < 2.0f){
-            ofSetColor(180, 0, 0);
-            ofDrawRectangle(textPos.x, textPos.y, 125, 25);
-            
-            ofSetColor(255);
-            ofDrawBitmapString("Settings Saved", textPos.x + 5, textPos.y + 18);
-            
-            
-        }
-        
-        if(ofGetElapsedTimef() - lastLoadTime < 2.0f){
-            ofSetColor(0, 150, 0);
-            ofDrawRectangle(textPos.x, textPos.y, 130, 25);
-            
-            ofSetColor(255);
-            ofDrawBitmapString("Settings loaded", textPos.x + 5, textPos.y + 18);
-        }
+
         
         
     } else {
@@ -385,12 +380,13 @@ void ofApp::draw(){
         
         if(currentCam == 0 || currentCam == 1) {
             
-            //        WallCam *thisCam = currentCam == 0 ? &leftCam : &rightCam;
-            WallCam *thisCam = &leftCam;
+            WallCam *thisCam = currentCam == 0 ? &leftCam : &rightCam;
+//            WallCam *thisCam = &leftCam;
             
             
             if(thisCam -> isThreadRunning()){
                 ofBackgroundGradient(ofColor(80), ofColor(0));
+//                ofBackground(255);
             } else {
                 ofBackground(200, 0, 0);
             }
@@ -420,14 +416,15 @@ void ofApp::draw(){
             
         } else if(currentCam == 2) {
             
-            ofSetColor(255);
-            font.drawString("Center Desk Cam", frame1Pos.x, font.stringHeight("A") + 10);
             
             if(centerCam.isThreadRunning()){
-                ofBackground(50);
+                ofBackgroundGradient(ofColor(80), ofColor(0));
             } else {
                 ofBackground(200, 0, 0);
             }
+
+            ofSetColor(255);
+            font.drawString("Center Desk Cam", frame1Pos.x, font.stringHeight("A") + 10);
             
             centerCam.drawGui(guiPos.x, guiPos.y);
             centerCam.drawRaw(frame1Pos.x, frame1Pos.y);
@@ -441,9 +438,34 @@ void ofApp::draw(){
         }
         
         
+        ofSetColor(255);
+        ofDrawBitmapString(s, 10, 15);
+        
         
         
     }
+    
+    
+    ofVec2f textPos(ofGetWidth() - 175, 20);
+    
+    if(ofGetElapsedTimef() - lastSaveTime < 2.0f){
+        ofSetColor(180, 0, 0);
+        ofDrawRectangle(textPos.x, textPos.y, 125, 25);
+        
+        ofSetColor(255);
+        ofDrawBitmapString("Settings Saved", textPos.x + 5, textPos.y + 18);
+        
+        
+    }
+    
+    if(ofGetElapsedTimef() - lastLoadTime < 2.0f){
+        ofSetColor(0, 150, 0);
+        ofDrawRectangle(textPos.x, textPos.y, 130, 25);
+        
+        ofSetColor(255);
+        ofDrawBitmapString("Settings loaded", textPos.x + 5, textPos.y + 18);
+    }
+    
     
     
 }
@@ -471,7 +493,7 @@ void ofApp::keyPressed(int key){
         
             currentCam--;
             if(currentCam < 0){
-                currentView = (numCams - 1);
+                currentCam = (numCams - 1);
             }
             
         }
@@ -552,6 +574,10 @@ void ofApp::keyPressed(int key){
         bookController.saveSettings();
         centerBook.saveSettings();
         
+        centerCam.saveSettings();
+        leftCam.saveSettings();
+        rightCam.saveSettings();
+        
         lastSaveTime = ofGetElapsedTimef();
     }
     
@@ -563,6 +589,10 @@ void ofApp::keyPressed(int key){
         rightBookcase.loadSettings();
         wallpaper.loadSettings();
         bookController.loadSettings();
+        
+        centerCam.loadSettings();
+        leftCam.loadSettings();
+        rightCam.loadSettings();
         
         lastLoadTime = ofGetElapsedTimef();
     }
@@ -614,35 +644,40 @@ void ofApp::mouseDragged(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     
-    if(button == 2){
+    if( !bViewCameras ){
         
-        int randomTexNum = floor(ofRandom(10));
+    
+        if(button == 2){
         
-        
-        if(x < leftBookcase.bookcaseCorners[1].x || x > rightBookcase.bookcaseCorners[0].x){
+            int randomTexNum = floor(ofRandom(10));
             
-            //make bookcase wave start from center X of bookcase
-            leftBookcase.triggerWave( randomTexNum, ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
-            rightBookcase.triggerWave( randomTexNum, ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
             
-        } else if(y < frame.frameCorners[3].y){
-            frame.triggerWave( randomTexNum, ofVec2f(x, y));
-        } else {
-            wallpaper.triggerWave( randomTexNum, ofVec2f(x, y));
+            if(x < leftBookcase.bookcaseCorners[1].x || x > rightBookcase.bookcaseCorners[0].x){
+            
+                //make bookcase wave start from center X of bookcase
+                leftBookcase.triggerWave( randomTexNum, ofVec2f(leftBookcase.bookcaseCorners[0].x + (leftBookcase.bookcaseCorners[1].x - leftBookcase.bookcaseCorners[0].x)/2.0 , y));
+                rightBookcase.triggerWave( randomTexNum, ofVec2f(rightBookcase.bookcaseCorners[0].x + (rightBookcase.bookcaseCorners[1].x - rightBookcase.bookcaseCorners[0].x)/2.0, y));
+            
+            } else if(y < frame.frameCorners[3].y){
+                frame.triggerWave( randomTexNum, ofVec2f(x, y));
+            } else {
+                wallpaper.triggerWave( randomTexNum, ofVec2f(x, y));
+            }
+            
+        }
+
+    } else {
+        
+        if( x > ofGetWidth()/2 ){
+            
+            currentCam++;
+            if(currentCam > numCams - 1){
+                currentCam = 0;
+            }
+
         }
         
     }
-    
-    //if we click in the frame, trigger the fact sheet
-    //    if(button == 0 && x > frame.frameCorners[0].x && x < frame.frameCorners[1].x && y < frame.frameCorners[3].y){
-    //
-    //        if(frame.bShowFactSheet){
-    //            frame.hideFactSheet();
-    //        } else {
-    //            frame.showFactSheet();
-    //        }
-    //
-    //    }
     
 }
 

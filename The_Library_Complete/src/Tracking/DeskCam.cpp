@@ -353,7 +353,7 @@ void DeskCam::update(){
         
         //get settings from gui
         vector<int> settings;
-        settings.resize(23);
+        settings.resize(24);
         
         settings[0] = nearClipSlider;
         settings[1] = farClipSlider;
@@ -382,7 +382,7 @@ void DeskCam::update(){
         settings[21] = maskPt3 -> y;
         
         settings[22] = flipImageToggle;
-
+        settings[23] = preThresholdToggle;
         
         settingsIn.send(settings);
         
@@ -503,11 +503,11 @@ void DeskCam::drawRaw(int x, int y){
 
     
     ofPopMatrix();
+    ofPopStyle();
     
     
 
     
-    ofPopStyle();
     
     //draw the raw depth value at that position
     if(ofGetMouseX() > x && ofGetMouseX() < x + w && ofGetMouseY() > y && ofGetMouseY() < y + h){
@@ -691,7 +691,7 @@ void DeskCam::drawDeskProxy(int x, int y){
     ofDrawBitmapString(touchData, 0, h + 20);
     
 
-    ofPushStyle();
+    ofPopStyle();
     ofPopMatrix();
     
     
@@ -721,6 +721,7 @@ void DeskCam::setupGui(){
     gui.add(farClipSlider.setup("Cam Far Clip", 1500, 0, 3000));
     
     gui.add(cvLabel.setup("   IMAGE PROCESSING", ""));
+    gui.add(preThresholdToggle.setup("Simple Threshold", true));
     gui.add(nearThreshSlider.setup("Near Threshold", 255, 0, 255));
     gui.add(farThreshSlider.setup("Far Threshold", 0, 0, 255));
     gui.add(blurAmountSlider.setup("Blur", 1, 0, 40));
@@ -758,6 +759,7 @@ void DeskCam::setupGui(){
     gui.add(touchSearchAreaSlider.setup("Touch Search Area", 5, 1, 30));
     gui.add(posSmoothingSlider.setup("Pos Smooth Amt", 10, 1, 30));
     gui.add(distSmoothingSlider.setup("Dist Smooth Amt", 6, 1, 30));
+
     
     gui.setHeaderBackgroundColor(ofColor(255));
     
@@ -838,6 +840,7 @@ void DeskCam::threadedFunction(){
             meshPts[3] = ofVec2f(settings_thread[20], settings_thread[21]);
             
             bool flipImage = settings_thread[22];
+            bool preThresh = settings_thread[23];
             
             rawPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
             blurredPix_thread.allocate(camWidth_thread, camHeight_thread, OF_IMAGE_GRAYSCALE);
@@ -860,8 +863,23 @@ void DeskCam::threadedFunction(){
                 rawPix_thread.mirror(true, false);
             }
             
+            if( preThresh ){
+                
+                //PRE threshold the raw image: blackout pixels out of range
+                //but leave the in-range pixels with original values
+                for(int i = 0; i < rawPix_thread.size(); i++){
+                    
+                    if(rawPix_thread[i] < farThresh || rawPix_thread[i] > nearThresh){
+                        rawPix_thread[i] = 0;
+                    }
+                    
+                }
+                
+            }
+            
             //blur the new raw image
             ofxCv::GaussianBlur(rawPix_thread, blurredPix_thread, blurAmount);
+            
             
             //take the rawPixels and get the bi-linear mapped subset from it
             getQuadSubPixels(blurredPix_thread, mappedBlurredPix_thread, meshPts);
@@ -936,20 +954,20 @@ void DeskCam::threadedFunction(){
             
             
             //Define contour finder
-            contours.setMinArea(minBlobArea);
-            contours.setMaxArea(maxBlobArea);
-            contours.setThreshold(254);  //only detect white
+            contours_thread.setMinArea(minBlobArea);
+            contours_thread.setMaxArea(maxBlobArea);
+            contours_thread.setThreshold(254);  //only detect white
             
             // wait before forgetting something
-            contours.getTracker().setPersistence(persistence);
+            contours_thread.getTracker().setPersistence(persistence);
             
             // an object can move up to ___ pixels per frame
-            contours.getTracker().setMaximumDistance(maxBlobDist);
+            contours_thread.getTracker().setMaximumDistance(maxBlobDist);
             
             //find dem blobs
-            contours.findContours(threshPix_thread);
+            contours_thread.findContours(threshPix_thread);
             
-            contoursOut.send(std::move(contours));
+            contoursOut.send(std::move(contours_thread));
             
             rawPixOut.send(std::move(blurredPix_thread));
             threshPixOut.send(std::move(threshPix_thread));

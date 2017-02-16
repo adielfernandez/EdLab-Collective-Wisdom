@@ -1,26 +1,45 @@
 <RightCam>
 	<___CAMERA_SETTINGS/>
-	<Cam_Near_Clip>500</Cam_Near_Clip>
-	<Cam_Far_Clip>3000</Cam_Far_Clip>
+	<Cam_Near_Clip>840</Cam_Near_Clip>
+	<Cam_Far_Clip>1920</Cam_Far_Clip>
 	<___IMAGE_PROCESSING/>
-	<Near_Threshold>255</Near_Threshold>
-	<Far_Threshold>15</Far_Threshold>
+	<Near_Threshold>253</Near_Threshold>
+	<Far_Threshold>16</Far_Threshold>
 	<Blur>1</Blur>
 	<Number_of_erosions>0</Number_of_erosions>
 	<Number_of_dilations>0</Number_of_dilations>
 	<___ROI_SETTINGS/>
-	<Region_Depth>124</Region_Depth>
-	<Wall_Level_Cutoff>292</Wall_Level_Cutoff>
-	<Dist_for_touch>10</Dist_for_touch>
+	<Region_Depth>88</Region_Depth>
+	<Wall_Level_Cutoff>259</Wall_Level_Cutoff>
+	<Dist_for_touch>16</Dist_for_touch>
 	<___BG_SUBTRACTION/>
 	<Use_BG_Diff>1</Use_BG_Diff>
-	<Frames_to_learn_BG>100</Frames_to_learn_BG>
+	<Frames_to_learn_BG>1480</Frames_to_learn_BG>
 	<___CONTOUR_FINDING/>
 	<Draw_Contours>1</Draw_Contours>
 	<Draw_Blob_info>1</Draw_Blob_info>
-	<Min_Blob_Area>155</Min_Blob_Area>
-	<Max_Blob_Area>8700</Max_Blob_Area>
-	<Persistence>15</Persistence>
-	<Max_Distance>32</Max_Distance>
+	<Min_Blob_Area>370</Min_Blob_Area>
+	<Max_Blob_Area>11500</Max_Blob_Area>
+	<Persistence>100</Persistence>
+	<Max_Distance>100</Max_Distance>
 <RightCam/>
+<Rotate_Image>0</Rotate_Image>
+	<___CONTROL_POINTS/>
+	<First_Depth_Pt>245</First_Depth_Pt>
+	<Second_Depth_Pt>176</Second_Depth_Pt>
+	<Third_Depth_Pt>106</Third_Depth_Pt>
+	<Fourth_Depth_Pt>28</Fourth_Depth_Pt>
+	<First_Left_X>21</First_Left_X>
+	<First_Right_X>595</First_Right_X>
+	<Second_Left_X>93</Second_Left_X>
+	<Second_Right_X>527</Second_Right_X>
+	<Third_Left_X>144</Third_Left_X>
+	<Third_Right_X>479</Third_Right_X>
+	<Fourth_Left_X>171</Fourth_Left_X>
+	<Fourth_Right_X>456</Fourth_Right_X>
+	<___TOUCH_SETTINGS/>
+	<Touch_Search_Area>6</Touch_Search_Area>
+	<Pos_Smooth_Amt>3</Pos_Smooth_Amt>
+	<Dist_Smooth_Amt>3</Dist_Smooth_Amt>
+<Simple_Threshold>1</Simple_Threshold>
 </RightCam>

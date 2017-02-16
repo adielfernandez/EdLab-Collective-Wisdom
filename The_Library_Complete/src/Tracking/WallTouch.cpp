@@ -117,7 +117,7 @@ void WallTouch::draw(){
         
         ofSetLineWidth(4);
         ofNoFill();
-        ofDrawCircle(p.x, p.y, -100, rad);
+        ofDrawCircle(p.x, p.y, -150, rad);
         ofFill();
     }
     

@@ -25,7 +25,7 @@
 <Book_Top_Bound>0.025</Book_Top_Bound>
 	<Book_Bottom_Bound>0.86</Book_Bottom_Bound>
 <Wait_after_touch>1094</Wait_after_touch>
-<Gui_Position>587, 309</Gui_Position>
+<Gui_Position>460, 540</Gui_Position>
 <Filigree_Top_M_>5</Filigree_Top_M_>
 	<Filigree_Bottom_M_>5</Filigree_Bottom_M_>
 	<Filigree_Width>142</Filigree_Width>
@@ -38,4 +38,5 @@
 	<Time_touches_last>0.25</Time_touches_last>
 <Btn_Col_LerpIN>0.11761</Btn_Col_LerpIN>
 	<Btn_Col_LerpOUT>0.07276</Btn_Col_LerpOUT>
+<Perceived_Vert_shift>0</Perceived_Vert_shift>
 </centerBook>

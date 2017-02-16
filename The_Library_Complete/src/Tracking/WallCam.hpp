@@ -109,6 +109,7 @@ public:
     ofxIntSlider farClipSlider;
     
     ofxLabel cvLabel;
+    ofxToggle preThresholdToggle;
     ofxIntSlider nearThreshSlider;
     ofxIntSlider farThreshSlider;
     ofxIntSlider blurAmountSlider;
@@ -127,6 +128,7 @@ public:
     ofxToggle useBgDiff;
     
     ofxLabel contoursLabel;
+//    ofxToggle findContoursToggle;
     ofxToggle drawContoursToggle;
     ofxToggle drawBlobInfoToggle;
     ofxIntSlider minBlobAreaSlider;

@@ -1552,11 +1552,12 @@ void CenterBook::draw(){
         
         //go through touches (for now mouseTouches, but eventually OSC data from camera)
         //draw cursors, do button region detection, etc.
+        ofPushMatrix();
+        ofTranslate(0, -verticalShiftSlider);
         for(int i = 0; i < touches.size(); i++){
             touches[i].draw();
         }
-        
-        
+        ofPopMatrix();
         
         camera.end();
         
@@ -1744,7 +1745,7 @@ void CenterBook::setupGui(){
     gui.add(bookPageTopSlider.setup("Book Top Bound", 0.1f, 0.0, 1.0));
     gui.add(bookPageBottomSlider.setup("Book Bottom Bound", 0.95f, 0.0, 1.0));
     gui.add(touchWaitSlider.setup("Wait after touch", 500, 10, 2000));
-
+    gui.add(verticalShiftSlider.setup("Perceived Vert shift", 0, 0, 80));
     
     
     maxRangeX = 100;

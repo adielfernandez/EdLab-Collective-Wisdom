@@ -164,7 +164,7 @@ void ContributionManager::logNewContribution(string n, string tag, string msg){
     ofNotifyEvent(newContributionEvt, c, this);
     
     //also create a new text file to store it for next time
-    saveContributionToFile(c);
+//    saveContributionToFile(c);
     
     
 }

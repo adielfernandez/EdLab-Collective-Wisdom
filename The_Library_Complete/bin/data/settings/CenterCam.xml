@@ -6,7 +6,7 @@
 	<Near_Threshold>255</Near_Threshold>
 	<Far_Threshold>3</Far_Threshold>
 	<Blur>7</Blur>
-	<Number_of_erosions>1</Number_of_erosions>
+	<Number_of_erosions>2</Number_of_erosions>
 	<Number_of_dilations>0</Number_of_dilations>
 	<___ROI_SETTINGS/>
 	<Region_Depth>96</Region_Depth>

@@ -860,9 +860,10 @@ void WallCam::drawSceneProxy(int x, int y){
         
         
         msg += "\n";
+        
 
-        ofSetColor(100, 255, 100);
-        ofDrawBitmapString(msg, 0, rectH + 20);
+
+
         
         //draw a loading bar
         if(bRecording){
@@ -884,7 +885,27 @@ void WallCam::drawSceneProxy(int x, int y){
             ofSetColor(255);
             ofDrawRectangle(0, rectH + 154, w, h);
 
+            ofFill();
+            
+        } else {
+            
+            //if we're not recording, display the current value
+            
+            if( touches.size() > 0 ){
+                if(calibratingPoint < 4){
+                    msg+= "Current DEPTH value for touch[0]: " + ofToString(touches[0].rawDepth);
+                } else {
+                    msg+= "Current X value for touch[0]: " + ofToString(touches[0].rawCamPos.x);
+                }
+            }
+            
         }
+        
+        
+        
+        ofSetColor(100, 255, 100);
+        ofDrawBitmapString(msg, 0, rectH + 20);
+        
     
     }  else {
         

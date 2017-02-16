@@ -5,7 +5,7 @@
 	<___IMAGE_PROCESSING/>
 	<Near_Threshold>255</Near_Threshold>
 	<Far_Threshold>3</Far_Threshold>
-	<Blur>0</Blur>
+	<Blur>7</Blur>
 	<Number_of_erosions>1</Number_of_erosions>
 	<Number_of_dilations>0</Number_of_dilations>
 	<___ROI_SETTINGS/>
@@ -14,7 +14,7 @@
 	<Dist_for_touch>10</Dist_for_touch>
 	<___BG_SUBTRACTION/>
 	<Use_BG_Diff>1</Use_BG_Diff>
-	<Frames_to_learn_BG>2</Frames_to_learn_BG>
+	<Frames_to_learn_BG>10</Frames_to_learn_BG>
 	<___CONTOUR_FINDING/>
 	<Draw_Contours>1</Draw_Contours>
 	<Draw_Blob_info>1</Draw_Blob_info>
@@ -26,8 +26,8 @@
 <___MASK_SETTINGS/>
 	<Mask_Pt_0>143, 230</Mask_Pt_0>
 	<Mask_Pt_1>462, 228</Mask_Pt_1>
-	<Mask_Pt_2>445, 365</Mask_Pt_2>
-	<Mask_Pt_3>165, 365</Mask_Pt_3>
+	<Mask_Pt_2>444, 347</Mask_Pt_2>
+	<Mask_Pt_3>162, 347</Mask_Pt_3>
 <Flip_Image>1</Flip_Image>
 <Draw_Foreground>0</Draw_Foreground>
 	<___TOUCH_SETTINGS/>

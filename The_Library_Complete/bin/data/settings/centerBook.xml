@@ -8,10 +8,10 @@
 	<__MAPPING/>
 	<Show_UnWarped>0</Show_UnWarped>
 	<Draw_Wireframe>0</Draw_Wireframe>
-	<Mesh_Pt_0>757.959, 700</Mesh_Pt_0>
-	<Mesh_Pt_1>1158.98, 696.735</Mesh_Pt_1>
-	<Mesh_Pt_2>1206.94, 1181.94</Mesh_Pt_2>
-	<Mesh_Pt_3>697.755, 1195</Mesh_Pt_3>
+	<Mesh_Pt_0>758.98, 693.469</Mesh_Pt_0>
+	<Mesh_Pt_1>1156.94, 693.469</Mesh_Pt_1>
+	<Mesh_Pt_2>1201.84, 1172.14</Mesh_Pt_2>
+	<Mesh_Pt_3>699.796, 1178.67</Mesh_Pt_3>
 <centerBook/>
 <__CONTENT_and_TEXTURING/>
 	<Show_Raw_Desk>1</Show_Raw_Desk>
@@ -38,5 +38,5 @@
 	<Time_touches_last>0.25</Time_touches_last>
 <Btn_Col_LerpIN>0.11761</Btn_Col_LerpIN>
 	<Btn_Col_LerpOUT>0.07276</Btn_Col_LerpOUT>
-<Perceived_Vert_shift>0</Perceived_Vert_shift>
+<Perceived_Vert_shift>8</Perceived_Vert_shift>
 </centerBook>

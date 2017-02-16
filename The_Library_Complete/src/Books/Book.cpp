@@ -286,9 +286,13 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     spawnDuration = 4.0f;
     spawnPosBackEasing = 1.0f;
     
+    float sideShift = -100;
+
+    storedToPulledOut = ofVec3f(sideShift, 0, -depth);
+    
 }
 
-void Book::setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum){
+void Book::setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum, int place){
     
     
     
@@ -298,8 +302,9 @@ void Book::setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum){
     shelfNum = sNum;
     bookNum = bNum;
     
-    float sideShift = -100;
-    pulledOutPos = stored + ofVec3f(sideShift, 0, -depth);
+    placeOnShelf = place;
+    
+    pulledOutPos = stored + storedToPulledOut;
     
     //book spawns off screen directly above it's stored position
     spawnPos.set(storedPos.x, - 100, storedPos.z);

@@ -475,7 +475,7 @@
 		D7FFD7551E53BDBD00A46BCB /* Ornament.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ornament.cpp; sourceTree = "<group>"; };
 		D7FFD7561E53BDBD00A46BCB /* Ornament.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ornament.hpp; sourceTree = "<group>"; };
 		D7FFD7571E53BDBD00A46BCB /* SceneController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneController.cpp; sourceTree = "<group>"; };
-		D7FFD7581E53BDBD00A46BCB /* SceneController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = SceneController.hpp; path = ../SceneController.hpp; sourceTree = "<group>"; };
+		D7FFD7581E53BDBD00A46BCB /* SceneController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneController.hpp; sourceTree = "<group>"; };
 		D7FFD76C1E53BE4700A46BCB /* DeskCam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeskCam.cpp; sourceTree = "<group>"; };
 		D7FFD76D1E53BE4700A46BCB /* DeskCam.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DeskCam.hpp; sourceTree = "<group>"; };
 		D7FFD76E1E53BE4700A46BCB /* DeskTouch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeskTouch.cpp; sourceTree = "<group>"; };
@@ -1615,18 +1615,10 @@
 		D7FFD7541E53BDBD00A46BCB /* Ornaments */ = {
 			isa = PBXGroup;
 			children = (
-				D7FFD7581E53BDBD00A46BCB /* SceneController.hpp */,
-				D7FFD7551E53BDBD00A46BCB /* Ornament.cpp */,
 				D7FFD7561E53BDBD00A46BCB /* Ornament.hpp */,
+				D7FFD7551E53BDBD00A46BCB /* Ornament.cpp */,
 			);
 			path = Ornaments;
-			sourceTree = "<group>";
-		};
-		D7FFD75A1E53BDBD00A46BCB /* Trinkets */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Trinkets;
 			sourceTree = "<group>";
 		};
 		D7FFD76B1E53BE4700A46BCB /* Tracking */ = {
@@ -1696,9 +1688,9 @@
 				D7FFD7421E53BDBD00A46BCB /* Content */,
 				D7FFD7491E53BDBD00A46BCB /* Furniture */,
 				D7FFD7541E53BDBD00A46BCB /* Ornaments */,
+				D7FFD7581E53BDBD00A46BCB /* SceneController.hpp */,
 				D7FFD7571E53BDBD00A46BCB /* SceneController.cpp */,
 				D7FFD76B1E53BE4700A46BCB /* Tracking */,
-				D7FFD75A1E53BDBD00A46BCB /* Trinkets */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

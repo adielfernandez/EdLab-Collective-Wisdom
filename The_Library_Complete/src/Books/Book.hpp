@@ -36,7 +36,7 @@ public:
     
     void setupUI(vector<ofImage> *_icons, vector<ofVec3f> shelf);
     
-    void setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum);
+    void setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum, int place);
     
     void update();
     void triggerDisplay();
@@ -63,6 +63,8 @@ public:
     int shelfNum;
     //unique id for this book
     int bookNum;
+    
+    int placeOnShelf;
     
     bool bIsScholarBook;
     int scholarNum;
@@ -152,6 +154,8 @@ public:
     ofVec3f displayPos;
     ofVec3f storedPos;
     ofVec3f spawnPos;
+    
+    ofVec3f storedToPulledOut;
     
     const float storedRotX = -90;
     const float storedRotZ = 90;

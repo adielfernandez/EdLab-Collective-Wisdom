@@ -188,6 +188,36 @@ public:
     double lastBookSettingsUpdate;
     
     
+    //second gui for positioning objects
+    ofxPanel gui2;
+    
+    string gui2Name;
+
+    void drawPositioningDebug();
+    void drawGui2();
+    void drawGui2(int x, int y);
+    bool bIsGui2Active;
+    
+    void repositionShelfContents();
+  
+    ofxVec2Slider gui2PosSlider;
+    
+    ofxLabel shelfPositioningLabel;
+    ofxVec2Slider shelf0StartSlider;
+    ofxVec2Slider shelf0EndSlider;
+    ofxVec2Slider shelf1StartSlider;
+    ofxVec2Slider shelf1EndSlider;
+    ofxVec2Slider shelf2StartSlider;
+    ofxVec2Slider shelf2EndSlider;
+    ofxVec2Slider shelf3StartSlider;
+    ofxVec2Slider shelf3EndSlider;
+    ofxVec2Slider shelf4StartSlider;
+    ofxVec2Slider shelf4EndSlider;
+    ofxVec2Slider shelf5StartSlider;
+    ofxVec2Slider shelf5EndSlider;
+    ofxFloatSlider bookSpacingSlider;
+    ofxButton rePositionBooksButton;
+    
 };
 
 

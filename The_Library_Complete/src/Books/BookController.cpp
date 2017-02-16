@@ -194,6 +194,7 @@ void BookController::setup(vector<Contribution> *cList){
     
     //SETUP THE GUI
     setupGui();
+    
     lastBookSettingsUpdate = 0;
 
     
@@ -223,7 +224,6 @@ void BookController::setup(vector<Contribution> *cList){
     
     int ornamentToPlace = 0;
     
-    float maxShelfWidth = bookWidth * 16;
     
     //set up books on both bookcases
     for(int j = 0; j < numShelves; j++){
@@ -244,9 +244,9 @@ void BookController::setup(vector<Contribution> *cList){
         
         //half way from top left corner to top right corner
         midShelfTop = (leftOrRight -> shelfCorners[shelfNum][2] + leftOrRight -> shelfCorners[shelfNum][3])/2.0f;
-
-        //while we're going through each shelf, set the shelf overlays
         
+        
+        //while we're going through each shelf, set the shelf overlays
         ShelfOverlay so;
         
         //top left corner
@@ -286,6 +286,9 @@ void BookController::setup(vector<Contribution> *cList){
         
         int thisShelfStart = bookCounter;
         
+        //the indexed position of each book on the shelf
+        int bookShelfIndex = 0;
+        
         //TRICKY: This loop goes one PAST how many books on the current shelf
         //So we'll check at the end of every row to see if there's an ornament there
         //If there is, place it. If not, do nothing.
@@ -302,6 +305,8 @@ void BookController::setup(vector<Contribution> *cList){
                 //push the current shelf pos past the ornament
                 currentShelfPos.x += ornaments[ornamentToPlace].gapWidth;
 
+                //increment the shelf index by however many books wide the ornament is
+                bookShelfIndex += ornaments[ornamentToPlace].numBooksWide;
                 
                 //this ornament has been placed,
                 //get ready to place the next one
@@ -341,15 +346,19 @@ void BookController::setup(vector<Contribution> *cList){
             
             
             //give books their locations
-            books[i].setLocation(stored, display, overallShelfNum, bookNum);
+            books[i].setLocation(stored, display, overallShelfNum, bookNum, bookShelfIndex);
             
             //give the book buttons the icon images and the position of the shelf corners
             books[i].setupUI(&buttonIcons, leftOrRight -> shelfCorners[shelfNum]);
 
             
+            cout << "Book[" << i << "] shelfNum: " << overallShelfNum << ", place on shelf: " << bookShelfIndex << endl;
+            
             //add the book thickness to the shelf to place the next book
             currentShelfPos += dirToShelfEnd * (books[i].thickness + bookSpacing);
             
+            //increment the shelf index
+            bookShelfIndex++;
             
             //Add the contributions from the list to the book
             //if we don't have enough contributions, mark extra books as bIsUnused
@@ -410,6 +419,8 @@ void BookController::setup(vector<Contribution> *cList){
         
     }
 
+    //reposition books using values from gui
+    repositionShelfContents();
 
     
 }
@@ -730,9 +741,25 @@ void BookController::update(){
         lastBookSettingsUpdate = ofGetElapsedTimef();
     }
     
+    if( bIsGui2Active ){
+        
+        gui2PosSlider = gui2.getPosition();
+        
+        
+        if( rePositionBooksButton ){
+            
+            repositionShelfContents();
+            
+        }
+        
+        
+    }
+    
+    
+    
     //set this to false, the drawGui() method will set it to true later
     bIsGuiActive = false;
-    
+    bIsGui2Active = false;
     
     //update all books
     for(int i = 0; i < books.size(); i++){
@@ -909,6 +936,153 @@ void BookController::draw(){
     
 }
 
+void BookController::repositionShelfContents(){
+    
+    
+    //loop through all the books then reset their positions
+    //along the line between the shelf start and end points
+    
+    ofVec2f shelfStart, shelfEnd, dirToEnd;
+
+    vector<bool> ornamentRepositioned;
+    ornamentRepositioned.assign(6, false);
+    
+    for(int i = 0; i < books.size(); i++){
+        
+        //find out what shelf it's on
+        int shelfNum = books[i].shelfNum;
+        int place = books[i].placeOnShelf;
+        
+        switch (shelfNum) {
+            case 0:
+                shelfStart = shelf0StartSlider;
+                shelfEnd = shelf0EndSlider;
+                break;
+            case 1:
+                shelfStart = shelf1StartSlider;
+                shelfEnd = shelf1EndSlider;
+                break;
+            case 2:
+                shelfStart = shelf2StartSlider;
+                shelfEnd = shelf2EndSlider;
+                break;
+            case 3:
+                shelfStart = shelf3StartSlider;
+                shelfEnd = shelf3EndSlider;
+                break;
+            case 4:
+                shelfStart = shelf4StartSlider;
+                shelfEnd = shelf4EndSlider;
+                break;
+            case 5:
+                shelfStart = shelf5StartSlider;
+                shelfEnd = shelf5EndSlider;
+                break;
+            default:
+                break;
+        }
+        
+        //get the direction from start to end
+        dirToEnd = shelfEnd - shelfStart;
+        dirToEnd.normalize();
+        
+        ofVec3f thisPos = shelfStart + dirToEnd * place * books[i].thickness;
+        //push it out above the bookshelf
+        thisPos.z = -50;
+        
+        //re-use the book's setLocation method with it's own values except
+        //with the new stored position on the shelf
+        books[i].setLocation(thisPos, books[i].displayPos, shelfNum, books[i].bookNum, place);
+        
+        //re-use this for loop to check the ornaments since we conveniently
+        //have shelfStart and shelfEnd defined already
+        
+        if( ornamentRepositioned[shelfNum] == false ){
+            
+            //set this ornament
+            ornaments[shelfNum].pos = shelfStart + dirToEnd * ornaments[shelfNum].placeOnShelf * books[0].thickness;
+            
+            ornamentRepositioned[shelfNum] = true;
+            
+            cout << "Ornament[" << shelfNum << "] repositioned" << endl;
+            
+        }
+        
+        
+        
+    }
+    
+
+    
+    
+    
+}
+
+
+void BookController::drawPositioningDebug(){
+    
+
+    
+    //draw all the points for the book positions
+    ofPushStyle();
+    ofPushMatrix();
+    
+    ofTranslate(0, 0, -100);
+    
+    ofNoFill();
+    ofSetLineWidth(2);
+    ofSetColor(0, 255, 0);
+    
+    int rad = 10;
+    
+    ofVec2f shelfStart, shelfEnd;
+    
+    for(int i = 0; i < 6; i++){
+        
+        switch (i) {
+            case 0:
+                shelfStart = shelf0StartSlider;
+                shelfEnd = shelf0EndSlider;
+                break;
+            case 1:
+                shelfStart = shelf1StartSlider;
+                shelfEnd = shelf1EndSlider;
+                break;
+            case 2:
+                shelfStart = shelf2StartSlider;
+                shelfEnd = shelf2EndSlider;
+                break;
+            case 3:
+                shelfStart = shelf3StartSlider;
+                shelfEnd = shelf3EndSlider;
+                break;
+            case 4:
+                shelfStart = shelf4StartSlider;
+                shelfEnd = shelf4EndSlider;
+                break;
+            case 5:
+                shelfStart = shelf5StartSlider;
+                shelfEnd = shelf5EndSlider;
+                break;
+            default:
+                break;
+        }
+        
+        
+        ofDrawCircle(shelfStart, rad);
+        ofDrawCircle(shelfEnd, rad);
+        
+        ofDrawLine(shelfStart, shelfEnd);
+        
+    }
+    
+    
+    ofPopMatrix();
+    ofPopStyle();
+    
+    
+}
+
 
 
 
@@ -1065,22 +1239,68 @@ void BookController::setupGui(){
     //this changes the color of all the labels
     settingsLabel.setDefaultTextColor(ofColor(0));
     
-    gui.setPosition(ofGetWidth()/2 - gui.getWidth()/2, 30);
-    
     bIsGuiActive = true;
     
     gui.minimizeAll();
     
+    
+
+    
+    gui2Name = "bookPositions";
+    
+    //set up second gui for positioning
+    gui2.setup(gui2Name, filePath + gui2Name + ".xml", 0, 0);
+
+    gui2.add(gui2PosSlider.setup("Gui Position", min, min, max));
+    
+    //re-use min and max vec2 for the range of the shelf sliders
+    min.set(50, 300);
+    max.set(650, 750);
+    
+    gui2.add(shelfPositioningLabel.setup("  SHELF POSITIONS", ""));
+    gui2.add(shelf0StartSlider.setup("Shelf0 Start", min, min, max));
+    gui2.add(shelf0EndSlider.setup("Shelf0 End", min, min, max));
+    gui2.add(shelf1StartSlider.setup("Shelf1 Start", min, min, max));
+    gui2.add(shelf1EndSlider.setup("Shelf1 End", min, min, max));
+    gui2.add(shelf2StartSlider.setup("Shelf2 Start", min, min, max));
+    gui2.add(shelf2EndSlider.setup("Shelf2 End", min, min, max));
+    
+    min.set(1250, 300);
+    max.set(1860, 750);
+    
+    gui2.add(shelf3StartSlider.setup("Shelf3 Start", min, min, max));
+    gui2.add(shelf3EndSlider.setup("Shelf3 End", min, min, max));
+    gui2.add(shelf4StartSlider.setup("Shelf4 Start", min, min, max));
+    gui2.add(shelf4EndSlider.setup("Shelf4 End", min, min, max));
+    gui2.add(shelf5StartSlider.setup("Shelf5 Start", min, min, max));
+    gui2.add(shelf5EndSlider.setup("Shelf5 End", min, min, max));
+    gui2.add(bookSpacingSlider.setup("Book Spacing", 0, 0, 10));
+    gui2.add(rePositionBooksButton.setup("Re-Position Books"));
+
+    
+    
+    gui2.setHeaderBackgroundColor(ofColor(255));
+    
+    //color applies to gui title only
+    gui2.setTextColor(ofColor(0));
+    
+    shelfPositioningLabel.setBackgroundColor(ofColor(255));
+    
+    bIsGui2Active = true;
+    
     loadSettings();
+    
     
     //now that we've loaded, move the gui to where we last had it
     gui.setPosition(guiPosSlider -> x, guiPosSlider -> y);
+    gui2.setPosition(gui2PosSlider -> x, gui2PosSlider -> y);
     
 }
 
 void BookController::loadSettings(){
     
     gui.loadFromFile( filePath + guiName + ".xml");
+    gui2.loadFromFile( filePath + gui2Name + ".xml");
     
     setBookVarsFromGui();
     
@@ -1089,6 +1309,7 @@ void BookController::loadSettings(){
 void BookController::saveSettings(){
     
     gui.saveToFile(filePath + guiName + ".xml");
+    gui2.saveToFile(filePath + gui2Name + ".xml");
     
 }
 
@@ -1102,4 +1323,15 @@ void BookController::drawGui(int x, int y){
     gui.setPosition(x, y);
     gui.draw();
     bIsGuiActive = true;
+}
+
+void BookController::drawGui2(){
+    gui2.draw();
+    bIsGui2Active = true;
+}
+
+void BookController::drawGui2(int x, int y){
+    gui2.setPosition(x, y);
+    gui2.draw();
+    bIsGui2Active = true;
 }

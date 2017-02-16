@@ -19,7 +19,7 @@ void Ornament::setup(int _type){
     
     if(type == 0){              //-----FIRST SHELF-----
         numBooksWide = 7;
-        placeOnShelf = 1;
+        placeOnShelf = 2;
         shelfNum = 0;
         
         img.load("assets/ornaments/clock.png");
@@ -39,7 +39,7 @@ void Ornament::setup(int _type){
         rightPadding = 0;
         
     } else if(type == 2){              //-----THIRD SHELF-----
-        numBooksWide = 5;
+        numBooksWide = 6;
         placeOnShelf = 10;
         shelfNum = 2;
         
@@ -107,7 +107,8 @@ void Ornament::setup(int _type){
 
 
 void Ornament::setShelfPosition(ofVec3f shelfPos){
-    float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), -40, -100);
+    float x = -40; // = ofMap(ofGetMouseX(), 0, ofGetWidth(), -40, -100);
+    
     pos = ofVec3f(shelfPos.x, shelfPos.y, x);
 }
 
@@ -115,7 +116,7 @@ void Ornament::setShelfPosition(ofVec3f shelfPos){
 void Ornament::checkForClicks(int x, int y, bool state){
     
     //region is defined from lower left corner then
-    //"gapWidth" to the left and "gapHeight" above
+    //"gapWidth" to the right and "gapHeight" above
     if(x > pos.x + leftPadding && x < pos.x + gapWidth - rightPadding && y < pos.y && y > pos.y - imgHeight){
 
         //if we're being clicked, not hovered over

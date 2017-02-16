@@ -36,7 +36,7 @@ void ofApp::setup(){
         2 = Frame
         3 = Bookcases
         4 = Book Controller
-        5 = CAMERAS
+        5 = Book positioning
      */
     
     numViews = 6;
@@ -330,6 +330,15 @@ void ofApp::draw(){
             
             //Bookcases debug
             bookController.drawGui();
+            
+        } else if(currentView == 5){
+            
+            
+            ofDisableDepthTest();
+            
+            //Bookcases debug
+            bookController.drawGui2();
+            bookController.drawPositioningDebug();
             
         }
         

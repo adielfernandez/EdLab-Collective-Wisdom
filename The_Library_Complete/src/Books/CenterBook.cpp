@@ -465,22 +465,20 @@ void CenterBook::update(){
         if(mouse.x > rawDeskPos.x && mouse.x < rawDeskPos.x + deskWidth && mouse.y > rawDeskPos.y && mouse.y < rawDeskPos.y + deskHeight){
             
             ofVec2f normalizedMouse((mouse.x - rawDeskPos.x)/deskWidth, (mouse.y - rawDeskPos.y)/deskHeight);
-            
-//            MouseTouch mt;
-//            mt.pos = normalizedMouse;
-//            mt.bIsTouching = ofGetMousePressed();
-//            mouseTouches.push_back(mt);
-//            if(printNormCoordsToggle) cout << mt.pos << endl;
 
+            //create a touch to add to the touches vector
+            DeskTouch dt;
             
-            //add mouse touch to touches vector
-//            Touch m;
-//            m.ID = 99999999;
-//            m.pos = normalizedMouse;
-//            m.dist = 1000;
-//            m.bIsTouching = ofGetMousePressed();
-//            
-//            receiveTouch(m);
+            dt.id = 9999999;
+            dt.pos = normalizedMouse;
+            dt.bIsTouching = ofGetMousePressed();
+            dt.dist = 100;
+            dt.mappedPos = ofVec2f( dt.pos.x * deskWidth, dt.pos.y * deskHeight );
+            
+            //store the x flipped version of mappedPos
+            dt.mappedXFlip = ofVec2f( ( 1.0f - dt.pos.x ) * deskWidth, dt.pos.y * deskHeight );
+            
+            touches.push_back(dt);
             
         }
         

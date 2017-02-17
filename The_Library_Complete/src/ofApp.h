@@ -85,6 +85,7 @@ public:
     //show coordinates of mouse to
     //help place things on screen
     bool bShowMouseCoords;
+    bool bShowCursor;
     
     //for drawing the saving/loading
     //feedback on screen

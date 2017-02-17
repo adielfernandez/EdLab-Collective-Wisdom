@@ -85,7 +85,7 @@ void DeskCam::setup(string _camName, const char* deviceName){
     isThreadCrashed = false;
     firstAfterCrash = true;
     
-    firstStop = true;
+    firstRestart = true;
     
     lastRestartTime = 0;
     
@@ -169,14 +169,14 @@ void DeskCam::update(){
         startThread();
         
         lastRestartTime = ofGetElapsedTimeMillis();
-        firstStop = true;
+        firstRestart = true;
         
     }
     
     //if it has been 2 seconds since last restart AND we're still crashed
     //then stop and prepare for the next restart
     //make sure to wait longer since we have waitForThread(4000)
-    if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 3000 && firstStop){
+    if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 3000 && firstRestart){
         
         cout << "Stopping Thread" << endl;
         stopThread();
@@ -186,158 +186,9 @@ void DeskCam::update(){
         
         background.reset();
         
-        firstStop = false;
+        firstRestart = false;
         
     }
-    
-    
-    
-    
-    
-    //process new data from thread if there are contours to find
-    
-    if( bNewContours ){
-        
-        bNewContours = false;
-        
-        //Go through previous touch data and set all touches to not updated
-        for(int i = 0; i < touches.size(); i++){
-            touches[i].bUpdated = false;
-            
-            touches[i].distForTouch = touchThresholdSlider;
-            touches[i].numPosSmoothingPts = posSmoothingSlider;
-            touches[i].numDistSmoothingPts = distSmoothingSlider;
-            
-        }
-        
-        
-        for(int i = 0; i < contours.size(); i++){
-            
-            
-            //get all the points in the blob so we can find the lowest point
-            //(highest on screen) i.e. the closest point to the wall
-            vector<ofPoint> points = contours.getPolyline(i).getVertices();
-            
-            //occasionally, contours will return polylines with zero vertices
-            //so check for verts to avoid seg-fault
-            if(points.size() > 0){
-                
-                //go through all the vertices and find the point with the lowest y value
-                int yVal = 100000;
-                int index = 0;
-                for(int j = 0; j < points.size(); j++){
-                    //if we find a point lower than yVal, store it
-                    if(points[j].y < yVal){
-                        yVal = points[j].y;
-                        
-                        //also store this index;
-                        index = j;
-                    }
-                }
-                
-                ofVec2f fingerTipPoint(points[index].x, points[index].y);
-            
-                //since the depth at the edge pixel might not always be the true depth (at boundary of contour),
-                //look around the area just above the lowest point and pick the highest (closest)
-                //depth value as the depth reading, this should be the hand rather than table noise
-                float touchDepth = -1;
-                
-                //search pixels above and to the sides, wider area gives more stable touch data
-                int pixelArea = touchSearchAreaSlider;
-                for(int x = fingerTipPoint.x - pixelArea; x < fingerTipPoint.x + pixelArea; x++){
-                    for(int y = fingerTipPoint.y; y < fingerTipPoint.y + pixelArea; y++){
-                        
-                        //make sure the pixel is in bounds
-                        if(x > 0 && x < foregroundPix.getWidth() && y > 0 && y < foregroundPix.getHeight()){
-                            int thisIndex = foregroundPix.getPixelIndex(x, y);
-                            if(foregroundPix[thisIndex] > touchDepth) touchDepth = foregroundPix[thisIndex];
-                        }
-                        
-                    }
-                }
-                
-                //now we know the left and right bounds at any depth: xLeft and xRight
-                //so let's finally map them to a normalized scale
-                float mappedX = ofMap(fingerTipPoint.x, 0, camWidth, 0.0, 1.0);
-                float mappedY = ofMap(fingerTipPoint.y, 0, camHeight, 0.0, 1.0);
-                
-                //get how far above the desk the fingertip is
-                float heightAboveDesk = touchDepth;
-                
-                //check if a touch exists with the ID, if it does, update it, if not add it.
-                bool touchExists = false;
-                int existingIndex;
-                
-                for(int j = 0; j < touches.size(); j++){
-                    if(touches[j].id == contours.getLabel(i)){
-                        touchExists = true;
-                        existingIndex = j;
-                        break;
-                    }
-                }
-                
-                if(touchExists){
-                    
-                    //update the touch
-                    touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), heightAboveDesk);
-                    
-                    touches[existingIndex].rawCamPos = fingerTipPoint;
-                    touches[existingIndex].rawDepth = touchDepth;
-                    
-                } else {
-                    
-                    //add the new touch
-                    DeskTouch t;
-                    t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), heightAboveDesk);
-
-                    t.rawCamPos = fingerTipPoint;
-                    t.rawDepth = touchDepth;
-                    
-                    touches.push_back(t);
-                    
-                }
-
-                
-                
-            }
-        
-        
-        
-        
-        }
-        
-        
-        //remove all the touches that haven't been updated recently
-        //starting from the end of the vector and moving to the front
-        for(int i = touches.size() - 1; i >= 0; i--){
-            
-            if(!touches[i].bUpdated){
-                touches.erase( touches.begin() + i );
-            }
-            
-        }
-        
-        if( touches.size() > 0 ){
-            bNewTouchesToSend = true;
-        }
-        
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
     
     
     //send settings into thread
@@ -388,45 +239,210 @@ void DeskCam::update(){
         
         lastFrameToThread = ofGetElapsedTimeMillis();
     }
+
     
-    //set values according to GUI
     
-    camera.setDepthClipping(nearClipSlider, farClipSlider);
+    //process new data from thread if there are contours to find
     
-    maskPoints.clear();
-    maskPoints.resize(4);
-    maskPoints[0] = maskPt0;
-    maskPoints[1] = maskPt1;
-    maskPoints[2] = maskPt2;
-    maskPoints[3] = maskPt3;
-    
-    //check for mouse handling of the mapping points
-    //and update the gui too
-    for(int i = 0; i < maskPoints.size(); i++){
-        if(maskPointMouseLock[i]){
-          
-            maskPoints[i] = adjustedMouse;
+    if( bNewContours ){
+        
+        bNewContours = false;
+        
+        //Go through previous touch data and set all touches to not updated
+        for(int i = 0; i < touches.size(); i++){
+            touches[i].bUpdated = false;
             
-            switch (i) {
-                case 0:
-                    maskPt0 = maskPoints[i];
-                    break;
-                case 1:
-                    maskPt1 = maskPoints[i];
-                    break;
-                case 2:
-                    maskPt2 = maskPoints[i];
-                    break;
-                case 3:
-                    maskPt3 = maskPoints[i];
-                    break;
-                default:
-                    break;
+            touches[i].distForTouch = touchThresholdSlider;
+            touches[i].numPosSmoothingPts = posSmoothingSlider;
+            touches[i].numDistSmoothingPts = distSmoothingSlider;
+            
+        }
+        
+        
+        for(int i = 0; i < contours.size(); i++){
+            
+            
+            //get all the points in the blob so we can find the lowest point
+            //(highest on screen) i.e. the closest point to the wall
+            vector<ofPoint> points = contours.getPolyline(i).getVertices();
+            
+            //occasionally, contours will return polylines with zero vertices
+            //so check for verts to avoid seg-fault
+            if(points.size() > 0){
+                
+                //go through all the vertices and find the point with the lowest y value
+                int yVal = 100000;
+                int index = 0;
+                for(int j = 0; j < points.size(); j++){
+                    //if we find a point lower than yVal, store it
+                    if(points[j].y < yVal){
+                        yVal = points[j].y;
+                        
+                        //also store this index;
+                        index = j;
+                    }
+                }
+                
+                ofVec2f fingerTipPoint(points[index].x, points[index].y);
+            
+                //since the depth at the edge pixel might not always be the true depth (at boundary of contour),
+                //look around the area just above the lowest point and pick the highest (closest)
+                //depth value as the depth reading, this should be the hand rather than table noise
+                //get how far above the desk the fingertip is
+                float heightAboveDesk = -1;
+                
+                //search pixels above and to the sides, wider area gives more stable touch data
+                int pixelArea = touchSearchAreaSlider;
+                for(int x = fingerTipPoint.x - pixelArea; x < fingerTipPoint.x + pixelArea; x++){
+                    for(int y = fingerTipPoint.y; y < fingerTipPoint.y + pixelArea; y++){
+                        
+                        //make sure the pixel is in bounds
+                        if(x > 0 && x < foregroundPix.getWidth() && y > 0 && y < foregroundPix.getHeight()){
+                            int thisIndex = foregroundPix.getPixelIndex(x, y);
+                            if(foregroundPix[thisIndex] > heightAboveDesk) heightAboveDesk = foregroundPix[thisIndex];
+                        }
+                        
+                    }
+                }
+                
+                //now we know the left and right bounds at any depth: xLeft and xRight
+                //so let's finally map them to a normalized scale
+                float mappedX = ofMap(fingerTipPoint.x, 0, camWidth, 0.0, 1.0);
+                
+                //map the Y so that points reach 1.0 when they hit the desk bound line
+                float mappedY = ofMap(fingerTipPoint.y, 0, camHeight * deskBoundLineSlider, 0.0, 1.0);
+                
+                //scale the Y as a minor correction
+                mappedY *= 1.0f - perceivedYShiftSlider;
+                
+                //Vertically shift the Y based on height to try to correct for the difference
+                //between the camera's persepective vs the user's perspective
+                //Gist: shift the touch vertically (-Y) the higher it goes
+                //100 value is arbitrary height above table to map to
+                // 1.0f - val is so that slider val of 0 means no shift
+                mappedY *= ofMap(heightAboveDesk, 0, 100, 1.0, 1.0f - perceivedHeightShiftSlider);
+                
+                
+                //check if a touch exists with the ID, if it does, update it, if not add it.
+                bool touchExists = false;
+                int existingIndex;
+                
+                for(int j = 0; j < touches.size(); j++){
+                    if(touches[j].id == contours.getLabel(i)){
+                        touchExists = true;
+                        existingIndex = j;
+                        break;
+                    }
+                }
+                
+                if(touchExists){
+                    
+                    //update the touch
+                    touches[existingIndex].renewTouch(ofVec2f(mappedX, mappedY), heightAboveDesk);
+                    
+                    touches[existingIndex].rawCamPos = fingerTipPoint;
+                    touches[existingIndex].rawDepth = heightAboveDesk;
+                    
+                } else {
+                    
+                    //add the new touch
+                    DeskTouch t;
+                    t.setNewTouch(contours.getLabel(i), ofVec2f(mappedX, mappedY), heightAboveDesk);
+
+                    t.rawCamPos = fingerTipPoint;
+                    t.rawDepth = heightAboveDesk;
+                    
+                    touches.push_back(t);
+                    
+                }
+
+                
+                
+            }
+        
+        
+        
+        
+        }
+        
+        
+        //remove all the touches that haven't been updated recently
+        //starting from the end of the vector and moving to the front
+        for(int i = touches.size() - 1; i >= 0; i--){
+            
+            if(!touches[i].bUpdated){
+                touches.erase( touches.begin() + i );
             }
             
-            break;
         }
+        
+        if( touches.size() > 0 ){
+            bNewTouchesToSend = true;
+        }
+        
+        
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    //set values according to GUI
+
+        
+        camera.setDepthClipping(nearClipSlider, farClipSlider);
+        
+        maskPoints.clear();
+        maskPoints.resize(4);
+        maskPoints[0] = maskPt0;
+        maskPoints[1] = maskPt1;
+        maskPoints[2] = maskPt2;
+        maskPoints[3] = maskPt3;
+        
+        //check for mouse handling of the mapping points
+        //and update the gui too
+        for(int i = 0; i < maskPoints.size(); i++){
+            if(maskPointMouseLock[i]){
+                
+                maskPoints[i] = adjustedMouse;
+                
+                switch (i) {
+                    case 0:
+                        maskPt0 = maskPoints[i];
+                        break;
+                    case 1:
+                        maskPt1 = maskPoints[i];
+                        break;
+                    case 2:
+                        maskPt2 = maskPoints[i];
+                        break;
+                    case 3:
+                        maskPt3 = maskPoints[i];
+                        break;
+                    default:
+                        break;
+                }
+                
+                break;
+            }
+        }
+        
+
+        
+    
     
 }
 
@@ -484,6 +500,16 @@ void DeskCam::drawRaw(int x, int y){
         ofDrawBitmapStringHighlight(ofToString(i), maskPoints[i].x + xShift, maskPoints[i].y - 10);
         
     }
+    
+    //draw the desk bound line by interpolating between the mask points
+    ofVec2f boundPt1, boundPt2;
+    
+    //         start         + (end           - start        ) * pct
+    boundPt1 = maskPoints[0] + (maskPoints[3] - maskPoints[0]) * deskBoundLineSlider;
+    boundPt2 = maskPoints[1] + (maskPoints[2] - maskPoints[1]) * deskBoundLineSlider;
+    
+    ofSetColor(255, 200, 0);
+    ofDrawLine(boundPt1, boundPt2);
 
     //draw a line around the boundary
     ofSetColor(0, 255, 0);
@@ -494,6 +520,7 @@ void DeskCam::drawRaw(int x, int y){
     p.addVertex(maskPoints[3]);
     p.close();
     p.draw();
+    
     
     
     //draw crosshairs for calibration
@@ -524,12 +551,15 @@ void DeskCam::drawRaw(int x, int y){
 
 void DeskCam::drawThresh(int x, int y){
     
+    ofPushStyle();
+    ofPushMatrix();
+    ofTranslate(x, y);
     
     if(drawForegroundToggle){
         
         ofImage fgImg;
         fgImg.setFromPixels(foregroundPix);
-        fgImg.draw(x, y);
+        fgImg.draw(0, 0);
 
         ofSetColor(255);
         ofDrawBitmapString("Foreground (640 x 480): after BG subtraction", x, y - 5);
@@ -538,7 +568,7 @@ void DeskCam::drawThresh(int x, int y){
         
         ofImage threshImg;
         threshImg.setFromPixels(threshPix);
-        threshImg.draw(x, y);
+        threshImg.draw(0, 0);
         
         ofSetColor(255);
         ofDrawBitmapString("Processed (640 x 480): crop, threshold, contours", x, y - 5);
@@ -548,9 +578,6 @@ void DeskCam::drawThresh(int x, int y){
     float w = threshPix.getWidth();
     float h = threshPix.getHeight();
     
-    ofPushStyle();
-    ofPushMatrix();
-    ofTranslate(x, y);
     
     
     //draw a light frame
@@ -565,6 +592,10 @@ void DeskCam::drawThresh(int x, int y){
     ofDrawLine(w/2, 0, w/2, h);
     ofDrawLine(0, h/2, w, h/2);
     
+    //draw desk bound line
+    ofSetColor(255, 200, 0);
+    ofSetLineWidth(2);
+    ofDrawLine(0, h * deskBoundLineSlider, w, h * deskBoundLineSlider);
     
     
     if(drawContoursToggle){
@@ -661,18 +692,33 @@ void DeskCam::drawDeskProxy(int x, int y){
         p.x *= w;
         p.y *= h;
         
-        float rad = ofMap(touches[i].dist, 0, 20, 7, 50, true);
+        float rad = ofMap(touches[i].dist, 0, 70, 7, 100, true);
         
         if(touches[i].bIsTouching){
+            
+            //draw a fat X when touching
             ofSetColor(0, 255, 0);
             
+            ofSetLineWidth(6);
+            
+            //width of X
+            int w = 20;
+            ofDrawLine(p.x - w/2, p.y - w/2, -100, p.x + w/2, p.y + w/2, -100);
+            ofDrawLine(p.x - w/2, p.y + w/2, -100, p.x + w/2, p.y - w/2, -100);
+            
+            //            ofDrawCircle(p.x, p.y, -100, rad * 2);
+            
+            
         } else {
-            ofSetColor(0, 128, 255);
+            
+            ofSetColor( 0, 128, 255 );
+            
+            ofSetLineWidth(4);
+            ofNoFill();
+            ofDrawCircle(p.x, p.y, -150, rad);
+            ofFill();
         }
         
-        ofSetLineWidth(3);
-        ofNoFill();
-        ofDrawCircle(p, rad);
         
         ofDrawBitmapStringHighlight(ofToString(touches[i].pos) + "\n" + ofToString(touches[i].dist), p);
         
@@ -706,6 +752,7 @@ void DeskCam::drawGui(int x, int y){
     
     gui.setPosition(x, y);
     gui.draw();
+    
     
     
 }
@@ -755,6 +802,9 @@ void DeskCam::setupGui(){
     gui.add(maxDistanceSlider.setup("Max Distance", 32, 0, 100));
     
     gui.add(touchSettingsLabel.setup("   TOUCH SETTINGS", ""));
+    gui.add(deskBoundLineSlider.setup("Desk Bottom Bound", 1.0, 0.0, 1.0));
+    gui.add(perceivedHeightShiftSlider.setup("Perceived Height Shift", 0.0, 0.0, 1.0));
+    gui.add(perceivedYShiftSlider.setup("Perceived Y Shift", 0.0, 0.0, 1.0));
     gui.add(touchThresholdSlider.setup("Touch Threshold", 5, 1, 30));
     gui.add(touchSearchAreaSlider.setup("Touch Search Area", 5, 1, 30));
     gui.add(posSmoothingSlider.setup("Pos Smooth Amt", 10, 1, 30));
@@ -775,6 +825,7 @@ void DeskCam::setupGui(){
     
     //this changes the color of all the labels for some reason
     cvLabel.setDefaultTextColor(ofColor(0));
+    
     
 }
 
@@ -810,7 +861,7 @@ void DeskCam::threadedFunction(){
             ofPixels threshPix_thread, blurredPix_thread;
             ofPixels mappedBlurredPix_thread;
             ofPixels foregroundPix_thread;
-            ofxCv::ContourFinder contours_thread;
+            
             
             //get all the values from the settings vector
             
@@ -1019,8 +1070,8 @@ void DeskCam::getQuadSubPixels(ofPixels& inPix, ofPixels& outPix, vector <ofVec2
             ylrp = y/(float)outH;
             xinput = (p1.x * (1-xlrp) + p2.x * xlrp) * (1-ylrp) + (p4.x * (1-xlrp) + p3.x * xlrp) * ylrp;
             yinput = ((p1.y * (1-ylrp)) + (p4.y * ylrp)) * (1-xlrp) + (p2.y * (1-ylrp) + p3.y * ylrp) * xlrp;
-            inIndex = xinput + (yinput * inW);
-            outIndex = x + y * outW;
+            inIndex = ofClamp( xinput + (yinput * inW) , 0, inW * inH - 1);
+            outIndex = ofClamp( x + y * outW, 0, outW * outH - 1);
             
             outPix[outIndex] = inPix[inIndex];
             

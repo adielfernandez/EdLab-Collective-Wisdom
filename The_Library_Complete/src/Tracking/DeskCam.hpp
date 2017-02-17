@@ -139,6 +139,9 @@ public:
     ofxIntSlider maxDistanceSlider;
     
     ofxLabel touchSettingsLabel;
+    ofxFloatSlider deskBoundLineSlider;
+    ofxFloatSlider perceivedYShiftSlider;
+    ofxFloatSlider perceivedHeightShiftSlider;
     ofxIntSlider touchThresholdSlider;
     ofxIntSlider touchSearchAreaSlider;
     ofxIntSlider posSmoothingSlider;
@@ -173,7 +176,7 @@ private:
     ofThreadChannel<ofPixels> foregroundPixOut;
     ofThreadChannel<ofxCv::ContourFinder> contoursOut;
     
-    
+    ofxCv::ContourFinder contours_thread;    
     ofxCv::RunningBackground background;
     
     //for restarting the background learning
@@ -183,7 +186,7 @@ private:
     //for restarting the thread
     unsigned long long lastRestartTime;
     bool firstAfterCrash;
-    bool firstStop;
+    bool firstRestart;
     
     
     void threadedFunction();

@@ -40,7 +40,7 @@
 <Rotate_Image>1</Rotate_Image>
 <___TOUCH_SETTINGS/>
 	<Touch_Search_Area>6</Touch_Search_Area>
-	<Pos_Smooth_Amt>5</Pos_Smooth_Amt>
-	<Dist_Smooth_Amt>3</Dist_Smooth_Amt>
+	<Pos_Smooth_Amt>2</Pos_Smooth_Amt>
+	<Dist_Smooth_Amt>2</Dist_Smooth_Amt>
 <Simple_Threshold>1</Simple_Threshold>
 </LeftCam>

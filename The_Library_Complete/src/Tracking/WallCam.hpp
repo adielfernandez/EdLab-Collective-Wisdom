@@ -187,7 +187,7 @@ private:
     ofThreadChannel<ofPixels> threshPixOut;
     ofThreadChannel<ofxCv::ContourFinder> contoursOut;
     
-    
+    ofxCv::ContourFinder contours_thread;
     ofxCv::RunningBackground background;
     
     //for restarting the background learning
@@ -197,7 +197,7 @@ private:
     //for restarting the thread
     unsigned long long lastRestartTime;
     bool firstAfterCrash;
-    bool firstStop;
+    bool firstRestart;
     
     
     void threadedFunction();

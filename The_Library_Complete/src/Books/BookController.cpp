@@ -1257,6 +1257,8 @@ void BookController::setupGui(){
     min.set(50, 300);
     max.set(650, 750);
     
+    gui2.add(rePositionBooksButton.setup("Re-Position Books"));
+    gui2.add(bookSpacingSlider.setup("Book Spacing", 0, 0, 10));
     gui2.add(shelfPositioningLabel.setup("  SHELF POSITIONS", ""));
     gui2.add(shelf0StartSlider.setup("Shelf0 Start", min, min, max));
     gui2.add(shelf0EndSlider.setup("Shelf0 End", min, min, max));
@@ -1274,8 +1276,6 @@ void BookController::setupGui(){
     gui2.add(shelf4EndSlider.setup("Shelf4 End", min, min, max));
     gui2.add(shelf5StartSlider.setup("Shelf5 Start", min, min, max));
     gui2.add(shelf5EndSlider.setup("Shelf5 End", min, min, max));
-    gui2.add(bookSpacingSlider.setup("Book Spacing", 0, 0, 10));
-    gui2.add(rePositionBooksButton.setup("Re-Position Books"));
 
     
     

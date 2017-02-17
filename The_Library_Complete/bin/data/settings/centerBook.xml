@@ -1,10 +1,10 @@
 <centerBook>
 	<__POSITIONING/>
-	<Book_Pos>109.184, 148.673</Book_Pos>
+	<Book_Pos>107.781, 150.255</Book_Pos>
 	<Bulk_Scale>1.5225</Bulk_Scale>
 	<Depth_Scale>0.6485</Depth_Scale>
-	<Height_Scale>0.759</Height_Scale>
-	<Width_Scale>0.8305</Width_Scale>
+	<Height_Scale>0.771512</Height_Scale>
+	<Width_Scale>0.837</Width_Scale>
 	<__MAPPING/>
 	<Show_UnWarped>0</Show_UnWarped>
 	<Draw_Wireframe>0</Draw_Wireframe>
@@ -25,7 +25,7 @@
 <Book_Top_Bound>0.025</Book_Top_Bound>
 	<Book_Bottom_Bound>0.86</Book_Bottom_Bound>
 <Wait_after_touch>1094</Wait_after_touch>
-<Gui_Position>1197, 157</Gui_Position>
+<Gui_Position>460, 540</Gui_Position>
 <Filigree_Top_M_>5</Filigree_Top_M_>
 	<Filigree_Bottom_M_>5</Filigree_Bottom_M_>
 	<Filigree_Width>142</Filigree_Width>
@@ -38,5 +38,5 @@
 	<Time_touches_last>0.25</Time_touches_last>
 <Btn_Col_LerpIN>0.11761</Btn_Col_LerpIN>
 	<Btn_Col_LerpOUT>0.07276</Btn_Col_LerpOUT>
-<Perceived_Vert_shift>8</Perceived_Vert_shift>
+<Perceived_Vert_shift>0</Perceived_Vert_shift>
 </centerBook>

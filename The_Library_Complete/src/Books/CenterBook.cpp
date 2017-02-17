@@ -1744,6 +1744,7 @@ void CenterBook::setupGui(){
     gui.add(bookPageBottomSlider.setup("Book Bottom Bound", 0.95f, 0.0, 1.0));
     gui.add(touchWaitSlider.setup("Wait after touch", 500, 10, 2000));
     gui.add(verticalShiftSlider.setup("Perceived Vert shift", 0, 0, 80));
+
     
     
     maxRangeX = 100;

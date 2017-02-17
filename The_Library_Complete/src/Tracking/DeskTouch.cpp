@@ -101,7 +101,7 @@ void DeskTouch::draw(){
     if(bIsTouching){
         
         //draw a fat X when touching
-        ofSetColor(closeColor);
+        ofSetColor(0, 255, 0);
         
         ofSetLineWidth(6);
         

@@ -70,7 +70,7 @@ void WallCam::setup(string _camName, const char* deviceName){
     isThreadCrashed = false;
     firstAfterCrash = true;
     
-    firstStop = true;
+    firstRestart = true;
     
     lastRestartTime = 0;
 
@@ -157,14 +157,14 @@ void WallCam::update(){
         startThread();
         
         lastRestartTime = ofGetElapsedTimeMillis();
-        firstStop = true;
+        firstRestart = true;
         
     }
     
     //if it has been 2 seconds since last restart AND we're still crashed
     //then stop and prepare for the next restart
     //make sure to wait longer since we have waitForThread(4000)
-    if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 3000 && firstStop){
+    if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 3000 && firstRestart){
         
         cout << "Stopping Thread" << endl;
         stopThread();
@@ -174,7 +174,7 @@ void WallCam::update(){
         
         background.reset();
         
-        firstStop = false;
+        firstRestart = false;
         
     }
 
@@ -1055,7 +1055,7 @@ void WallCam::threadedFunction(){
             ofPixels rawPix_thread;      //regular pix going out
             
             ofPixels threshPix_thread, blurredPix_thread;
-            ofxCv::ContourFinder contours_thread;
+            
 
             //get all the values from the settings vector
 

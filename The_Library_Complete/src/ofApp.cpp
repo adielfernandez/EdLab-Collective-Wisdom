@@ -143,6 +143,7 @@ void ofApp::setup(){
     //----------Debug Tools----------
     bShowFrameRate = false;
     bShowMouseCoords = false;
+    bShowCursor = false;
     
     bIsFullscreen = false;
     
@@ -604,6 +605,16 @@ void ofApp::keyPressed(int key){
         rightCam.loadSettings();
         
         lastLoadTime = ofGetElapsedTimef();
+    }
+    
+    if(key == 'c'){
+        
+        bShowCursor = !bShowCursor;
+        
+        if(bShowCursor){
+            
+        }
+        
     }
     
     

@@ -1,12 +1,12 @@
 <CenterCam>
 	<___CAMERA_SETTINGS/>
 	<Cam_Near_Clip>915</Cam_Near_Clip>
-	<Cam_Far_Clip>1574</Cam_Far_Clip>
+	<Cam_Far_Clip>1665</Cam_Far_Clip>
 	<___IMAGE_PROCESSING/>
 	<Near_Threshold>255</Near_Threshold>
 	<Far_Threshold>3</Far_Threshold>
-	<Blur>7</Blur>
-	<Number_of_erosions>2</Number_of_erosions>
+	<Blur>5</Blur>
+	<Number_of_erosions>1</Number_of_erosions>
 	<Number_of_dilations>0</Number_of_dilations>
 	<___ROI_SETTINGS/>
 	<Region_Depth>96</Region_Depth>
@@ -18,22 +18,25 @@
 	<___CONTOUR_FINDING/>
 	<Draw_Contours>1</Draw_Contours>
 	<Draw_Blob_info>1</Draw_Blob_info>
-	<Min_Blob_Area>1650</Min_Blob_Area>
+	<Min_Blob_Area>3125</Min_Blob_Area>
 	<Max_Blob_Area>100000</Max_Blob_Area>
 	<Persistence>100</Persistence>
 	<Max_Distance>65</Max_Distance>
 <CenterCam/>
 <___MASK_SETTINGS/>
-	<Mask_Pt_0>143, 230</Mask_Pt_0>
-	<Mask_Pt_1>462, 228</Mask_Pt_1>
-	<Mask_Pt_2>444, 347</Mask_Pt_2>
-	<Mask_Pt_3>162, 347</Mask_Pt_3>
+	<Mask_Pt_0>142, 222</Mask_Pt_0>
+	<Mask_Pt_1>462, 224</Mask_Pt_1>
+	<Mask_Pt_2>439, 389</Mask_Pt_2>
+	<Mask_Pt_3>169, 387</Mask_Pt_3>
 <Flip_Image>1</Flip_Image>
 <Draw_Foreground>0</Draw_Foreground>
 	<___TOUCH_SETTINGS/>
 	<Touch_Threshold>10</Touch_Threshold>
 <Touch_Search_Area>10</Touch_Search_Area>
-<Pos_Smooth_Amt>7</Pos_Smooth_Amt>
-	<Dist_Smooth_Amt>5</Dist_Smooth_Amt>
+<Pos_Smooth_Amt>4</Pos_Smooth_Amt>
+	<Dist_Smooth_Amt>3</Dist_Smooth_Amt>
 <Simple_Threshold>0</Simple_Threshold>
+<Desk_Bottom_Bound>0.74</Desk_Bottom_Bound>
+<Perceived_Y_Shift>0.1</Perceived_Y_Shift>
+<Perceived_Height_Shift>0.47</Perceived_Height_Shift>
 </CenterCam>

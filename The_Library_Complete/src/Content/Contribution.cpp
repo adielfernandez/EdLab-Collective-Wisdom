@@ -15,10 +15,10 @@ Contribution::Contribution(){
     
 }
 
-void Contribution::setMessage(string _name, string _tag, string _msg){
+void Contribution::setMessage(string _name, int _tagNum, string _msg){
     
     name = _name;
-    tag = _tag;
+    tagNum = _tagNum;
     message = _msg;
     
 }

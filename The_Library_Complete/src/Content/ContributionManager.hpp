@@ -16,6 +16,8 @@
 
 #include "ofMain.h"
 #include "Contribution.hpp"
+#include "ScholarData.hpp"
+
 #pragma once
 
 
@@ -25,13 +27,14 @@ public:
     
     ContributionManager();
     
-    void loadContent();
+    void loadContent(ScholarData *data);
     void saveContributionToFile(Contribution _c);
     
-    void logNewContribution(string n, string tag, string msg);
+    void logNewContribution(string n, int tagNum, string msg);
     
     vector<Contribution> contributionList;
     
+    ScholarData *scholarData;
     
     const int numBookModels = 77;
     

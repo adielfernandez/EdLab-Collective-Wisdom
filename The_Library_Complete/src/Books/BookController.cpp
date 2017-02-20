@@ -368,20 +368,10 @@ void BookController::setup(vector<Contribution> *cList){
                 books[i].bIsUnused = false;
                 
                 //get tag number and color from the tagList in scholar data to set up the book
-                int tagNum = 0;
-                ofColor tagCol;
                 
                 string thisTag = (*contributionList)[i].tag;
-                
-                //go through the tagList and see which one this tag is
-                for(int i = 0; i < scholarData -> tagList.size(); i++){
-                    if(thisTag.compare(scholarData -> tagList[i]) == 0){
-                        tagNum = i;  
-                    }
-                }
-                
-                tagCol = scholarData -> tagColorList[tagNum];
-
+                int tagNum = (*contributionList)[i].tagNum;
+                ofColor tagCol = scholarData -> tagColorList[tagNum];
                 
                 //set up the content
                 //give a reference to the individual contribution in the list
@@ -663,18 +653,9 @@ void BookController::addToLibrary( Contribution& c ){
 
     
     
-    //if we've gotten this far,
-    //get tag number and color from the tagList in scholar data to set up the book
-    int tagNum;
-    ofColor tagCol;
-    
-    for(int i = 0; i < scholarData -> tagList.size(); i++){
-        if( c.tag.compare(scholarData -> tagList[i]) == 0 ){
-            tagNum = i;
-        }
-    }
-    
-    tagCol = scholarData -> tagColorList[tagNum];
+    //Set all the right data
+    int tagNum = c.tagNum;
+    ofColor tagCol = scholarData -> tagColorList[tagNum];
     
     string tagLine1 = scholarData -> formattedTagList[tagNum][0];
     string tagLine2 = scholarData -> formattedTagList[tagNum][1];
@@ -714,7 +695,7 @@ void BookController::onNewContribution( Contribution& c ){
     //if not, add the contribution to the queue and wait
     if(ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider){
         
-        addToLibrary( c );
+        addToLibrary( c ); 
     
     } else {
         

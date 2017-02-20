@@ -64,7 +64,7 @@ void Ornament::setup(int _type){
         
     } else if(type == 4){              //-----FIFTH SHELF-----
         numBooksWide = 3;
-        placeOnShelf = 15;
+        placeOnShelf = 14;
         shelfNum = 4;
         
         img.load("assets/ornaments/rightBookend.png");

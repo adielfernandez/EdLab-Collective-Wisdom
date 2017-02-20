@@ -1,0 +1,15 @@
+User Message Format:
+--------------------
+Line 0: name
+Line 1: Tag NUMBER
+Line 2: Unix Timestamp
+Line 3+: Message Content
+
+========================================
+
+Scholar "message" Format:
+-------------------------
+Line 0: Scholar Name
+Line 1: Scholar Number
+Line 3: Tag Number
+Line 4+: Message Content

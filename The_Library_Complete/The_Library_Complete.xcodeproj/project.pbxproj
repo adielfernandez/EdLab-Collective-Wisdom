@@ -1585,12 +1585,12 @@
 		D7FFD7421E53BDBD00A46BCB /* Content */ = {
 			isa = PBXGroup;
 			children = (
-				D7FFD7431E53BDBD00A46BCB /* Contribution.cpp */,
 				D7FFD7441E53BDBD00A46BCB /* Contribution.hpp */,
-				D7FFD7451E53BDBD00A46BCB /* ContributionManager.cpp */,
+				D7FFD7431E53BDBD00A46BCB /* Contribution.cpp */,
 				D7FFD7461E53BDBD00A46BCB /* ContributionManager.hpp */,
-				D7FFD7471E53BDBD00A46BCB /* ScholarData.cpp */,
+				D7FFD7451E53BDBD00A46BCB /* ContributionManager.cpp */,
 				D7FFD7481E53BDBD00A46BCB /* ScholarData.hpp */,
+				D7FFD7471E53BDBD00A46BCB /* ScholarData.cpp */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -1598,16 +1598,16 @@
 		D7FFD7491E53BDBD00A46BCB /* Furniture */ = {
 			isa = PBXGroup;
 			children = (
-				D7FFD74A1E53BDBD00A46BCB /* Bookcase.cpp */,
 				D7FFD74B1E53BDBD00A46BCB /* Bookcase.hpp */,
-				D7FFD74C1E53BDBD00A46BCB /* Frame.cpp */,
+				D7FFD74A1E53BDBD00A46BCB /* Bookcase.cpp */,
 				D7FFD74D1E53BDBD00A46BCB /* Frame.hpp */,
-				D7FFD74E1E53BDBD00A46BCB /* Tile.cpp */,
+				D7FFD74C1E53BDBD00A46BCB /* Frame.cpp */,
 				D7FFD74F1E53BDBD00A46BCB /* Tile.hpp */,
-				D7FFD7501E53BDBD00A46BCB /* TiledObject.cpp */,
+				D7FFD74E1E53BDBD00A46BCB /* Tile.cpp */,
 				D7FFD7511E53BDBD00A46BCB /* TiledObject.hpp */,
-				D7FFD7521E53BDBD00A46BCB /* Wallpaper.cpp */,
+				D7FFD7501E53BDBD00A46BCB /* TiledObject.cpp */,
 				D7FFD7531E53BDBD00A46BCB /* Wallpaper.hpp */,
+				D7FFD7521E53BDBD00A46BCB /* Wallpaper.cpp */,
 			);
 			path = Furniture;
 			sourceTree = "<group>";
@@ -1684,12 +1684,12 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
+				D7FFD7581E53BDBD00A46BCB /* SceneController.hpp */,
+				D7FFD7571E53BDBD00A46BCB /* SceneController.cpp */,
 				D7FFD7341E53BDBD00A46BCB /* Books */,
 				D7FFD7421E53BDBD00A46BCB /* Content */,
 				D7FFD7491E53BDBD00A46BCB /* Furniture */,
 				D7FFD7541E53BDBD00A46BCB /* Ornaments */,
-				D7FFD7581E53BDBD00A46BCB /* SceneController.hpp */,
-				D7FFD7571E53BDBD00A46BCB /* SceneController.cpp */,
 				D7FFD76B1E53BE4700A46BCB /* Tracking */,
 			);
 			path = src;

@@ -395,10 +395,11 @@ void Book::setupContent(Contribution c, string tagText1, string tagText2, int _t
     
     //setup the tag button
     tagButton.setFont( UIFont );
-    tagButton.setTag( tagText1, tagText2, tagNum, tagCol);
+    tagButton.setTag( tagText1, tagText2, tagNum, tagCol );
     
     formatTextForDisplay();
-    drawContentToTexture();
+    
+    textureDrawn = false;
     
     //set up the spawning effect now that we have a color
     spawnRibbons.setup(tagCol);
@@ -743,7 +744,12 @@ void Book::update(){
         exitButton.update();
         tagButton.update();
         
-
+        if( !textureDrawn ){
+            
+            drawContentToTexture();
+            textureDrawn = true;
+            
+        }
 
         // bIsDisplayed: runs through book being pulled out to display
         // position and being put back in the shelf

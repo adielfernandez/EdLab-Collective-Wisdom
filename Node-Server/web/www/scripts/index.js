@@ -13,6 +13,11 @@
     this.$inputName = $('[data-ref="input-name"]');
     this.$inputTag = $('[data-ref="input-tag"]');
 
+
+    this.$missingTag = $('[data-ref="tag-error"]');
+    this.$missingName = $('[data-ref="name-error"]');
+    this.$missingContribution = $('[data-ref="contribution-error"]');
+
     this.addEvents();
 
     //waits 2000ms before moving past landing page
@@ -50,13 +55,28 @@
 
   CollectiveWisdom.prototype.addEvents = function() {
     this.$contributeBtn.on('click', function() {
-      this.$sectionContribute.addClass('is-before');
-      this.$sectionThanks.removeClass('is-after');
 
       console.log("contribution button clicked");
-      hasContributed = true;
 
-      this.sendData();
+      //only moves on if function returns true
+      //i.e. all 3 fields have been filled out and
+      //the data is actually sent
+      if( this.sendData() ){
+
+        console.log("Moving on to thank you page");
+
+        hasContributed = true;
+        this.$sectionContribute.addClass('is-before');
+        this.$sectionThanks.removeClass('is-after');
+
+      } else {
+
+      console.log("Fields not complete");
+
+      }
+      
+
+
     }.bind(this));
 
     this.$thanksBtn.on('click', function() {
@@ -76,8 +96,7 @@
 
         var d = new Date();
 
-        //if its been too long, i.e. 300 ms, just a bit over OF's heartbeat rate (250ms)
-        //since we've received a message then we're disconnected
+        //if its been too long since we've received a message then we're disconnected
         var timeSinceLastHB = d.getTime() - lastHeartbeatTime;
         
         if(timeSinceLastHB > 1000){
@@ -86,7 +105,7 @@
           connected = true;
         }
 
-        console.log("Time since last heartbeat: " + timeSinceLastHB);
+        // console.log("Time since last heartbeat: " + timeSinceLastHB);
 
         if(connected){
 
@@ -121,7 +140,7 @@
       }.bind(this), 300);
 
 
-    }.bind(this), 2000);
+    }.bind(this), 3000);
   };
 
 
@@ -131,14 +150,77 @@
   CollectiveWisdom.prototype.sendData = function() {
     var contribution = this.$inputContribution.val();
     var userName = this.$inputName.val();
-    var userTag = this.$inputTag.val();;
+    var userTagNum = this.$inputTag.val();
 
-    socket.emit('new-message', { name: userName, tag: userTag, message: contribution });
+    var bHasName = false;
+    var bHasTag = false;
+    var bHasContribution = false;
 
-    // Send data here.
-    console.log(userName + ", " + userTag + ", " + contribution);
+
+    //Check for Contribution Field
+    if( contribution.length != 0){
+      //hide error text
+      bHasContribution = true;
+      this.$missingContribution.text("*");
+    } else {
+      //show error text
+      this.$missingContribution.text("* (Required)");
+    } 
+
+
+    //Check for Name Field
+    if(userName.length != 0){
+      //hide error text
+      this.$missingName.text("*");
+      bHasName = true;
+
+    } else {
+      //show error text
+      bHasName = false;
+      this.$missingName.text("* (Required)");
+      console.log("UserName Field Empty");
+
+    } 
+
+
+    //Check for Tag Field
+    if(userTagNum != -1 ){ //default option has val = -1
+      //hide error text
+      this.$missingTag.text("*");
+      bHasTag = true;
+    } else {
+      //show error text
+      this.$missingTag.text("* (Required)");
+      bHasTag = false;
+    }
+      
+    //If all 3 fields are populated, send message and move on
+    if(bHasName && bHasTag && bHasContribution){
+      //all 3 fields are populated, 
+
+      socket.emit('new-message', { name: userName, tag: userTagNum, message: contribution });
+
+      // Send data here.
+      console.log("Sending:  " + userName + ", " + userTagNum + ", " + contribution);
+
+      return true;
+     } else {
+
+      //not all fields completed, don't send anything and return false
+      return false;
+     }
+
   }
+
+
+
+
+  
 
   return new CollectiveWisdom();
 })();
+
+
+
+
 

@@ -97,8 +97,8 @@ public:
     int numShelves;
     const float bookWidth = 24.2906;
     
-    const int maxNumBooks = 108;
-    const int maxBooksPerShelf = 18;
+    const int maxNumBooks = 102;
+    const int maxBooksPerShelf = 17;
 
     vector<Ornament> ornaments;
     vector<TagRibbon> tagRibbons;

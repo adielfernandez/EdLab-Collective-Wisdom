@@ -14,8 +14,9 @@ ContributionManager::ContributionManager(){
     
 }
 
-void ContributionManager::loadContent(){
+void ContributionManager::loadContent( ScholarData *data ){
 
+    scholarData = data;
     
     //First add in all the scholars
     ofDirectory scholarDir;
@@ -29,7 +30,7 @@ void ContributionManager::loadContent(){
         
         string name = "";
         int scholarNum = 0;
-        string tag = "";
+        int tagNum = 0;
         string message = "";
         
         if(buff.size()) {
@@ -47,7 +48,7 @@ void ContributionManager::loadContent(){
                 } else if(lineNum == 1){
                     scholarNum = ofToInt(line);
                 } else if(lineNum == 2){
-                    tag = line;
+                    tagNum = ofToInt(line);
                 } else {
                     message += line;
                 }
@@ -57,7 +58,8 @@ void ContributionManager::loadContent(){
             
             Contribution c;
             c.ID = contributionList.size();
-            c.setMessage(name, tag, message);
+            c.setMessage(name, tagNum, message);
+            c.tag = scholarData -> tagList[ tagNum ];
             c.bIsScholar = true;
             c.scholarNum = scholarNum;
             
@@ -79,7 +81,7 @@ void ContributionManager::loadContent(){
         ofBuffer buff = ofBufferFromFile(messageDir.getPath(i));
         
         string name = "";
-        string tag = "";
+        int tagNum = 0;
         string message = "";
         unsigned int birthTime = 0;
         
@@ -96,7 +98,7 @@ void ContributionManager::loadContent(){
                 if(lineNum == 0){
                     name = line;
                 } else if(lineNum == 1){
-                    tag = line;
+                    tagNum = ofToInt(line);
                 } else if(lineNum == 2){
                     birthTime = ofToInt(line);
                 } else {
@@ -108,7 +110,8 @@ void ContributionManager::loadContent(){
 
             Contribution c;
             c.ID = contributionList.size();
-            c.setMessage(name, tag, message);
+            c.setMessage(name, tagNum, message);
+            c.tag = scholarData -> tagList[ tagNum ];
             
             contributionList.push_back(c);
             
@@ -140,21 +143,19 @@ void ContributionManager::loadContent(){
 
     
     
-
-    
-    
     
 
     
     
 }
 
-void ContributionManager::logNewContribution(string n, string tag, string msg){
+void ContributionManager::logNewContribution(string n, int tagNum, string msg){
     
     //create a message
     Contribution c;
     c.ID = contributionList.size();
-    c.setMessage(n, tag, msg);
+    c.setMessage(n, tagNum, msg);
+    c.tag = scholarData -> tagList[tagNum];
     c.birthTime = ofGetUnixTime();
     
     //push it to the list
@@ -164,7 +165,7 @@ void ContributionManager::logNewContribution(string n, string tag, string msg){
     ofNotifyEvent(newContributionEvt, c, this);
     
     //also create a new text file to store it for next time
-//    saveContributionToFile(c);
+    saveContributionToFile(c);
     
     
 }
@@ -177,7 +178,7 @@ void ContributionManager::saveContributionToFile(Contribution _c){
     ofBuffer buffer;
     buffer.append(_c.name);
     buffer.append("\n");
-    buffer.append(_c.tag);
+    buffer.append(ofToString(_c.tagNum));
     buffer.append("\n");
     buffer.append(ofToString(_c.birthTime));
     buffer.append("\n");

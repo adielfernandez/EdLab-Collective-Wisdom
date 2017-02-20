@@ -10,10 +10,10 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-    connectToServer = false;
+    connectToServer = true;
     
     if(connectToServer){
-        //        client.connect("localhost", 8081);
+//        client.connect("localhost", 8081);
         client.connect("35.165.1.38", 8081);  //"collectivewisdom.cc" also works
         client.addListener(this);
         bSendHeartbeat = true;
@@ -73,7 +73,7 @@ void ofApp::setup(){
     
     
     //Load contributions from file
-    contributionManager.loadContent();
+    contributionManager.loadContent(&scholarData);
     
     
     //Finally, now that the book models have been loaded
@@ -625,15 +625,15 @@ void ofApp::keyPressed(int key){
         if(bookController.books.size() > 0){
             //            int thisTag = floor(ofRandom(scholarData.tagList.size()));
             
-            string name = "JaneDoe" + ofToString(ofGetElapsedTimef(), 2);
-            string s = scholarData.tagList[messageTagNum];
+            string name = "JaneDoe " + ofToString(ofGetElapsedTimef(), 2);
+//            string s = scholarData.tagList[messageTagNum];
             
-            messageTagNum++;
             
             if(messageTagNum == 10) messageTagNum = 0;
             
-            contributionManager.logNewContribution(name, s, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
+            contributionManager.logNewContribution(name, messageTagNum, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.");
             
+            messageTagNum++;
             
             //            cout << "New manual contribution with tag: " << s << endl;
         }
@@ -765,12 +765,12 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
     if(parts.size() > 1){
         string messageTag = parts[0];
         string name = parts[1];
-        string tag = parts[2];
+        int tagNum = ofToInt( parts[2] );
         string message = parts[3];
         
-        cout << "From: " << name << "\nTag: " << tag << "\nMessage: " << message << "\n" << endl;
+        cout << "From: " << name << "\nTag: " << tagNum << "\nMessage: " << message << "\n" << endl;
         
-        contributionManager.logNewContribution(name, tag, message);
+        contributionManager.logNewContribution(name, tagNum, message);
         
     }
     

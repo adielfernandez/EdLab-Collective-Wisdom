@@ -24,10 +24,11 @@ public:
     
     Contribution();
     
-    void setMessage(string _name, string _tag, string _msg);
+    void setMessage(string _name, int _tagNum, string _msg);
     
     string name;
     string tag;
+    int tagNum;
     string message;
     
     //unique ID for reference

@@ -105,6 +105,7 @@ public:
     bool bNeedsUpdate;
     
     ofFbo textureFBO;
+    bool textureDrawn;
     ofMaterial material;
     ofTexture *tex;
     ofVboMesh spineMesh;

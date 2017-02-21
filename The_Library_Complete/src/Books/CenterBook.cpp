@@ -452,12 +452,6 @@ void CenterBook::update(){
     
     //if we're showing the raw desk, see if the mouse is inside of it and
     //pass normalized mouse touches into the FBO
-    
-    //this is practice for when touches actually come in through OSC
-    //Touches will be normalized from 0-1 over the width/height of the entire desk
-    
-//    mouseTouches.clear();
-    
     if(showRawDeskToggle && bIsGuiActive){
         
         ofVec2f mouse(ofGetMouseX(), ofGetMouseY());
@@ -511,12 +505,15 @@ void CenterBook::update(){
     //go through mouse touches and check for detection zones
     for(int i = 0; i < touches.size(); i++){
         
+        //don't update the mouse touch so we can listen to clicks
+        //instead of comparing touch distance vs a threshold
+        if( touches[i].id != 9999999 )
         touches[i].update();
     
         //touch data is normalized from 0-1 in x and y
         ofVec2f thisTouch = touches[i].pos;
         
-
+//        cout << "Touch pos: " << thisTouch << ", touch state: " << touches[i].bIsTouching << endl;
         
         //see if we're over book
         if(thisTouch.x > bookLeftBoundSlider && thisTouch.y > bookPageTopSlider && thisTouch.y < bookPageBottomSlider){
@@ -660,67 +657,73 @@ void CenterBook::update(){
                 
                 //We already know we're hovering over the book
                 //but let's see which page we're on
-                if(thisTouch.x < bookCenterSlider){
-                    //left page
-
-                    //over button area
-                    if(thisTouch.y > 0.21){
-                        
-                        //"show portrait" button
-                        if(thisTouch.y < 0.4){
-                        
-                            hoveredOption = 0;
-                            
-                        //"show factsheet" button
-                        } else if(thisTouch.y < 0.6){
-                            
-                            hoveredOption = 1;
-                            
-                        //"show well known works" button
-                        } else if(thisTouch.y < 0.78){
-                            
-                            hoveredOption = 2;
-                            
-                        }
-                        
-                        
-                    }
+                if(thisTouch.x > bookLeftBoundSlider && thisTouch.x < bookCenterSlider){
                     
-                    if( hoveredOption >= 0 && hoveredOption <= 2){
+                    //These buttons only exist on scholar page
+                    
+                    if(bViewingScholars){
                         
-                        scholarOptionHoverStates[hoveredOption] = true;
-                        
-                        if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                        //over button area
+                        if(thisTouch.y > 0.21){
                             
-                            
-                            lastTouchTime = ofGetElapsedTimeMillis();
-                            
-                            //don't do anything if this option is already selected
-                            if(selectedScholarOption != hoveredOption){
-                            
-                                if(hoveredOption == 0){
-                                    
-                                    frame -> changeScholar(currentScholar);
-                                    frame -> hideFactSheet();
-                                    frame -> hideWorksSheet();
-                                    
-                                } else if(hoveredOption == 1){
-                                    
-                                    frame -> changeScholar(currentScholar);
-                                    frame -> showFactSheet();
-                                    frame -> hideWorksSheet();
-                                    
-                                } else if(hoveredOption == 2){
-                                    
-                                    frame -> changeScholar(currentScholar);
-                                    frame -> showWorksSheet();
-                                    frame -> hideFactSheet();
-                                }
+                            //"show portrait" button
+                            if(thisTouch.y < 0.4){
                                 
-                                selectedScholarOption = hoveredOption;
+                                hoveredOption = 0;
+                                
+                                //"show factsheet" button
+                            } else if(thisTouch.y < 0.6){
+                                
+                                hoveredOption = 1;
+                                
+                                //"show well known works" button
+                            } else if(thisTouch.y < 0.78){
+                                
+                                hoveredOption = 2;
                                 
                             }
+                            
+                            
                         }
+                        
+                        if( hoveredOption >= 0 && hoveredOption <= 2){
+                            
+                            scholarOptionHoverStates[hoveredOption] = true;
+                            
+                            if(touches[i].bIsTouching && ofGetElapsedTimeMillis() - lastTouchTime > touchWaitSlider){
+                                
+                                
+                                lastTouchTime = ofGetElapsedTimeMillis();
+                                
+                                //don't do anything if this option is already selected
+                                if(selectedScholarOption != hoveredOption){
+                                    
+                                    if(hoveredOption == 0){
+                                        
+                                        frame -> changeScholar(currentScholar);
+                                        frame -> hideFactSheet();
+                                        frame -> hideWorksSheet();
+                                        
+                                    } else if(hoveredOption == 1){
+                                        
+                                        frame -> changeScholar(currentScholar);
+                                        frame -> showFactSheet();
+                                        frame -> hideWorksSheet();
+                                        
+                                    } else if(hoveredOption == 2){
+                                        
+                                        frame -> changeScholar(currentScholar);
+                                        frame -> showWorksSheet();
+                                        frame -> hideFactSheet();
+                                    }
+                                    
+                                    selectedScholarOption = hoveredOption;
+                                    
+                                }
+                            }
+                        }
+                        
+                        
                     }
                     
                 } else {
@@ -1492,6 +1495,7 @@ void CenterBook::draw(){
             } else {
                 ofNoFill();
                 ofSetColor(255);
+                ofSetLineWidth(1);
                 ofDrawRectangle(homeButtonPos, homeButtonWidth, homeButtonHeight);
                 ofFill();
                 

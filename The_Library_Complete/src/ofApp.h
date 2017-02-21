@@ -25,6 +25,8 @@
 #include "Tracking/DeskTouch.hpp"
 #include "Tracking/DeskTouch.hpp"
 
+#include "Ornamentation/TitleBanner.hpp"
+
 class ofApp : public ofBaseApp{
     
 public:
@@ -81,6 +83,8 @@ public:
     BookController bookController;
     
     CenterBook centerBook;
+    
+    
     
     //show coordinates of mouse to
     //help place things on screen

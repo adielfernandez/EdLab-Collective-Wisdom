@@ -176,6 +176,9 @@ private:
     ofThreadChannel<ofPixels> foregroundPixOut;
     ofThreadChannel<ofxCv::ContourFinder> contoursOut;
     
+    //this member exists outside of the thread
+    //so contours maintain their permanence (IDs)
+    //but DO NOT use this anywhere outside of thread
     ofxCv::ContourFinder contours_thread;    
     ofxCv::RunningBackground background;
     

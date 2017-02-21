@@ -53,6 +53,9 @@
 		C6C3882A0B0872D1485F3874 /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E38D74C62B19279B65BC7 /* Client.cpp */; };
 		CCD326ED8E01272042317DD2 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A781C912CD5B01022F6BB2C /* Util.cpp */; };
 		D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A4DD23693DFAB8EC05FAA5D /* ofxCvShortImage.cpp */; };
+		D788C97A1E5B996B00B897DB /* Ornament.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D788C9761E5B996B00B897DB /* Ornament.cpp */; };
+		D788C97B1E5B996B00B897DB /* TitleBanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D788C9781E5B996B00B897DB /* TitleBanner.cpp */; };
+		D788C97E1E5BF01700B897DB /* NotificationBanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D788C97C1E5BF01600B897DB /* NotificationBanner.cpp */; };
 		D7FFD75B1E53BDBD00A46BCB /* Book.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD7351E53BDBD00A46BCB /* Book.cpp */; };
 		D7FFD75C1E53BDBD00A46BCB /* BookController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD7371E53BDBD00A46BCB /* BookController.cpp */; };
 		D7FFD75D1E53BDBD00A46BCB /* BookUIButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD7391E53BDBD00A46BCB /* BookUIButton.cpp */; };
@@ -67,7 +70,6 @@
 		D7FFD7661E53BDBD00A46BCB /* Tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD74E1E53BDBD00A46BCB /* Tile.cpp */; };
 		D7FFD7671E53BDBD00A46BCB /* TiledObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD7501E53BDBD00A46BCB /* TiledObject.cpp */; };
 		D7FFD7681E53BDBD00A46BCB /* Wallpaper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD7521E53BDBD00A46BCB /* Wallpaper.cpp */; };
-		D7FFD7691E53BDBD00A46BCB /* Ornament.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD7551E53BDBD00A46BCB /* Ornament.cpp */; };
 		D7FFD76A1E53BDBD00A46BCB /* SceneController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD7571E53BDBD00A46BCB /* SceneController.cpp */; };
 		D7FFD7741E53BE4700A46BCB /* DeskCam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD76C1E53BE4700A46BCB /* DeskCam.cpp */; };
 		D7FFD7751E53BE4700A46BCB /* DeskTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7FFD76E1E53BE4700A46BCB /* DeskTouch.cpp */; };
@@ -443,6 +445,12 @@
 		D5BB6F0357B6422E1B1656B4 /* ofxCvColorImage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvColorImage.h; path = ../../../addons/ofxOpenCv/src/ofxCvColorImage.h; sourceTree = SOURCE_ROOT; };
 		D6426FE9886FD3B4A831A446 /* exposure_compensate.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = exposure_compensate.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/stitching/detail/exposure_compensate.hpp; sourceTree = SOURCE_ROOT; };
 		D76A59E7B3601E76351C9BDB /* cvaux.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvaux.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cvaux.h; sourceTree = SOURCE_ROOT; };
+		D788C9761E5B996B00B897DB /* Ornament.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ornament.cpp; path = src/Ornamentation/Ornament.cpp; sourceTree = SOURCE_ROOT; };
+		D788C9771E5B996B00B897DB /* Ornament.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Ornament.hpp; path = src/Ornamentation/Ornament.hpp; sourceTree = SOURCE_ROOT; };
+		D788C9781E5B996B00B897DB /* TitleBanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TitleBanner.cpp; path = src/Ornamentation/TitleBanner.cpp; sourceTree = SOURCE_ROOT; };
+		D788C9791E5B996B00B897DB /* TitleBanner.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TitleBanner.hpp; path = src/Ornamentation/TitleBanner.hpp; sourceTree = SOURCE_ROOT; };
+		D788C97C1E5BF01600B897DB /* NotificationBanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NotificationBanner.cpp; path = src/Ornamentation/NotificationBanner.cpp; sourceTree = SOURCE_ROOT; };
+		D788C97D1E5BF01600B897DB /* NotificationBanner.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NotificationBanner.hpp; path = src/Ornamentation/NotificationBanner.hpp; sourceTree = SOURCE_ROOT; };
 		D7FFD7351E53BDBD00A46BCB /* Book.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Book.cpp; sourceTree = "<group>"; };
 		D7FFD7361E53BDBD00A46BCB /* Book.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Book.hpp; sourceTree = "<group>"; };
 		D7FFD7371E53BDBD00A46BCB /* BookController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookController.cpp; sourceTree = "<group>"; };
@@ -472,8 +480,6 @@
 		D7FFD7511E53BDBD00A46BCB /* TiledObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TiledObject.hpp; sourceTree = "<group>"; };
 		D7FFD7521E53BDBD00A46BCB /* Wallpaper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wallpaper.cpp; sourceTree = "<group>"; };
 		D7FFD7531E53BDBD00A46BCB /* Wallpaper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wallpaper.hpp; sourceTree = "<group>"; };
-		D7FFD7551E53BDBD00A46BCB /* Ornament.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ornament.cpp; sourceTree = "<group>"; };
-		D7FFD7561E53BDBD00A46BCB /* Ornament.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ornament.hpp; sourceTree = "<group>"; };
 		D7FFD7571E53BDBD00A46BCB /* SceneController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneController.cpp; sourceTree = "<group>"; };
 		D7FFD7581E53BDBD00A46BCB /* SceneController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneController.hpp; sourceTree = "<group>"; };
 		D7FFD76C1E53BE4700A46BCB /* DeskCam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeskCam.cpp; sourceTree = "<group>"; };
@@ -1612,12 +1618,17 @@
 			path = Furniture;
 			sourceTree = "<group>";
 		};
-		D7FFD7541E53BDBD00A46BCB /* Ornaments */ = {
+		D7FFD7541E53BDBD00A46BCB /* Ornamentation */ = {
 			isa = PBXGroup;
 			children = (
-				D7FFD7561E53BDBD00A46BCB /* Ornament.hpp */,
-				D7FFD7551E53BDBD00A46BCB /* Ornament.cpp */,
+				D788C9761E5B996B00B897DB /* Ornament.cpp */,
+				D788C9771E5B996B00B897DB /* Ornament.hpp */,
+				D788C97D1E5BF01600B897DB /* NotificationBanner.hpp */,
+				D788C97C1E5BF01600B897DB /* NotificationBanner.cpp */,
+				D788C9791E5B996B00B897DB /* TitleBanner.hpp */,
+				D788C9781E5B996B00B897DB /* TitleBanner.cpp */,
 			);
+			name = Ornamentation;
 			path = Ornaments;
 			sourceTree = "<group>";
 		};
@@ -1689,7 +1700,7 @@
 				D7FFD7341E53BDBD00A46BCB /* Books */,
 				D7FFD7421E53BDBD00A46BCB /* Content */,
 				D7FFD7491E53BDBD00A46BCB /* Furniture */,
-				D7FFD7541E53BDBD00A46BCB /* Ornaments */,
+				D7FFD7541E53BDBD00A46BCB /* Ornamentation */,
 				D7FFD76B1E53BE4700A46BCB /* Tracking */,
 			);
 			path = src;
@@ -1899,6 +1910,7 @@
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
 				EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */,
 				6AABAB39E82AF5CFEA23A205 /* ContourFinder.cpp in Sources */,
+				D788C97E1E5BF01700B897DB /* NotificationBanner.cpp in Sources */,
 				45CC483A999BF1065A6B926C /* Distance.cpp in Sources */,
 				D7FFD7651E53BDBD00A46BCB /* Frame.cpp in Sources */,
 				D7FFD7741E53BE4700A46BCB /* DeskCam.cpp in Sources */,
@@ -1909,6 +1921,7 @@
 				C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */,
 				7CDAD32BE4FA46701E3552C7 /* RunningBackground.cpp in Sources */,
 				10B69DE456AED1288FC9316B /* Tracker.cpp in Sources */,
+				D788C97A1E5B996B00B897DB /* Ornament.cpp in Sources */,
 				A6668C5B1272D7FCD5B5A16F /* Utilities.cpp in Sources */,
 				DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */,
 				D7FFD7671E53BDBD00A46BCB /* TiledObject.cpp in Sources */,
@@ -1923,7 +1936,6 @@
 				D7FFD75E1E53BDBD00A46BCB /* CenterBook.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				D7FFD76A1E53BDBD00A46BCB /* SceneController.cpp in Sources */,
-				D7FFD7691E53BDBD00A46BCB /* Ornament.cpp in Sources */,
 				D7FFD75F1E53BDBD00A46BCB /* SpawnRibbon.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
@@ -1940,6 +1952,7 @@
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,
 				1D5F3298C2FA073628012944 /* ofxCvContourFinder.cpp in Sources */,
 				D7FFD7641E53BDBD00A46BCB /* Bookcase.cpp in Sources */,
+				D788C97B1E5B996B00B897DB /* TitleBanner.cpp in Sources */,
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
 				D7FFD7621E53BDBD00A46BCB /* ContributionManager.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,

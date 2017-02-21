@@ -74,7 +74,7 @@ void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
     buttonHeight = buttonIcon -> getHeight() * buttonScale;
     
     //set the button margins and spacing based on the self and icon dimensions
-    shelfHeight = (shelfCorners[1] - shelfCorners[2]).length();
+    shelfHeight = (shelfCorners[1] - shelfCorners[2]).length() - 8;
     
     float spacing = (shelfHeight - buttonHeight * 3)/4.0f;
     
@@ -442,7 +442,7 @@ void BookUIButton::draw(){
                     ofSetColor(0, tagHelpTrans);
                     ofDrawRectangle(0, -15, 2, buttonWidth, 80);
                     
-                    ofScale(0.7, -0.7);
+                    ofScale(0.9, -0.9);
                     ofSetColor(helpTextCol, tagHelpTrans);
                     font -> drawString(tagHelp, 0, 0);
                     

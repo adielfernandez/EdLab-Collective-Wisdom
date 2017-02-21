@@ -84,9 +84,23 @@ void SceneController::setup(){
     //start app with this combo
     setTextureCombo(lastTextureCombo);
     
+    titleBanner.setup();
+    
+    //set up the notification banners by telling them where to be
+    ofVec3f leftCasePos = ( leftBookcase -> bookcaseCorners[0] + leftBookcase -> bookcaseCorners[1] )/2.0f;
+    ofVec3f rightCasePos = ( rightBookcase -> bookcaseCorners[0] + rightBookcase -> bookcaseCorners[1] )/2.0f;
+    
+    leftBanner.setup( leftCasePos );
+    rightBanner.setup( rightCasePos );
+    
 }
 
 void SceneController::update(){
+    
+    titleBanner.update();
+    leftBanner.update();
+    rightBanner.update();
+    
     
     //handle locked booleans
     if( ofGetElapsedTimef() - lastChangeTime < lockWaitTime){
@@ -154,12 +168,52 @@ void SceneController::update(){
 //    }
     
     
-    
-    
-    
-    
-    
 }
+
+
+
+void SceneController::drawTitleBanner(){
+    titleBanner.draw();
+}
+
+void SceneController::drawLeftBanner(){
+    leftBanner.draw();
+}
+
+void SceneController::drawRightBanner(){
+    rightBanner.draw();
+}
+
+void SceneController::onBookSpawnEvent( BookSpawnEvent &be ){
+    
+    
+    // Right or left
+    if( be.bIsLeftBookcase ){
+        
+        if( be.type == BookSpawnEvent::ARCHIVE ){
+            leftBanner.setArchive();
+        } else {
+            leftBanner.setNewBook();
+        }
+        
+        leftBanner.show();
+        
+    } else {
+        
+        if( be.type == BookSpawnEvent::ARCHIVE ){
+            rightBanner.setArchive();
+        } else {
+            rightBanner.setNewBook();
+        }
+        
+        rightBanner.show();
+        
+    }
+
+
+
+}
+
 
 
 void SceneController::onRedecorateEvent( SceneEvent &se ){
@@ -249,8 +303,6 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
     }
     
 }
-
-
 
 
 

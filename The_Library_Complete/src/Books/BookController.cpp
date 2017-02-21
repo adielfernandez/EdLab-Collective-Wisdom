@@ -168,10 +168,10 @@ void BookController::setup(vector<Contribution> *cList){
         fonts.push_back(f);
     }
     
-    UIFont.load("assets/interface/Century-gothic-bold.ttf", 13);
+    UIFont.load("assets/interface/Century-gothic-bold.ttf", 12);
 
-    //decrease letter spacing a bit to fit more text into tight spaces
-    UIFont.setLetterSpacing(0.9);
+    //decrease letter spacing a bit to fit more text into the tight tag button
+    UIFont.setLetterSpacing(0.90);
 
     
     
@@ -342,7 +342,7 @@ void BookController::setup(vector<Contribution> *cList){
             //X: shifted to the right in the shelf to make room for the tag button on the left
             //Y: upward a tad to move it vertically off the shelf
             //Z: shift the book out towards the viewer
-            display += ofVec3f(52, -5, -70);
+            display += ofVec3f(52, -13, -70);
             
             
             //give books their locations
@@ -574,7 +574,7 @@ void BookController::onButtonClickEvt(ButtonEvent &b){
     
 }
 
-void BookController::addToLibrary( Contribution& c ){
+void BookController::addToLibrary( Contribution& c, bool newBook ){
  
     int fillThisIndex = -1;
     
@@ -583,7 +583,12 @@ void BookController::addToLibrary( Contribution& c ){
     bool emptyBookAvailable = false;
     
     for(int i = 0; i < books.size(); i++){
-        if(books[i].bIsUnused == true){
+
+        //if this book is available AND it's on an unused shelf
+        //use this book
+        bool shelfInUse = shelfOverlays[ books[i].shelfNum ].bIsInUse;
+        
+        if(books[i].bIsUnused && !shelfInUse){
             
             emptyBookAvailable = true;
             
@@ -680,6 +685,24 @@ void BookController::addToLibrary( Contribution& c ){
     
     books[fillThisIndex].triggerNewBookEvt();
     
+    
+    //trigger an event for the scene controller
+    //listener to put up a notification
+    BookSpawnEvent b;
+    
+    //new book or archive event?
+    b.type = newBook ? BookSpawnEvent::NEW_BOOK : BookSpawnEvent::ARCHIVE;
+    
+    //left or right bookcase?
+    b.bIsLeftBookcase = ( books[fillThisIndex].shelfNum < 3 ) ? true : false;
+    
+    //send event
+    ofNotifyEvent(bookSpawnEvent, b, this);
+    
+    
+    
+    
+    
     lastNewBookEvent = ofGetElapsedTimef();
     
     //reset the recycle timer too so recycle events wait after ANY book addition
@@ -687,20 +710,38 @@ void BookController::addToLibrary( Contribution& c ){
     
 }
 
+bool BookController::checkShelfAvailable(){
+    
+    bool shelfAvailable = false;
+    
+    for(int i = 0; i < shelfOverlays.size(); i++){
+        
+        if( !shelfOverlays[i].bIsInUse ){
+            shelfAvailable = true;
+            
+            
+            break;
+        }
+    }
+    
+    return shelfAvailable;
+    
+}
+
+
+//called using listener to events in Contribution Manager
 void BookController::onNewContribution( Contribution& c ){
     
     
     //check if it has been long enough since the last event or if there
     //is an available bookshelves to add a book to.
     //if not, add the contribution to the queue and wait
-    if(ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider){
+    if(checkShelfAvailable() && ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider){
         
-        addToLibrary( c ); 
+        addToLibrary( c, true ); //true = new book, not archive event
     
     } else {
-        
-        //if no available books found (coming in too fast or all shelves
-        //are occupied), store the index of the book in the queue
+
         incomingQueue.push_back( c );
         
     }
@@ -771,25 +812,24 @@ void BookController::update(){
         ornaments[i].update();
     }
     
-    //Wait a little bit between ANY event (New book or recycle)
-    if( ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider ){
+    //Wait a little bit between ANY event (New book or recycle) and
+    //make sure there's a shelf available to put the new book in
+    if( checkShelfAvailable() && ofGetElapsedTimef() - lastNewBookEvent > newBookIntervalSlider ){
        
         //check if there's anything in the queue
         if( !incomingQueue.empty() ){
             
             //trigger a new book event with the oldest one
-            addToLibrary( *incomingQueue.begin() );
+            addToLibrary( *incomingQueue.begin() , true );  //true = new book, not archive event
             
             //then remove the oldest one (the first element in the vector)
             incomingQueue.pop_front();
             
-
-
-        
         } else {
             
             //the queue is empty, so check if there are books in the archive
-            //and if it's been long enough for a recycling event
+            //and if it's been long enough for a recycling event AND if there's
+            //available shelf space for a new book to come in
             if( contributionList -> size() > books.size() ){
                 
                 //AND it's been long enough between recycle events
@@ -820,7 +860,9 @@ void BookController::update(){
                         
                         //send to get recycled, this method will take care of
                         //switching the archival stats of the old/new messages
-                        addToLibrary( (*contributionList)[indexToRecycle] );
+                        addToLibrary( (*contributionList)[indexToRecycle], false ); //false = archive event
+
+                        
                         
                     }
                     

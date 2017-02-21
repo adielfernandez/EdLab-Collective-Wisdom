@@ -19,6 +19,9 @@
 #include "Furniture/Wallpaper.hpp"
 #include "Furniture/Frame.hpp"
 #include "Furniture/Bookcase.hpp"
+#include "Ornamentation/TitleBanner.hpp"
+#include "Ornamentation/NotificationBanner.hpp"
+
 
 //Dont include CenterBook
 //#include "Books/CenterBook.hpp"
@@ -46,6 +49,19 @@ struct SceneEvent{
     
 };
 
+struct BookSpawnEvent{
+    
+    enum EVT_TYPE{
+        ARCHIVE = 0,
+        NEW_BOOK = 1
+    };
+    
+    EVT_TYPE type;
+    
+    bool bIsLeftBookcase;
+    
+};
+
 
 
 
@@ -69,11 +85,24 @@ public:
     void setTextureCombo(int num);
     void triggerAllWave(int x, int y, int num);
     
+    void drawTitleBanner();
+    void drawLeftBanner();
+    void drawRightBanner();
+    
+    
+    //event based methods
+    void onRedecorateEvent( SceneEvent &se );
+    void onBookSpawnEvent( BookSpawnEvent &be );
+    
+    
     Bookcase *leftBookcase;
     Bookcase *rightBookcase;
     CenterBook *centerBook;
     Frame *frame;
     Wallpaper *wallpaper;
+    
+    TitleBanner titleBanner;
+    NotificationBanner leftBanner, rightBanner;
     
     //While on, no other transition, changes
     //effects will be listened to
@@ -98,7 +127,9 @@ public:
     int lastTextureCombo;
     
     
-    void onRedecorateEvent( SceneEvent &se );
+
+    
+    
 };
 
 

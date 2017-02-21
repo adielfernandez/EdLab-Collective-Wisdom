@@ -92,6 +92,7 @@ void ofApp::setup(){
     sceneController.setIdleTimerRef( &idleTimer );
     sceneController.setup();
     
+    
     //-----EVENT LISTENERS
     
     //Scene listens to centerbook redecorate button
@@ -103,6 +104,8 @@ void ofApp::setup(){
                       &SceneController::onRedecorateEvent);
     }
     
+    //Scene listens to book controller for book spawn events
+    ofAddListener(bookController.bookSpawnEvent, &sceneController, &SceneController::onBookSpawnEvent);
     
     //BookController listens to new contributions
     ofAddListener(contributionManager.newContributionEvt, &bookController, &BookController::onNewContribution);
@@ -276,6 +279,9 @@ void ofApp::draw(){
         
         frame.draw();
         
+        sceneController.drawLeftBanner();
+        sceneController.drawRightBanner();
+        
         leftBookcase.draw();
         rightBookcase.draw();
         
@@ -291,7 +297,10 @@ void ofApp::draw(){
         
         //camera inverts textures so draw the edge mask upside down
         ofSetColor(255);
-        bgEdgeMask.draw(-1, ofGetHeight(), bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
+        bgEdgeMask.draw(-1, 1200, bgEdgeMask.getWidth(), -(bgEdgeMask.getHeight() + 2));
+        
+        
+        sceneController.drawTitleBanner();
         
         
         if(currentView == 1){
@@ -350,6 +359,9 @@ void ofApp::draw(){
         
         
         
+        
+        
+        
         if(bShowMouseCoords){
             ofSetColor(255);
             string s = ofToString(mouseX) + ", " + ofToString(mouseY);
@@ -361,7 +373,7 @@ void ofApp::draw(){
         
         if(currentView != 0){
             ofSetColor(255);
-            ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate(), 2), ofGetWidth()/2, 20);
+            ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate(), 2), 1920/2, 20);
         }
         
         
@@ -456,7 +468,7 @@ void ofApp::draw(){
     }
     
     
-    ofVec2f textPos(ofGetWidth() - 175, 20);
+    ofVec2f textPos(1920 - 175, 20);
     
     if(ofGetElapsedTimef() - lastSaveTime < 2.0f){
         ofSetColor(180, 0, 0);
@@ -531,7 +543,7 @@ void ofApp::keyPressed(int key){
     } else if(key == OF_KEY_UP){
         
     } else if(key == OF_KEY_DOWN){
-        
+        sceneController.titleBanner.show();
     }
     
     if(key == OF_KEY_LEFT_SHIFT){
@@ -686,17 +698,6 @@ void ofApp::mousePressed(int x, int y, int button){
             
         }
 
-    } else {
-        
-        if( x > ofGetWidth()/2 ){
-            
-            currentCam++;
-            if(currentCam > numCams - 1){
-                currentCam = 0;
-            }
-
-        }
-        
     }
     
 }

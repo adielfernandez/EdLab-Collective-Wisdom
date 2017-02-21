@@ -27,10 +27,10 @@
 
 #include "../Content/ScholarData.hpp"
 
-#include "../Ornaments/Ornament.hpp"
+#include "../Ornamentation/Ornament.hpp"
 #include "TagRibbon.hpp"
 
-
+#include "../SceneController.hpp"
 
 #include "../Tracking/DeskCam.hpp"
 #include "../Tracking/WallCam.hpp"
@@ -65,8 +65,12 @@ public:
 
     //Method for adding a book, whether
     //its a new contribution or archive recycle
-    void addToLibrary( Contribution& c );
+    void addToLibrary( Contribution& c, bool newBook );
     
+    //convenience method for check if a shelf is
+    //available so we don't lock up
+    //if a new book comes in and has no where to go
+    bool checkShelfAvailable();
     
     list<Contribution> incomingQueue;
     double lastNewBookEvent;
@@ -77,6 +81,7 @@ public:
     //stores the touch data
     vector<WallTouch> touches;
     
+    ofEvent<BookSpawnEvent> bookSpawnEvent;
     
     void onButtonClickEvt(ButtonEvent &b);
     

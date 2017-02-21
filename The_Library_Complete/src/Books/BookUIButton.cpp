@@ -96,8 +96,15 @@ void BookUIButton::setIcons(ofImage *icon, ofImage *hover){
         yButtonHeight = -shelfHeight + spacing * 2 + buttonHeight * 1.5;
     }
     
+    //add a little bit in Y to make more vertical space above buttons
+    yButtonHeight += 5;
+    
+    //add extra padding on the right side of buttons in the right bookcase
+    float padding = shelfNum > 2 ? -15 : 0;
+    
+    
     //button x position
-    float xButtonPos = shelfCorners[1].x - spacing - buttonWidth * 0.5;
+    float xButtonPos = shelfCorners[1].x - spacing - buttonWidth * 0.5 + padding;
     
     hiddenPos.set(bookDisplayPos.x + 30, bookDisplayPos.y + yButtonHeight, -70);
     displayedPos.set(xButtonPos, bookDisplayPos.y + yButtonHeight, -70);
@@ -166,8 +173,11 @@ void BookUIButton::setTag(string t1, string t2, int _tagNum, ofColor c){
     
     //only set the positions if this button isn't in the center book
     if(!bIsCenterBookButton){
+        //add extra padding on the left side of tag buttons in the left bookcase
+        float padding = shelfNum < 3 ? 15 : 0;
+        
         hiddenPos.set(bookDisplayPos.x + 30, shelfCorners[3].y + spacing, -70);
-        displayedPos.set(shelfCorners[3].x + spacing, shelfCorners[3].y + spacing, -70);
+        displayedPos.set(shelfCorners[3].x + spacing + padding, shelfCorners[3].y + spacing, -70);
         currentPos = hiddenPos;
     }
     

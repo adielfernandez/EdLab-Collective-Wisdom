@@ -261,8 +261,18 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
                 
                 int newTex = floor( ofRandom(leftBookcase -> images.size()) );
                 
-                leftBookcase -> triggerWave( newTex, p );
-                rightBookcase -> triggerWave( newTex, p );
+                
+                
+                //offset the waves to make the gap feel less wide
+                //as the wave travels through it
+                if( se.type == SceneEvent::BOOKCASE_LEFT ){
+                    leftBookcase -> triggerWave( newTex, p );
+                    rightBookcase -> triggerWave( newTex, p + ofVec2f(300, 0));
+                } else {
+                    leftBookcase -> triggerWave( newTex, p + ofVec2f(-300, 0));
+                    rightBookcase -> triggerWave( newTex, p );
+                }
+                
                 
             }
             

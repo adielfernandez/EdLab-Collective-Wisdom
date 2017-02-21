@@ -20,7 +20,7 @@ void ofApp::setup(){
     }
     
     lastHeartbeatTime = 0;
-    heartbeatInterval = 200;
+    heartbeatInterval = 500;
     
     //----------SCHOLAR INFO Setup----------
     

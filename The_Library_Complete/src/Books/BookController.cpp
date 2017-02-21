@@ -342,7 +342,7 @@ void BookController::setup(vector<Contribution> *cList){
             //X: shifted to the right in the shelf to make room for the tag button on the left
             //Y: upward a tad to move it vertically off the shelf
             //Z: shift the book out towards the viewer
-            display += ofVec3f(52, -13, -70);
+            display += ofVec3f(52, -16, -70);
             
             
             //give books their locations

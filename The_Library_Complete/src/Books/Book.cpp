@@ -144,7 +144,7 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
     //make display scale different depending on model goal is to have book fill shelf height, so
     //height * displayScale should be a little less than the shelf height (approx. 140)
     //so that the book isn't so big it overlaps with the buttons
-    displayScale = modelScale * (135.0f/height);
+    displayScale = modelScale * (130.0f/height);
     
 
     height *= bulkScale;

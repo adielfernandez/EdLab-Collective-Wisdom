@@ -25,10 +25,10 @@ void TitleBanner::setup(){
     
     //set the positions we'll ease between
     //remember texture is inverted in Y due to ofEasyCam we're drawing in
-    titleHiddenPos.set( ofGetWidth()/2, -200 );
+    titleHiddenPos.set( 1920/2, -200 );
     subTitleHiddenPos = titleHiddenPos + ofVec3f( 0, 0 );
     
-    titleDisplayedPos.set( ofGetWidth()/2, titleImg.getHeight() - 15);
+    titleDisplayedPos.set( 1920/2, titleImg.getHeight() - 15 + 16);
     subTitleDisplayedPos = titleDisplayedPos + ofVec3f( 0, -12 );
     
     titlePos = titleHiddenPos;

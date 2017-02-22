@@ -286,24 +286,35 @@ void DeskCam::update(){
                 ofVec2f fingerTipPoint(points[index].x, points[index].y);
             
                 //since the depth at the edge pixel might not always be the true depth (at boundary of contour),
-                //look around the area just above the lowest point and pick the highest (closest)
-                //depth value as the depth reading, this should be the hand rather than table noise
+                //look around the area just above the lowest point and pick the average depth val
+                //of the blob as the depth reading, this should be the hand rather than table noise
                 //get how far above the desk the fingertip is
                 float heightAboveDesk = -1;
+                int numSamples = 0;
                 
                 //search pixels above and to the sides, wider area gives more stable touch data
                 int pixelArea = touchSearchAreaSlider;
+                
                 for(int x = fingerTipPoint.x - pixelArea; x < fingerTipPoint.x + pixelArea; x++){
                     for(int y = fingerTipPoint.y; y < fingerTipPoint.y + pixelArea; y++){
                         
                         //make sure the pixel is in bounds
                         if(x > 0 && x < foregroundPix.getWidth() && y > 0 && y < foregroundPix.getHeight()){
+                            
                             int thisIndex = foregroundPix.getPixelIndex(x, y);
-                            if(foregroundPix[thisIndex] > heightAboveDesk) heightAboveDesk = foregroundPix[thisIndex];
+                            
+                            
+                            if(foregroundPix[thisIndex] > 0){
+                                
+                                heightAboveDesk += foregroundPix[thisIndex];
+                                numSamples++;
+                            }
                         }
                         
                     }
                 }
+                
+                heightAboveDesk /= numSamples;
                 
                 //now we know the left and right bounds at any depth: xLeft and xRight
                 //so let's finally map them to a normalized scale

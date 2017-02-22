@@ -164,16 +164,16 @@ void ScholarData::setupData(){
     
     tagDescriptions.resize(tagList.size());
     
-    tagDescriptions[0] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[1] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[2] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[3] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[4] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[5] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[6] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[7] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[8] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
-    tagDescriptions[9] = "This tag... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium ligula ex, in suscipit felis ornare id. Maecenas sagittis dui orci, nec ";
+    tagDescriptions[0] = "Focuses on a diverse community of educators that ranges from history, philosophy, art, music, administration, bilingual & bicultural education, ESL, applied linguistics, and social studies.";
+    tagDescriptions[1] = "Focuses on the application of the biological, physiological, behavioral, and sociocultural sciences underlying human communication, movement, and community settings.";
+    tagDescriptions[2] = "Focuses on and prepares students to explore psychological needs of individuals, families, and communities through proficient researchers, educational leadership, and practitioners.";
+    tagDescriptions[3] = "Supports students development in areas of theories of teaching and learning to enact multiple approaches of practices on behalf of children and youth in schools & neighborhoods.";
+    tagDescriptions[4] = "Focuses on embracing the value of drawing on several disciplines in Economics Education, Politics Education, and Sociology Education and a notable group of legal scholars.";
+    tagDescriptions[5] = "Focuses on a multidisciplinary program that aims to improve health, learning, and social well-being in schools and other settings and throughout the lifespan of students.";
+    tagDescriptions[6] = "Focuses on and conduct research on fundamental issues in human development, human cognition, and measurement & applied statistics, to solve educational and social problems.";
+    tagDescriptions[7] = "Offer degrees at the masters, advanced masters, and doctoral levels: Anthropology, International and Comparative Education. ";
+    tagDescriptions[8] = "Focuses on issues of educational practice in mathematics, science, technology, and cognate human sciences, including the relationships among these disciplines.";
+    tagDescriptions[9] = "Focuses on Adult Learning & Leadership, Education Leadership, Higher & Postsecondary Education, Executive Program for Nursing, and Social-Organizational Psychology.";
     
     
     //Go through the tags and set colors

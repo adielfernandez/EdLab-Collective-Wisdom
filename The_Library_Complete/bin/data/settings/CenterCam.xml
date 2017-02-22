@@ -31,8 +31,8 @@
 <Flip_Image>1</Flip_Image>
 <Draw_Foreground>0</Draw_Foreground>
 	<___TOUCH_SETTINGS/>
-	<Touch_Threshold>10</Touch_Threshold>
-<Touch_Search_Area>10</Touch_Search_Area>
+	<Touch_Threshold>9</Touch_Threshold>
+<Touch_Search_Area>5</Touch_Search_Area>
 <Pos_Smooth_Amt>4</Pos_Smooth_Amt>
 	<Dist_Smooth_Amt>3</Dist_Smooth_Amt>
 <Simple_Threshold>0</Simple_Threshold>

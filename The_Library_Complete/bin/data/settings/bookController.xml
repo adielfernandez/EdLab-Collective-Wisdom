@@ -1,6 +1,6 @@
 <bookController>
 	<__LIBRARY_SETTINGS/>
-	<Archive_Interval>157.975</Archive_Interval>
+	<Archive_Interval>90.7</Archive_Interval>
 	<New_Book_Interval>0.935</New_Book_Interval>
 	<__BOOK_SETTINGS/>
 <bookController/>
@@ -18,7 +18,7 @@
 	<Noise_scale>0.060088</Noise_scale>
 	<Color_range>24.5</Color_range>
 <__SPAWN_SETTINGS/>
-    <Spawn_duration>3.3025</Spawn_duration>
+    <Spawn_duration>4.585</Spawn_duration>
     <Pos_Back_Ease>0.72</Pos_Back_Ease>
 	<__RIBBON_SETTINGS/>
     <Update_Book_Vars>1</Update_Book_Vars>
@@ -30,7 +30,7 @@
 	<Book_Open_Time>4.2</Book_Open_Time>
 	<Book_Close_Time>4.2</Book_Close_Time>
 	<Button_Speed>0.08</Button_Speed>
-<Gui_Position>586, 73</Gui_Position>
+<Gui_Position>628, 38</Gui_Position>
 <Stagger_ribbons>10.75</Stagger_ribbons>
 	<__RIBBON_NOISE/>
 <Stagger_radii>7.4</Stagger_radii>

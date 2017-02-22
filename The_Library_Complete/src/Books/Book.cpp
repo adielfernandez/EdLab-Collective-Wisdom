@@ -434,37 +434,46 @@ void Book::formatTextForDisplay(){
     //split the whole string into a vector of words
     vector<string> words = ofSplitString(total, " ");
     
-    const int numCharsPerLine = 15;
+    int pixelsPerLine = pageWidth - 25;
+    int pageNum = 0;
+    int pixelsLeftInLine = pixelsPerLine;
     const int linesPerPage = 8;
     
     int currentLine = 0;
-    int charsLeftInLine = numCharsPerLine;
     
     string textThisPage = "";
     
+    int spaceLength = font -> stringWidth(" ");
+    
     for(int i = 0; i < words.size(); i++){
+        
+        //left page fits more text
+//        pixelsPerLine = (pageNum % 2 == 0) ? pageWidth - 15 : pageWidth - 25;
+        
+        int wordLength = font -> stringWidth( words[i] );
         
         //first check for the page break between the
         //author page and rest of content
         if( words[i].compare("***") == 0 ) {
             
             pageText.push_back(textThisPage);
+            pageNum++;
             
             //Do not add *** to page, just make text blank
             textThisPage = "";
             currentLine = 0;
-            charsLeftInLine = numCharsPerLine;
+            pixelsLeftInLine = pixelsPerLine;
             
             
         } else {
             
             //check if the number of characters left in the current line
             //is greater than or equal to the current word, add it
-            if(words[i].length() <= charsLeftInLine){
+            if( wordLength <= pixelsLeftInLine){
                 
                 //add the word
                 textThisPage += words[i];
-                charsLeftInLine -= words[i].length();
+                pixelsLeftInLine -= wordLength;
                 
                 //if there's no more room on the line...
             } else {
@@ -475,22 +484,23 @@ void Book::formatTextForDisplay(){
                     //go to next line
                     textThisPage += "\n";
                     currentLine++;
-                    charsLeftInLine = numCharsPerLine;
+                    pixelsLeftInLine = pixelsPerLine;
                     
                     //add the word
                     textThisPage += words[i];
-                    charsLeftInLine -= words[i].length();
+                    pixelsLeftInLine -= wordLength;
                     
                     //if we ARE at the bottom of the page...
                 } else {
                     
                     //add it to the pageText vector
                     pageText.push_back(textThisPage);
+                    pageNum++;
                     
                     //add word to the fresh page
                     textThisPage = words[i];
                     currentLine = 0;
-                    charsLeftInLine -= words[i].length();
+                    pixelsLeftInLine -= wordLength;
                     
                 }
                 
@@ -498,20 +508,21 @@ void Book::formatTextForDisplay(){
             
             //add a space
             textThisPage += " ";
-            charsLeftInLine--;
+            pixelsLeftInLine -= spaceLength;
             
             //if thats the end of this line
             //go to the next line
-            if(charsLeftInLine <= 0){
+            if(pixelsLeftInLine <= 0){
                 textThisPage += "\n";
                 currentLine++;
-                charsLeftInLine = numCharsPerLine;
+                pixelsLeftInLine = pixelsPerLine;
             }
             
             //if we're on the last word but havent reached the end of the page yet,
             //add the text to the vector
             if(i == words.size() - 1){
                 pageText.push_back(textThisPage);
+                pageNum++;
             }
         }
     }
@@ -557,7 +568,7 @@ void Book::drawContentToTexture(){
         
         //left pages draw closer to page edge
         //right pages draw further to get past page curvature
-        float leftMargin = (i % 2 == 1 ? 10 : 5);
+        float leftMargin = (i % 2 == 0 ? 5 : 15);
         float topMargin = 18.5;
         
         ofTranslate(pageTexCoords[i].x + leftMargin, pageTexCoords[i].y + topMargin);
@@ -743,6 +754,8 @@ void Book::update(){
         prevButton.update();
         exitButton.update();
         tagButton.update();
+        
+        cout << "Font type: " << fontType << endl;
         
         if( !textureDrawn ){
             

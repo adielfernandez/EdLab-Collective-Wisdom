@@ -56,7 +56,7 @@ void BookController::loadModels(){
     //Each group has a consistent model, texture and font
     int numBookTypes = 2;
     int numTexTypes = 7; //texDir.size();
-    int numFontTypes = 3; //fontDir.size();
+    int numFontTypes = 2; //fontDir.size();
     
     int placeInThisGroup = 0;
     int numInThisGroup = round(ofRandom(2,3));
@@ -437,7 +437,7 @@ void BookController::checkTouchEvents(int x, int y, bool touchState){
      
         //if we're not active AND we're not in a new book event AND
         //the touch is true, check for book triggers
-        if(!books[i].bIsActive && !books[i].bIsNewBookEvt && touchState){
+        if( !books[i].bIsUnused && !books[i].bIsActive && !books[i].bIsNewBookEvt && touchState){
             
             //only check books that are not on active shelves
             if(shelfOverlays[books[i].shelfNum].bIsInUse == false){

@@ -624,7 +624,9 @@ void ofApp::keyPressed(int key){
         bShowCursor = !bShowCursor;
         
         if(bShowCursor){
-            
+            ofShowCursor();
+        } else {
+            ofHideCursor();
         }
         
     }

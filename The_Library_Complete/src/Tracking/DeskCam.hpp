@@ -71,6 +71,9 @@ public:
     unsigned long long lastFrameTime;
     float lastFrameRate; //for smoothing
     
+    bool bLearnBackground;
+    
+    
     //Flag for triggering new
     //data to send via OSC
     bool bNewContours;
@@ -93,8 +96,6 @@ public:
     
     //touch data we'll send elsewhere
     vector<DeskTouch> touches;
-    
-    float thresholdPos;
     
     
     //GUI SETTINGS

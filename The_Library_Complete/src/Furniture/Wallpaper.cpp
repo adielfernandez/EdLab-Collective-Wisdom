@@ -36,9 +36,10 @@ void Wallpaper::setup(){
     
     tileResSliderName = "Tile Res _ ";
     
-    bIsGuiActive = false;
+    bIsGuiActive = true;
     
     setupGui();
+    
     
     waveSpeedSlider = 1.0;
     effectDurationSlider = 1.8;

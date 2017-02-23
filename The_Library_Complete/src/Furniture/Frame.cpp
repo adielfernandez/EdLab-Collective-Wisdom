@@ -72,7 +72,7 @@ void Frame::setup(string name){
 
     lastMapTime = 0;
     
-    
+    bIsGuiActive = true;
 
     
 }

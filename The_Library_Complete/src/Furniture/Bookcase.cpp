@@ -105,6 +105,8 @@ void Bookcase::loadMedia(){
     //Setup the parent class TiledObject with all th info set above
     TiledObject::setupTiledObject(true);   //TRUE, this is a bookcase
     
+    bIsGuiActive = true;
+    
 }
 
 

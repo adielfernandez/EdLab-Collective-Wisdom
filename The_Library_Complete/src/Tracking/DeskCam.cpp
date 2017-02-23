@@ -93,6 +93,11 @@ void DeskCam::setup(string _camName, const char* deviceName){
     
     startThread();
     
+    //Pretend we just got a frame so the thread doesn't stop
+    //thinking it crashed since ofGetElapsedTimeMillis starts
+    //long before the window opens (assets take a long time to load)
+    lastFrameTime = ofGetElapsedTimeMillis();
+    
 }
 
 
@@ -144,7 +149,7 @@ void DeskCam::update(){
         isThreadCrashed = true;
         
         if(firstAfterCrash){
-            cout << "Stopping Thread" << endl;
+            cout << "[" << camName << " thread]Stopping Thread" << endl;
             stopThread();
             
             emptyAllChannels();
@@ -165,7 +170,7 @@ void DeskCam::update(){
     //only try to restart the thread every 4 seconds
     if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 4000){
         
-        cout << "Attempting to start thread..." << endl;
+        cout << "[" << camName << " thread] Attempting to start thread..." << endl;
         startThread();
         
         lastRestartTime = ofGetElapsedTimeMillis();
@@ -178,7 +183,7 @@ void DeskCam::update(){
     //make sure to wait longer since we have waitForThread(4000)
     if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 3000 && firstRestart){
         
-        cout << "Stopping Thread" << endl;
+        cout << "[" << camName << " thread] Stopping Thread" << endl;
         stopThread();
         
         emptyAllChannels();
@@ -216,7 +221,21 @@ void DeskCam::update(){
         
         settings[7] = learningTimeSlider;
         settings[8] = useBgDiff;    //bool casted as int into vector
-        settings[9] = resetBG;    //bool casted as int into vector
+        
+        bool reset;
+        
+        if(ofGetFrameNum() > 30 && bLearnBackground){
+            
+            reset = true;
+            bLearnBackground = false;
+            
+            cout << "Background reset!" << endl;
+            
+        } else {
+            reset = resetBG;
+        }
+        
+        settings[9] = reset;    //bool casted as int into vector
         
         settings[10] = minBlobAreaSlider;
         settings[11] = maxBlobAreaSlider;
@@ -573,7 +592,7 @@ void DeskCam::drawThresh(int x, int y){
         fgImg.draw(0, 0);
 
         ofSetColor(255);
-        ofDrawBitmapString("Foreground (640 x 480): after BG subtraction", x, y - 5);
+        ofDrawBitmapString("Foreground (640 x 480): after BG subtraction", 0, -5);
         
     } else {
         
@@ -582,7 +601,7 @@ void DeskCam::drawThresh(int x, int y){
         threshImg.draw(0, 0);
         
         ofSetColor(255);
-        ofDrawBitmapString("Processed (640 x 480): crop, threshold, contours", x, y - 5);
+        ofDrawBitmapString("Processed (640 x 480): crop, threshold, contours", 0, -5);
         
     }
     

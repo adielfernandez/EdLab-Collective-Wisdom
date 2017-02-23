@@ -20,7 +20,7 @@ void ofApp::setup(){
     }
     
     lastHeartbeatTime = 0;
-    heartbeatInterval = 500;
+    heartbeatInterval = 250;
     
     //----------SCHOLAR INFO Setup----------
     
@@ -252,7 +252,9 @@ void ofApp::update(){
     camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
     camera.setOrientation(ofVec3f(180, 0, 0));
     
-    
+    //set the centerbook camera to in the rare case that key/mouse presses
+    //offset the easycam
+    centerBook.resetCamera();
     
     
     

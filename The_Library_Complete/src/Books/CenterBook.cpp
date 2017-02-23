@@ -342,6 +342,8 @@ void CenterBook::setup(ScholarData *sData, Frame *f){
     //draw everything to the texture
     drawContentToTexture();
     
+    bIsGuiActive = true;
+    
 }
 
 void CenterBook::mapMesh(){

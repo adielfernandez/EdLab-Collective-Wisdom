@@ -87,6 +87,11 @@ void WallCam::setup(string _camName, const char* deviceName){
     
     startThread();
     
+    //Pretend we just got a frame so the thread doesn't stop
+    //thinking it crashed since ofGetElapsedTimeMillis starts
+    //long before the window opens (assets take a long time to load)
+    lastFrameTime = ofGetElapsedTimeMillis();
+    
 }
 
 
@@ -132,7 +137,7 @@ void WallCam::update(){
         isThreadCrashed = true;
         
         if(firstAfterCrash){
-            cout << "Stopping Thread" << endl;
+            cout << "[" << camName << " thread] Stopping Thread" << endl;
             stopThread();
             
             emptyAllChannels();
@@ -153,7 +158,7 @@ void WallCam::update(){
     //only try to restart the thread every 4 seconds
     if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 4000){
         
-        cout << "Attempting to start thread..." << endl;
+        cout << "[" << camName << " thread] Attempting to start thread..." << endl;
         startThread();
         
         lastRestartTime = ofGetElapsedTimeMillis();
@@ -166,7 +171,7 @@ void WallCam::update(){
     //make sure to wait longer since we have waitForThread(4000)
     if(isThreadCrashed && ofGetElapsedTimeMillis() - lastRestartTime > 3000 && firstRestart){
         
-        cout << "Stopping Thread" << endl;
+        cout << "[" << camName << " thread] Stopping Thread" << endl;
         stopThread();
         
         emptyAllChannels();
@@ -382,10 +387,11 @@ void WallCam::update(){
     //send settings into thread
 
     camera.update();
-//    if(camera.isFrameNew()){
     
-    //hack to not flood thread with duplicate images until
-    //we get isFrameNew() working
+    //hack to not flood thread with duplicate images
+    //ofxOrbbecAstra isFrameNew() does not work with multiple cameras
+    
+//    if(camera.isFrameNew()){
     if(ofGetElapsedTimeMillis() - lastFrameToThread > 34){  //34 ms between frames = ~30fps
         
         rawShortPixIn.send(camera.getRawDepth());
@@ -410,7 +416,7 @@ void WallCam::update(){
         
         bool reset;
         
-        if(ofGetElapsedTimef() > 2.0f && bLearnBackground){
+        if(ofGetFrameNum() > 30 && bLearnBackground){
             
             reset = true;
             bLearnBackground = false;

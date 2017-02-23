@@ -58,8 +58,9 @@ void SceneController::setup(){
     //for making randomized texture changes
     lastChangeTime = 0;
     
-    //how long to wait between idle changes
-    idleTriggerWaitTime = 30.0f;
+    //how long to wait between idle changes, start at
+    //zero, it will be given random wait times later
+    idleTriggerWaitTime = 0.0f;
     
     //how long to wait after a change to unlock the scene
     lockWaitTime = 6.0f;
@@ -128,44 +129,66 @@ void SceneController::update(){
     
     //Trigger an animation if the system is idle AND if it's been
     //long enough since the last one and the scene isn't locked
-    
-//    if( !lockScene &&  *idleTimer > 300.0f && ofGetElapsedTimef() - lastChangeTime > idleTriggerWaitTime){
-//        
-//        float whichObject = ofRandom(3);
-//        
-//        int newTexture = floor(ofRandom(10));
-//        
-//        float x = ofRandom(ofGetWidth());
-//        float y = ofRandom(ofGetHeight());
-//        
-//        if(whichObject < 1.0){
-//            
-//            //BOOKCASES
-//            leftBookcase -> triggerWave( newTexture, ofVec2f(leftBookcase -> bookcaseCorners[0].x + (leftBookcase -> bookcaseCorners[1].x - leftBookcase -> bookcaseCorners[0].x)/2.0 , y) );
-//            
-//            rightBookcase -> triggerWave( newTexture, ofVec2f(rightBookcase -> bookcaseCorners[0].x + (rightBookcase -> bookcaseCorners[1].x - rightBookcase -> bookcaseCorners[0].x)/2.0, y));
-//            
-//            lastBookcaseChangeTime = ofGetElapsedTimef();
-//            
-//        } else if(whichObject < 2.0){
-//
-//            //FRAME
-//            frame -> triggerWave( newTexture, ofVec2f(x, y));
-//            
-//            lastFrameChangeTime = ofGetElapsedTimef();
-//            
-//        } else {
-//            
-//            //WALLPAPER
-//            wallpaper -> triggerWave( newTexture, ofVec2f(x, y));
-//            
-//            lastWallpaperChangeTime = ofGetElapsedTimef();
-//        }
-//        
-//        idleTriggerWaitTime = ofRandom(30.0f, 60.0f);
-////        lastChangeTime = ofGetElapsedTimef();
-//        
-//    }
+    if( !lockScene &&  *idleTimer > 30.0f && ofGetElapsedTimef() - lastChangeTime > idleTriggerWaitTime){
+        
+        int newTexNum;
+        
+        float x = ofRandom(ofGetWidth());
+        float y = ofRandom(ofGetHeight());
+        
+        bool somethingChanged = false;
+
+        //go through each object and trigger them if it's safe to
+        
+        if( !lockBookcases ){
+            
+            newTexNum = floor(ofRandom( leftBookcase -> images.size() ));
+            
+            //BOOKCASES
+            leftBookcase -> triggerWave( newTexNum, ofVec2f(leftBookcase -> bookcaseCorners[0].x + (leftBookcase -> bookcaseCorners[1].x - leftBookcase -> bookcaseCorners[0].x)/2.0 , y) );
+            
+            rightBookcase -> triggerWave( newTexNum, ofVec2f(rightBookcase -> bookcaseCorners[0].x + (rightBookcase -> bookcaseCorners[1].x - rightBookcase -> bookcaseCorners[0].x)/2.0, y));
+            
+            somethingChanged = true;
+            
+        }
+        
+        
+        if( !lockFrame ){
+            
+            newTexNum = floor(ofRandom( frame -> images.size() ));
+            
+            //FRAME
+            frame -> triggerWave( newTexNum, ofVec2f(x, y));
+            somethingChanged = true;
+            
+        }
+        
+        if( !lockWallpaper ){
+            
+            newTexNum = floor(ofRandom( wallpaper -> images.size() ));
+            
+            //WALLPAPER
+            wallpaper -> triggerWave( newTexNum, ofVec2f(x, y));
+            somethingChanged = true;
+            
+        }
+
+        
+        //if we've done anything this time
+        //set the banner and note the time
+        if( somethingChanged ){
+            
+            titleBanner.show();
+            
+            lastChangeTime = ofGetElapsedTimef();
+            idleTriggerWaitTime = ofRandom(60.0f, 120.0f);
+            
+            cout << "Triggering idle event, next event in: " << idleTriggerWaitTime << endl;
+            
+        }
+        
+    }
     
     
 }

@@ -6,11 +6,11 @@ void ofApp::setup(){
     
     ofSetFrameRate(200);
     ofSetVerticalSync(true);
-    //    ofSetLogLevel(OF_LOG_VERBOSE);
+//        ofSetLogLevel(OF_LOG_VERBOSE);
     
     
     //----------WebSocket Connection----------
-    connectToServer = true;
+    connectToServer = false;
     
     if(connectToServer){
 //        client.connect("localhost", 8081);
@@ -222,7 +222,14 @@ void ofApp::update(){
     //copy it over
     std::copy(centerCam.touches.begin(), centerCam.touches.end(), centerBook.touches.begin());
     
+    //if there are touches we're not idle
+    int totalTouches = centerCam.touches.size() + leftCam.touches.size() + rightCam.touches.size();
     
+    if(totalTouches != 0) lastTouchTime = ofGetElapsedTimef();
+    
+    idleTimer = ofGetElapsedTimef() - lastTouchTime;
+    
+//    cout << "System Idle time: " << idleTimer << endl;
     
     
     sceneController.update();

@@ -52,8 +52,12 @@ public:
     void hover();
     void select();
     
+    void sendButtonEvent();
+    
     void checkForClicks(int x, int y, bool touchState);
     
+    double idleTime;
+    double lastTouchTime;
     
     //0 = exit, 1 = prev, 2 = next
     //3 = tag button, 4 = centerbook 

@@ -1,4 +1,4 @@
-George S. Counts
-5
-5
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.
+John Dewey
+4
+0
+Education is a social process; education is growth; education is not preparation for life but is life itself.

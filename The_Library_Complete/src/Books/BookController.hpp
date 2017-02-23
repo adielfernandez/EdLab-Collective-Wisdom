@@ -140,6 +140,7 @@ public:
     ofxFloatSlider bookOpenTimeSlider;
     ofxFloatSlider bookCloseTimeSlider;
     ofxFloatSlider buttonLerpSpeedSlider;
+    ofxFloatSlider bookIdleCloseTimeSlider;
 
     ofxLabel spawnSettingsLabel;
     ofxFloatSlider spawnDurationSlider;

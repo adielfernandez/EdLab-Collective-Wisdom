@@ -48,7 +48,8 @@ public:
 
     void mapMesh();
     
-    
+    double idleTime;
+    double lastInteractionTime;
     
     ScholarData *scholarData;
     Frame *frame;
@@ -270,6 +271,7 @@ public:
     ofxFloatSlider bookPageBottomSlider;
     ofxIntSlider touchWaitSlider;
     ofxIntSlider verticalShiftSlider;
+    ofxFloatSlider idleTimeToResetSlider;
     
     
     //desk control points

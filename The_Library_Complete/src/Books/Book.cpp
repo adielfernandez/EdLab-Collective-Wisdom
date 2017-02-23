@@ -290,6 +290,9 @@ void Book::setup(ofTexture *_tex, ofTrueTypeFont *_bookFont, ofTrueTypeFont *_UI
 
     storedToPulledOut = ofVec3f(sideShift, 0, -depth);
     
+    idleTime = 0;
+    idleTimeBeforeClose = 60.0f;
+    
 }
 
 void Book::setLocation(ofVec3f stored, ofVec3f display, int sNum, int bNum, int place){
@@ -596,6 +599,12 @@ void Book::triggerDisplay(){
     
     animStartTime = ofGetElapsedTimef();
     
+    //go through all the buttons and set their lastTouchTime to now
+    exitButton.lastTouchTime = ofGetElapsedTimef();
+    prevButton.lastTouchTime = ofGetElapsedTimef();
+    nextButton.lastTouchTime = ofGetElapsedTimef();
+    tagButton.lastTouchTime = ofGetElapsedTimef();
+    
 }
 
 void Book::triggerNewBookEvt(){
@@ -749,13 +758,36 @@ void Book::update(){
     //update if we're active but NOT in a new book spawning event
     if( bIsActive && !bIsNewBookEvt ){
         
+        //go through the buttons and see which one has the most recent idleTime
+        vector<double> idleTimes = {nextButton.idleTime, prevButton.idleTime, exitButton.idleTime, tagButton.idleTime };
+        
+        idleTime = 100000000000000.0f;
+        for(int i = 0; i < idleTimes.size(); i++){
+            if( idleTimes[i] < idleTime ) idleTime = idleTimes[i];
+        }
+        
+        //if it's been long enough, close the book but hijack the
+        //checkbuttonclicks() method so we know the book closes correctly
+        if( idleTime > idleTimeBeforeClose ){
+
+            //set the button as true, jot down when the button was pressed
+            //and send a signal to the book controller to put the book away
+            //and handle the shelf guards
+            exitButton.buttonState = true;
+            exitButton.lastButtonPress = ofGetElapsedTimeMillis();
+            exitButton.sendButtonEvent();
+            
+        }
+        
+        
+        
         //update buttons
         nextButton.update();
         prevButton.update();
         exitButton.update();
         tagButton.update();
         
-        cout << "Font type: " << fontType << endl;
+        
         
         if( !textureDrawn ){
             

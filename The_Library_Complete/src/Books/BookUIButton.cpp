@@ -49,7 +49,8 @@ void BookUIButton::setup(int _type, ofVec3f bookPos ){
     
     pushButtonScale = 1.0f;
     
-
+    idleTime = 0;
+    lastTouchTime = 0;
         
     buttonLerpSpeed = 0.08;
 }
@@ -253,20 +254,8 @@ void BookUIButton::checkForClicks(int x, int y, bool touchState){
                 
                 if(type == 0 || type == 3){
                     
-                    ButtonEvent e;
-                    e.type = type;
-//                    e.tag = tag;
-                    e.tagNum = tagNum;
-                    e.bookNum = bookNum;
-                    e.shelfNum = shelfNum;
-                    e.tagCol = tagCol;
-                    e.bIsCenterBookButton = bIsCenterBookButton;
-                    e.bScholarButton = bScholarButton;
-                    e.src = ofVec3f(currentPos.x + buttonWidth/2, currentPos.y + buttonHeight/2, -90);
-                    
-                    ofNotifyEvent(newButtonClickEvt, e, this);
-                    
-                    
+                    //creates an event 
+                    sendButtonEvent();
                     
                 }
 
@@ -278,14 +267,35 @@ void BookUIButton::checkForClicks(int x, int y, bool touchState){
                 bIsHovering = true;
             }
 
+            //we're either touching or hovering over the button
+            //so update the idle time
+            lastTouchTime = ofGetElapsedTimef();
+            
+            
         }
         
     }
     
+}
     
+void BookUIButton::sendButtonEvent(){
     
+    ButtonEvent e;
+    e.type = type;
+    //                    e.tag = tag;
+    e.tagNum = tagNum;
+    e.bookNum = bookNum;
+    e.shelfNum = shelfNum;
+    e.tagCol = tagCol;
+    e.bIsCenterBookButton = bIsCenterBookButton;
+    e.bScholarButton = bScholarButton;
+    e.src = ofVec3f(currentPos.x + buttonWidth/2, currentPos.y + buttonHeight/2, -90);
+    
+    ofNotifyEvent(newButtonClickEvt, e, this);
     
 }
+
+
 
 void BookUIButton::show(){
 
@@ -353,7 +363,7 @@ void BookUIButton::update(){
 
     }
     
-    
+    idleTime = ofGetElapsedTimef() - lastTouchTime;
     
 }
 

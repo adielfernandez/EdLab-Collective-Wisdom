@@ -449,8 +449,21 @@ void CenterBook::update(){
     }
     
 
+    //set the idle time
+    idleTime = ofGetElapsedTimef() - lastInteractionTime;
     
-    
+    //if it's been long enough since we've been touched
+    if( idleTime > idleTimeToResetSlider ){
+
+        //move to the home page
+        currentOpenPage = 0;
+        lastInteractionTime = ofGetElapsedTimef();
+
+        //and set the frame to the scholar portrait
+        frame -> hideFactSheet();
+        frame -> hideWorksSheet();
+        
+    }
     
     //if we're showing the raw desk, see if the mouse is inside of it and
     //pass normalized mouse touches into the FBO
@@ -506,6 +519,9 @@ void CenterBook::update(){
     
     //go through mouse touches and check for detection zones
     for(int i = 0; i < touches.size(); i++){
+        
+        //there are touches, so set the lastInteractionTime to current time
+        lastInteractionTime = ofGetElapsedTimef();
         
         //don't update the mouse touch so we can listen to clicks
         //instead of comparing touch distance vs a threshold
@@ -1750,6 +1766,7 @@ void CenterBook::setupGui(){
     gui.add(bookPageBottomSlider.setup("Book Bottom Bound", 0.95f, 0.0, 1.0));
     gui.add(touchWaitSlider.setup("Wait after touch", 500, 10, 2000));
     gui.add(verticalShiftSlider.setup("Perceived Vert shift", 0, 0, 80));
+    gui.add(idleTimeToResetSlider.setup("Idle Time to reset", 60.0f, 10.0f, 120.0));
 
     
     

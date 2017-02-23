@@ -1121,6 +1121,7 @@ void BookController::setBookVarsFromGui(){
         books[i].totalBookOpenTime = bookOpenTimeSlider;
         books[i].totalBookCloseTime = bookCloseTimeSlider;
         books[i].setButtonSpeeds(buttonLerpSpeedSlider);
+        books[i].idleTimeBeforeClose = bookIdleCloseTimeSlider;
         
         books[i].spawnRibbons.numRibbonsToDraw = numRibbonsSlider;
         books[i].spawnRibbons.orbitSpeed = orbitSpeedSlider;
@@ -1197,6 +1198,7 @@ void BookController::setupGui(){
     gui.add(bookOpenTimeSlider.setup("Book Open Time", 4.2, 1.0f, 8.0f));
     gui.add(bookCloseTimeSlider.setup("Book Close Time", 4.2, 1.0f, 8.0f));
     gui.add(buttonLerpSpeedSlider.setup("Button Speed", 0.08, 0.005f, 0.3f));
+    gui.add(bookIdleCloseTimeSlider.setup("Idle Close Time", 60.0f, 10.0f, 120.0f));
     
     gui.add(spawnSettingsLabel.setup("  SPAWN SETTINGS", ""));
     gui.add(spawnDurationSlider.setup("Spawn duration", 4.0f, 0.5f, 10.0f));

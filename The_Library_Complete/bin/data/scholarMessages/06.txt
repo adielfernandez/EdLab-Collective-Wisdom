@@ -1,4 +1,4 @@
 John Dewey
-6
-6
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vehicula purus ante, eu condimentum sapien ultrices nec. Aenean enim ipsum, condimentum id pellentesque et, sollicitudin eget ipsum. Cras sit amet auctor ex. Phasellus ac finibus metus.
+4
+0
+We do not learn from experience... we learn from reflecting on experience.

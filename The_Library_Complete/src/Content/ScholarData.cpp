@@ -33,7 +33,7 @@ void ScholarData::setupData(){
     
     scholarList[1].nameTop = "Patty Smith";
     scholarList[1].nameBottom = "Hill";
-    scholarList[1].nameFull = "Mary S. Rose";
+    scholarList[1].nameFull = "Patty Smith Hill";
     scholarList[1].dates = "(1868 - 1946)";
     scholarList[1].factSheet = "Patty Smith Hill (March 27, 1868 – May 25, 1946) was an American nursery school, kindergarten teacher, and key founder of the National Association Nursery Education (NANE) which now exists as the National Association For the Education of Young Children (NAEYC). Perhaps most well known as the sister of Mildred J. Hill with whom she is credited as co-writing the tune to the song Good Morning To All which became popular as Happy Birthday to You, Patty developed the Patty Hill blocks and in 1924 helped create the Institute of Child Welfare Research at Columbia University Teachers College.";
     scholarList[1].works = "1892: Hill was a founding member of the International Kindergarten Union (IKU).\n1893: Hill is perhaps best known as the sister of Mildred J. Hill, with whom she is credited as co-writing the tune to the song \"Good Morning To All\". The tune became even more popular as \"Happy Birthday to You\" during the 20th century. Hill and her sister Mildred wrote the song (Mildred wrote the tune; Patty wrote the original lyrics) was honored, along with the Hill sisters, at the Chicago World's Fair in.\n1924: Helped create the Institute of Child Welfare Research.\n1935, Hill became involved with the Federal Emergency Nursery Schools Program.";
@@ -49,7 +49,7 @@ void ScholarData::setupData(){
     
     scholarList[3].nameTop = "Edward";
     scholarList[3].nameBottom = "Thorndike";
-    scholarList[3].nameFull = "Edward Thorndik";
+    scholarList[3].nameFull = "Edward Thorndike";
     scholarList[3].dates = "(1874 - 1949)";
     scholarList[3].factSheet = "Edward “Lee” Thorndike (August 31, 1874 – August 9, 1949) was a psychologist who spent nearly his entire career at Teachers College, His work on Comparative psychology and the learning process led to the theory of connectionism and helped lay the scientific foundation for modern educational psychology. He also worked on solving industrial problems, such as employee exams and testing.";
     scholarList[3].works = "1898: Animal Intelligence, a series of \"puzzlebox\" experiments\n1903: Educational Psychology\n1904: Introduction to Theory of Mental and Social Measurement\n1905: Development of law of effect identifying the three main areas of intellectual development: abstract intelligence, mechanical intelligence, and social intelligence.\n1913–1914 Educational Psychology";
@@ -67,7 +67,7 @@ void ScholarData::setupData(){
     
     scholarList[5].nameTop = "Jerome";
     scholarList[5].nameBottom = "Bruner";
-    scholarList[5].nameFull = "Jerome Seymour Bruner";
+    scholarList[5].nameFull = "Jerome Bruner";
     scholarList[5].dates = "(1915 - 2016)";
     scholarList[5].factSheet = "Jerome Seymour Bruner (October 1, 1915 – June 5, 2016) was an American psychologist who made significant contributions to human cognitive psychology and cognitive learning theory in educational psychology. Bruner was a senior research fellow at the New York University School of Law.";
     scholarList[5].works = "1960s: the \"Cognitive Revolution\" that continues to influence psychology around the world.\n1961: The Process of Education";

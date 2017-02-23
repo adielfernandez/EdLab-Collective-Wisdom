@@ -53,6 +53,9 @@ public:
     //Support Methods
     bool bPrintDebug;
     
+    double idleTime;
+    float idleTimeBeforeClose;
+    
     
     //Book type: 0 = short, 1 = medium, 2 = tall
     int bookType;

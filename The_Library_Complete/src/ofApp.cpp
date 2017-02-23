@@ -149,8 +149,10 @@ void ofApp::setup(){
     bShowCursor = false;
     
     bIsFullscreen = false;
-    
-    
+
+    bShowCursor = false;
+    ofHideCursor();
+
     
     //time of the last save/load event
     //start them out earlier so they dont draw on startup

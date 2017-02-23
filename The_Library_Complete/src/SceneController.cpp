@@ -184,7 +184,7 @@ void SceneController::update(){
             lastChangeTime = ofGetElapsedTimef();
             idleTriggerWaitTime = ofRandom(60.0f, 120.0f);
             
-            cout << "Triggering idle event, next event in: " << idleTriggerWaitTime << endl;
+//            cout << "Triggering idle event, next event in: " << idleTriggerWaitTime << endl;
             
         }
         

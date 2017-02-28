@@ -10,7 +10,7 @@ void ofApp::setup(){
     
     
     //----------WebSocket Connection----------
-    connectToServer = false;
+    connectToServer = true;
     
     if(connectToServer){
 //        client.connect("localhost", 8081);

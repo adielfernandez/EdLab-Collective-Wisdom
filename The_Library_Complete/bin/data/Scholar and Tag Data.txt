@@ -1,0 +1,23 @@
+Scholar Index Numbers:
+0 = Mary S. Rose
+1 = Patty Smith Hill
+2 = William Heard Kilpatrick
+3 = Edward Thorndike
+4 = John Dewey
+5 = Jerome Bruner
+6 = Maria Montessori
+7 = Jean Piaget
+8 = Lev Vygotsky
+9 = Maxine Greene
+
+Tag Index Numbers
+    tagList[0] = "Arts & Humanities";
+    tagList[1] = "Biobehavioral Sciences";
+    tagList[2] = "Counseling &  Clinical Psychology";
+    tagList[3] = "Curriculum & Teaching";
+    tagList[4] = "Education Policy & Social Analysis";
+    tagList[5] = "Health and Behavior Studies";
+    tagList[6] = "Human Development";
+    tagList[7] = "International & Transcultural Studies";
+    tagList[8] = "Mathematics, Science & 	Technology";
+    tagList[9] = "Organization & Leadership";

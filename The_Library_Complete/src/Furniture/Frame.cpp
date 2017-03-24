@@ -704,7 +704,7 @@ void Frame::prepareMesh(){
     //to map the mesh to the physical frame. Start them off as square
     //but they will be overwritten by loaded GUI settings
     frameCorners.resize(4);
-    frameCorners[0] = ofVec2f( ofGetWidth()/2 - frameWidth/2, heightFromTop );
+    frameCorners[0] = ofVec2f( 1920/2 - frameWidth/2, heightFromTop );
     frameCorners[1] = frameCorners[0] + ofVec2f( frameWidth, 0           );
     frameCorners[2] = frameCorners[0] + ofVec2f( frameWidth, frameHeight );
     frameCorners[3] = frameCorners[0] + ofVec2f( 0         , frameHeight );

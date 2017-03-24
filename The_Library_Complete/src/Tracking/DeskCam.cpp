@@ -198,13 +198,13 @@ void DeskCam::update(){
     
     //send settings into thread
     
-    camera.update();
     //    if(camera.isFrameNew()){
     
     //hack to not flood thread with duplicate images until
     //we get isFrameNew() working
-    if(ofGetElapsedTimeMillis() - lastFrameToThread > 34){  //34 ms between frames = ~30fps
+    if(ofGetElapsedTimeMillis() > 20000 && ofGetElapsedTimeMillis() - lastFrameToThread > 50){  //34 ms between frames = ~30fps
         
+        camera.update();
         rawShortPixIn.send(camera.getRawDepth());
         
         //get settings from gui

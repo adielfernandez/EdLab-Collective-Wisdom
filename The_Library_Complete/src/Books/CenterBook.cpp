@@ -106,10 +106,10 @@ void CenterBook::setup(ScholarData *sData, Frame *f){
     float deskHeightFromTop = 700;  //just a starting point, adjusted by gui later
     
     meshPoints.resize(4);
-    meshPoints[0] = ofVec2f( ofGetWidth()/2 - deskWidth/2 , deskHeightFromTop );
-    meshPoints[1] = ofVec2f( ofGetWidth()/2 + deskWidth/2 , deskHeightFromTop );
-    meshPoints[2] = ofVec2f( ofGetWidth()/2 + deskWidth/2 , deskHeightFromTop + deskHeight );
-    meshPoints[3] = ofVec2f( ofGetWidth()/2 - deskWidth/2 , deskHeightFromTop + deskHeight );
+    meshPoints[0] = ofVec2f( 1920/2 - deskWidth/2 , deskHeightFromTop );
+    meshPoints[1] = ofVec2f( 1920/2 + deskWidth/2 , deskHeightFromTop );
+    meshPoints[2] = ofVec2f( 1920/2 + deskWidth/2 , deskHeightFromTop + deskHeight );
+    meshPoints[3] = ofVec2f( 1920/2 - deskWidth/2 , deskHeightFromTop + deskHeight );
     
 
     filigreeBorder.load("assets/interface/filigree/frame.png");
@@ -241,7 +241,7 @@ void CenterBook::setup(ScholarData *sData, Frame *f){
 
     
     //The position the raw desk will draw when debugging
-    rawDeskPos.set( ofGetWidth()/2.0 - deskWidth/2, ofGetHeight()/2 - deskHeight + 50 );
+    rawDeskPos.set( 1920/2.0 - deskWidth/2, 1200/2 - deskHeight + 50 );
     
     
     
@@ -580,7 +580,7 @@ void CenterBook::update(){
                         SceneEvent se;
                         
                         //set at just above desk level
-                        se.pos.set( ofGetWidth()/2, 700 );
+                        se.pos.set( 1920/2, 700 );
                         se.type = SceneEvent::CENTERBOOK;
                         
                         ofNotifyEvent(redecorateEvent, se, this);

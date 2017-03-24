@@ -38,7 +38,7 @@ void SceneController::setTextureCombo(int num){
 
     //Number order in textureCombos vector:
     //WALLPAPER - BOOKCASE - FRAME
-    triggerAllWave( ofGetWidth()/2, ofGetHeight()/2, num);
+    triggerAllWave( 1920/2, 1200/2, num);
     
 }
 
@@ -133,8 +133,8 @@ void SceneController::update(){
         
         int newTexNum;
         
-        float x = ofRandom(ofGetWidth());
-        float y = ofRandom(ofGetHeight());
+        float x = ofRandom(1920);
+        float y = ofRandom(1200);
         
         bool somethingChanged = false;
 
@@ -267,7 +267,7 @@ void SceneController::onRedecorateEvent( SceneEvent &se ){
             leftBookcase -> triggerWave( textureCombos[combo][1], p );
             
             //right case from right
-            p.set( ofGetWidth(), se.pos.y );
+            p.set( 1920, se.pos.y );
             rightBookcase -> triggerWave( textureCombos[combo][1], p );
             
             //frame from above

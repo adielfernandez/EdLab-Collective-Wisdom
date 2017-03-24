@@ -39,4 +39,5 @@
 <Btn_Col_LerpIN>0.11761</Btn_Col_LerpIN>
 	<Btn_Col_LerpOUT>0.07276</Btn_Col_LerpOUT>
 <Perceived_Vert_shift>0</Perceived_Vert_shift>
+<Idle_Time_to_reset>60</Idle_Time_to_reset>
 </centerBook>

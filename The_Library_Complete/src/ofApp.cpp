@@ -136,10 +136,10 @@ void ofApp::setup(){
     //----------Lighting/Material/Camera Setup----------
     camera.enableOrtho();
     camera.disableMouseInput();
-    camera.setTarget(ofVec3f(ofGetWidth()/2, ofGetHeight()/2, 0));
+    camera.setTarget(ofVec3f(1920/2, 1200/2, 0));
     //    camera.setFarClip(10000);
     //    camera.setNearClip(-100);
-    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+    camera.setPosition(1920/2, 1200/2, -1000);
     camera.setOrientation(ofVec3f(180, 0, 0));
     
     
@@ -258,7 +258,7 @@ void ofApp::update(){
     
     
     //update camera positions so it snaps back after dragging
-    camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+    camera.setPosition(1920/2, 1200/2, -1000);
     camera.setOrientation(ofVec3f(180, 0, 0));
     
     //set the centerbook camera to in the rare case that key/mouse presses
@@ -589,7 +589,7 @@ void ofApp::keyPressed(int key){
     if(key == 'c'){
         
         //reset camera
-        camera.setPosition(ofGetWidth()/2, ofGetHeight()/2, -1000);
+        camera.setPosition(1920/2, 1200/2, -1000);
         camera.setOrientation(ofVec3f(180, 0, 0));
         
         centerBook.resetCamera();

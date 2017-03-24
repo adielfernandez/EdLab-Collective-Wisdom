@@ -186,8 +186,6 @@ void Bookcase::update(){
         
     }
     
-//    bIsAnimating = ofGetMouseX() > ofGetWidth()/2;
-    
     
     //this will be set to true later if we're drawing the gui.
     bIsGuiActive = false;

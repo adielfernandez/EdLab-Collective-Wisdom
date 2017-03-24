@@ -192,9 +192,6 @@ void Tile::update(){
         currentAngle = ofxeasing::map_clamp(now, effectStartTime, effectEndTime, startAngle, endAngle, &ofxeasing::back::easeOut_s, backEasing);
         
         //back ease the angle
-//        float x = ofMap(ofGetMouseX(), 0, ofGetWidth(), startAngle, endAngle);
-//        currentAngle = x;
-        
 
         if(now > effectStartTime + effectDuration){
         

@@ -6,7 +6,7 @@
 	<Number_of_erosions>1</Number_of_erosions>
 	<Number_of_dilations>0</Number_of_dilations>
 	<___ROI_SETTINGS/>
-	<Region_Depth>88</Region_Depth>
+	<Region_Depth>76</Region_Depth>
 	<Wall_Level_Cutoff>240</Wall_Level_Cutoff>
 	<___CONTOUR_FINDING/>
 	<Min_Blob_Area>255</Min_Blob_Area>

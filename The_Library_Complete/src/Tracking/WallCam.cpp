@@ -386,14 +386,14 @@ void WallCam::update(){
     
     //send settings into thread
 
-    camera.update();
     
     //hack to not flood thread with duplicate images
     //ofxOrbbecAstra isFrameNew() does not work with multiple cameras
     
 //    if(camera.isFrameNew()){
-    if(ofGetElapsedTimeMillis() - lastFrameToThread > 34){  //34 ms between frames = ~30fps
+    if(ofGetElapsedTimeMillis() > 20000 && ofGetElapsedTimeMillis() - lastFrameToThread > 50){  //34 ms between frames = ~30fps
         
+        camera.update();
         rawShortPixIn.send(camera.getRawDepth());
         
         //get settings from gui

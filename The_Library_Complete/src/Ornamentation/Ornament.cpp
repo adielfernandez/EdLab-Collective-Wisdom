@@ -107,9 +107,9 @@ void Ornament::setup(int _type){
 
 
 void Ornament::setShelfPosition(ofVec3f shelfPos){
-    float x = -40; // = ofMap(ofGetMouseX(), 0, ofGetWidth(), -40, -100);
+    float z = -40; 
     
-    pos = ofVec3f(shelfPos.x, shelfPos.y, x);
+    pos = ofVec3f(shelfPos.x, shelfPos.y, z);
 }
 
 

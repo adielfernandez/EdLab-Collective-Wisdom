@@ -622,6 +622,8 @@ void ofApp::keyPressed(int key){
         rightBookcase.loadSettings();
         wallpaper.loadSettings();
         bookController.loadSettings();
+        centerBook.loadSettings();
+
         
         centerCam.loadSettings();
         leftCam.loadSettings();

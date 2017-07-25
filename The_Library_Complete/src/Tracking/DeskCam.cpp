@@ -509,6 +509,8 @@ void DeskCam::drawRaw(int x, int y){
     ofPath mask;
     mask.rectangle(0, 0, camWidth, camHeight);
     mask.close();
+    
+    //points added after .close() are added as a hole
     mask.moveTo((ofPoint)maskPoints[0]);
     mask.lineTo((ofPoint)maskPoints[1]);
     mask.lineTo((ofPoint)maskPoints[2]);
@@ -1065,13 +1067,13 @@ void DeskCam::threadedFunction(){
 //OpenTSPS project created by Brett Renfer and the Lab @ Rockwell
 //https://github.com/labatrockwell/openTSPS/blob/master/addons/ofxTSPS/libs/ofxTSPS/include/ofxTSPS/utils/Utils.h#L13
 
-//Converts gets a subset of an ofPixels instance by doing a bi-linear mapping
+//Gets a subset of an ofPixels instance by doing a bi-linear mapping
 //of the pixels between 4 control vertices
 void DeskCam::getQuadSubPixels(ofPixels& inPix, ofPixels& outPix, vector <ofVec2f>& quad) {
     if ( quad.size() < 4 ){
         ofLog( OF_LOG_ERROR, "You must pass a vector of four points to this function");
         return;
-    } // weird thing that could happen...
+    }
     
     int inW, inH, outW, outH;
     inW = inPix.getWidth();

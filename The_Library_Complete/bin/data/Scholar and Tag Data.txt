@@ -1,3 +1,16 @@
+Tag Index Numbers:
+0 = Arts & Humanities
+1 = Biobehavioral Sciences
+2 = Counseling &  Clinical Psychology
+3 = Curriculum & Teaching
+4 = Education Policy & Social Analysis
+5 = Health and Behavior Studies
+6 = Human Development
+7 = International & Transcultural Studies
+8 = Mathematics, Science &  Technology
+9 = Organization & Leadership
+
+
 Scholar Index Numbers:
 0 = Mary S. Rose
 1 = Patty Smith Hill
@@ -9,15 +22,3 @@ Scholar Index Numbers:
 7 = Jean Piaget
 8 = Lev Vygotsky
 9 = Maxine Greene
-
-Tag Index Numbers
-    tagList[0] = "Arts & Humanities";
-    tagList[1] = "Biobehavioral Sciences";
-    tagList[2] = "Counseling &  Clinical Psychology";
-    tagList[3] = "Curriculum & Teaching";
-    tagList[4] = "Education Policy & Social Analysis";
-    tagList[5] = "Health and Behavior Studies";
-    tagList[6] = "Human Development";
-    tagList[7] = "International & Transcultural Studies";
-    tagList[8] = "Mathematics, Science & 	Technology";
-    tagList[9] = "Organization & Leadership";

@@ -3,10 +3,10 @@
 	<Wave_Speed>0.3655</Wave_Speed>
 	<Effect_Duration>0.345</Effect_Duration>
 	<__Control_Points/>
-	<Corner_0>764.064, 157.551</Corner_0>
-	<Corner_1>1155.74, 156.02</Corner_1>
-	<Corner_2>1157.28, 686.452</Corner_2>
-	<Corner_3>764.983, 685.112</Corner_3>
+	<Corner_0>761.194, 159.082</Corner_0>
+	<Corner_1>1155.74, 159.082</Corner_1>
+	<Corner_2>1158.81, 687.408</Corner_2>
+	<Corner_3>764.983, 685.878</Corner_3>
 	<Control_Pt_0>0.10625</Control_Pt_0>
 	<Control_Pt_1>0.8925</Control_Pt_1>
 	<Control_Pt_2>0.07625</Control_Pt_2>
@@ -20,5 +20,5 @@
 <__Mapping_Points/>
 <Easing_Bounce_Amt>1</Easing_Bounce_Amt>
 <Draw_Shadow>1</Draw_Shadow>
-<Gui_Position>1163, 92</Gui_Position>
+<Gui_Position>541, 84</Gui_Position>
 </frame>

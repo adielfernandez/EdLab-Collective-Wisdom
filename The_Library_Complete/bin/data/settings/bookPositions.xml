@@ -1,18 +1,18 @@
 <bookPositions>
-	<Gui_Position>1099, 42</Gui_Position>
+	<Gui_Position>599, 89</Gui_Position>
 	<__SHELF_POSITIONS/>
-	<Shelf0_Start>155.076, 379.84</Shelf0_Start>
-	<Shelf0_End>569.178, 381.734</Shelf0_End>
-	<Shelf1_Start>153.393, 534.184</Shelf1_Start>
+	<Shelf0_Start>157.143, 378.061</Shelf0_Start>
+	<Shelf0_End>569.178, 380.357</Shelf0_End>
+	<Shelf1_Start>153.393, 531.888</Shelf1_Start>
 	<Shelf1_End>569.307, 534.184</Shelf1_End>
-	<Shelf2_Start>153.316, 692.602</Shelf2_Start>
-	<Shelf2_End>579.233, 694.898</Shelf2_End>
-	<Shelf3_Start>1343.99, 379.151</Shelf3_Start>
-	<Shelf3_End>1805.64, 378.348</Shelf3_End>
-	<Shelf4_Start>1342.97, 536.021</Shelf4_Start>
-	<Shelf4_End>1803.98, 533.323</Shelf4_End>
-	<Shelf5_Start>1342.9, 693.463</Shelf5_Start>
-	<Shelf5_End>1804.91, 690.421</Shelf5_End>
+	<Shelf2_Start>153.316, 688.01</Shelf2_Start>
+	<Shelf2_End>570.408, 692.602</Shelf2_End>
+	<Shelf3_Start>1346.48, 382.653</Shelf3_Start>
+	<Shelf3_End>1779.08, 382.653</Shelf3_End>
+	<Shelf4_Start>1346.48, 536.48</Shelf4_Start>
+	<Shelf4_End>1779.08, 536.48</Shelf4_End>
+	<Shelf5_Start>1346.48, 693.463</Shelf5_Start>
+	<Shelf5_End>1779.08, 692.602</Shelf5_End>
 <bookPositions/>
 	<Book_Spacing>0</Book_Spacing>
 </bookPositions>
